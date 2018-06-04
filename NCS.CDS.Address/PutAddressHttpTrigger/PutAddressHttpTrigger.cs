@@ -11,7 +11,7 @@ namespace NCS.CDS.Address.PutAddressHttpTrigger
     public static class PutAddressHttpTrigger
     {
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Address/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

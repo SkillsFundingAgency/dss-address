@@ -12,7 +12,7 @@ namespace NCS.CDS.Address.GetAddressByIdHttpTrigger
     public static class GetAddressByIdHttpTrigger
     {
         [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Address/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

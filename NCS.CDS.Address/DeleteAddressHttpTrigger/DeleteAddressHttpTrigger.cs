@@ -11,7 +11,7 @@ namespace NCS.CDS.Address.DeleteAddressHttpTrigger
     public static class DeleteAddressHttpTrigger
     {
         [FunctionName("Delete")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Address/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
