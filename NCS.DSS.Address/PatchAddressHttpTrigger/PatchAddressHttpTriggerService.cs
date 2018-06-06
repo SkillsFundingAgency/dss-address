@@ -1,4 +1,4 @@
-﻿namespace NCS.CDS.Address.PatchAddressHttpTrigger
+﻿namespace NCS.DSS.Address.PatchAddressHttpTrigger
 {
     public class PatchAddressHttpTriggerService
     {

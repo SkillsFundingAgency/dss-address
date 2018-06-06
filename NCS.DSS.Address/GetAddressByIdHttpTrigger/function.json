@@ -2,10 +2,10 @@
   "bindings": [
     {
       "authLevel": "function",
-      "name": "req",
-      "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "patch" ]
+      "methods": [ "get" ],
+      "name": "req",
+      "type": "httpTrigger"
     },
     {
       "name": "$return",
@@ -14,6 +14,6 @@
     }
   ],
   "disabled": false,
-  "entryPoint": "NCS.CDS.Address.PatchAddressHttpTrigger.Run",
-  "scriptFile": "..\\bin\\NCS.CDS.Address.dll"
+  "entryPoint": "NCS.DSS.Address.GetAddressByIdHttpTrigger.Run",
+  "scriptFile": "..\\bin\\NCS.DSS.Address.dll"
 } 

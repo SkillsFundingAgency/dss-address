@@ -1,4 +1,4 @@
-﻿namespace NCS.CDS.Address.PutAddressHttpTrigger
+﻿namespace NCS.DSS.Address.PutAddressHttpTrigger
 {
     public class PutAddressHttpTriggerService
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace NCS.CDS.Address.Models
+namespace NCS.DSS.Address.Models
 {
     public class Address
     {
@@ -32,7 +32,7 @@ namespace NCS.CDS.Address.Models
         public string Address5 { get; set; }
 
         [StringLength(10)]
-        [RegularExpression(PostcodeRegEx)]
+        [RegularExpression(PostcodeRegEx, ErrorMessage = "Please enter a valid postcode")]
         public string PostCode { get; set; }
 
         [StringLength(10)]

@@ -1,4 +1,4 @@
-﻿namespace NCS.CDS.Address.PostAddressHttpTrigger
+﻿namespace NCS.DSS.Address.PostAddressHttpTrigger
 {
     public class PostAddressHttpTriggerService
     {

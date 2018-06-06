@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace NCS.CDS.Address.GetAddressHttpTrigger
+namespace NCS.DSS.Address.GetAddressHttpTrigger
 {
     public static class GetAddressHttpTrigger
     {

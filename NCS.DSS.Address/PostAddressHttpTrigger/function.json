@@ -14,6 +14,6 @@
     }
   ],
   "disabled": false,
-  "entryPoint": "NCS.CDS.Address.PostAddressHttpTrigger.Run",
-  "scriptFile": "..\\bin\\NCS.CDS.Address.dll"
+  "entryPoint": "NCS.DSS.Address.PostAddressHttpTrigger.Run",
+  "scriptFile": "..\\bin\\NCS.DSS.Address.dll"
 } 

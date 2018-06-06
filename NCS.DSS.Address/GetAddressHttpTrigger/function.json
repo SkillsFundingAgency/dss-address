@@ -1,11 +1,11 @@
-{
+﻿{
   "bindings": [
     {
       "authLevel": "function",
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
-      "methods": [ "delete" ]
+      "methods": [ "get" ]
     },
     {
       "name": "$return",
@@ -14,6 +14,6 @@
     }
   ],
   "disabled": false,
-  "entryPoint": "NCS.CDS.Address.DeleteAddressHttpTrigger.Run",
-  "scriptFile": "..\\bin\\NCS.CDS.Address.dll"
+  "entryPoint": "NCS.DSS.Address.GetAddressHttpTrigger.Run",
+  "scriptFile": "..\\bin\\NCS.DSS.Address.dll"
 } 

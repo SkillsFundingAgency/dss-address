@@ -1,18 +1,17 @@
 using System;
+using System.Net;
+using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
 
-namespace NCS.CDS.Address.GetAddressByIdHttpTrigger
+namespace NCS.DSS.Address.PatchAddressHttpTrigger
 {
-    public static class GetAddressByIdHttpTrigger
+    public static class PatchAddressHttpTrigger
     {
-        [FunctionName("GetById")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        [FunctionName("Patch")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -24,12 +23,10 @@ namespace NCS.CDS.Address.GetAddressByIdHttpTrigger
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
-            var service = new GetAddressByIdHttpTriggerService();
-            var values = await service.GetAddress(addressGuid);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(values),
+                Content = new StringContent(JsonConvert.SerializeObject(addressGuid),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }

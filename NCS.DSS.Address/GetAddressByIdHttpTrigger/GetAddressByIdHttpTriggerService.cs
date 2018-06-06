@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace NCS.CDS.Address.GetAddressHttpTrigger
+namespace NCS.DSS.Address.GetAddressByIdHttpTrigger
 {
-    public class GetAddressHttpTriggerService
+    public class GetAddressByIdHttpTriggerService
     {
-        public async Task<List<Models.Address>> GetAddresses()
+        public async Task<Models.Address> GetAddress(Guid addressId)
         {
-            var result = CreateTempAddresses();
+            var address = CreateTempAddresses();
+            var result = address.FirstOrDefault(a => a.AddressId == addressId);
             return await Task.FromResult(result);
         }
 
@@ -58,6 +60,5 @@ namespace NCS.CDS.Address.GetAddressHttpTrigger
 
             return addressList;
         }
-
     }
 }
