@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.Address))]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId:guid}/Addresses")]HttpRequestMessage req, TraceWriter log)
+        [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

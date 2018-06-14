@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Http;
+using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
@@ -11,7 +13,9 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger
     public static class PatchAddressHttpTrigger
     {
         [FunctionName("Patch")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        [ResponseType(typeof(Models.Address))]
+        [Display(Name = "Patch", Description = "Ability to update an existing address.")]
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 

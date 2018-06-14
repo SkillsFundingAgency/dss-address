@@ -10,8 +10,9 @@ namespace NCS.DSS.Address.PutAddressHttpTrigger
 {
     public static class PutAddressHttpTrigger
     {
+        [Disable]
         [FunctionName("Put")]
-        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId:guid}/Addresses/{addressId:guid}")]HttpRequestMessage req, TraceWriter log, string addressId)
+        public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
