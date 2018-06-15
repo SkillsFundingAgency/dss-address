@@ -5,6 +5,7 @@ using System.Net.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Address.Annotations;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.DeleteAddressHttpTrigger
@@ -12,6 +13,8 @@ namespace NCS.DSS.Address.DeleteAddressHttpTrigger
     public static class DeleteAddressHttpTrigger
     {
         [FunctionName("Delete")]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Address Deleted", ShowSchema = true)]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Address Id does not exist", ShowSchema = false)]
         [Display(Name = "Delete", Description = "Ability to delete a particular address for a given customer.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
         {

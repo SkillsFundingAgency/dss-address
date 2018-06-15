@@ -14,6 +14,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Address.Annotations;
 
 namespace NCS.DSS.Address.APIDefinition
 {
@@ -241,8 +242,21 @@ namespace NCS.DSS.Address.APIDefinition
                     }
                 }
             }
-            responseDef.description = "OK";
-            AddToExpando(responses, "200", responseDef);
+
+            // automatically get data(http code, description and show schema) from the new custom response class
+            var responseCodes = methodInfo.GetCustomAttributes(typeof(AddressResponse), false);
+
+            foreach (var response in responseCodes)
+            {
+                var addressResponse = (AddressResponse)response;
+
+                if (!addressResponse.ShowSchema)
+                    responseDef = new ExpandoObject();
+
+                responseDef.description = addressResponse.Description;
+                AddToExpando(responses, addressResponse.HttpStatusCode.ToString(), responseDef);
+            }
+
             return responses;
         }
 

@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Address.Annotations;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger
 {
@@ -13,6 +14,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger
     {
         [FunctionName("Post")]
         [ResponseType(typeof(Models.Address))]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Address Created", ShowSchema = true)]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Unable to create Address", ShowSchema = false)]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Forbidden", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId)
         {

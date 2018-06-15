@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using NCS.DSS.Address.Annotations;
 
 namespace NCS.DSS.Address.GetAddressHttpTrigger
 {
@@ -14,6 +15,8 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger
     {
         [FunctionName("Get")]
         [ResponseType(typeof(Models.Address))]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Address found", ShowSchema = true)]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Address Id does not exist", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve all addresses for a given customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId)
         {

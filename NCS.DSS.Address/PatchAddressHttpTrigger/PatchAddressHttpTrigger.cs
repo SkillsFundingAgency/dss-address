@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using NCS.DSS.Address.Annotations;
 using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger
@@ -14,6 +15,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger
     {
         [FunctionName("Patch")]
         [ResponseType(typeof(Models.Address))]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Address Updated", ShowSchema = true)]
+        [AddressResponse(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Supplied Address Id does not exist", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
         public static HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
         {
