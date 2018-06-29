@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -8,8 +9,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
+using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 
-namespace NCS.DSS.Address.GetAddressHttpTrigger
+namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 {
     public static class GetAddressHttpTrigger
     {
@@ -25,12 +27,30 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger
         {
             log.Info("C# HTTP trigger function processed a request.");
 
+            if (!Guid.TryParse(customerId, out var customerGuid))
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(customerId),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
             var service = new GetAddressHttpTriggerService();
-            var values = await service.GetAddresses();
+            var addresses = await service.GetAddressesAsync(customerGuid);
+
+            if (addresses == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(customerId),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(values),
+                Content = new StringContent(JsonConvert.SerializeObject(addresses),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }
