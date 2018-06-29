@@ -8,18 +8,9 @@
       "methods": [ "post" ]
     },
     {
-      "direction": "out",
       "name": "$return",
-      "type": "http"
-    },
-    {
-      "type": "documentDB",
-      "name": "documents",
-      "databaseName": "Address",
-      "collectionName": "Addresses",
-      "authToken": "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-      "connection": "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",
-      "direction": "in"
+      "type": "http",
+      "direction": "out"
     }
   ],
   "disabled": false,
