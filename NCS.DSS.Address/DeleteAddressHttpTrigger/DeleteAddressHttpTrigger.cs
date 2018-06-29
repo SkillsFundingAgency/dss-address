@@ -12,6 +12,7 @@ namespace NCS.DSS.Address.DeleteAddressHttpTrigger
 {
     public static class DeleteAddressHttpTrigger
     {
+        [Disable]
         [FunctionName("Delete")]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Address Deleted", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Address does not exist", ShowSchema = false)]
