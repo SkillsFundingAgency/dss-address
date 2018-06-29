@@ -9,8 +9,9 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
+using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 
-namespace NCS.DSS.Address.GetAddressByIdHttpTrigger
+namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 {
     public static class GetAddressByIdHttpTrigger
     {
@@ -21,7 +22,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
-        [Display(Name = "Get", Description = "Ability to retrieve a single address with a given Id for an individual customer.")]
+        [Display(Name = "Get", Description = "Ability to retrieve a single address with a given AddressId for an individual customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
         {
             log.Info("C# HTTP trigger function processed a request.");
@@ -34,12 +35,22 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
+
             var service = new GetAddressByIdHttpTriggerService();
-            var values = await service.GetAddress(addressGuid);
+            var address = await service.GetAddressAsync(addressGuid);
+
+            if (address == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(addressId),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(values),
+                Content = new StringContent(JsonConvert.SerializeObject(address),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }
