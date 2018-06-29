@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,11 +7,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Address.Annotations;
-using NCS.DSS.Address.PostAddressHttpTrigger.Service;
-using NCS.DSS.Address.Validation;
-using Newtonsoft.Json;
 
-namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
+namespace NCS.DSS.Address.PostAddressHttpTrigger
 {
     public static class PostAddressHttpTrigger
     {
@@ -32,21 +28,8 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             // Get request body
             var address = await req.Content.ReadAsAsync<Models.Address>();
 
-            // validate the request
-            var validate = new Validate();
-            var errors = validate.ValidateResource(address);
-
-            if (errors != null && errors.Any())
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(errors),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
             var addressService = new PostAddressHttpTriggerService();
-            var addressId = await addressService.CreateAsync(address);
+            var addressId = addressService.Create(address);
 
             return addressId == null
                 ? new HttpResponseMessage(HttpStatusCode.BadRequest)
