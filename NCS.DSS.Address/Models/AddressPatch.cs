@@ -4,22 +4,11 @@ using NCS.DSS.Address.Annotations;
 
 namespace NCS.DSS.Address.Models
 {
-    public class Address
+    public class AddressPatch
     {
         private const string AddressRegEx = @"[A-Za-z0-9 ~!@&amp;'\()*+,\-.\/:;]{1,100}";
         private const string PostcodeRegEx = @"([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\s?[0-9][A-Za-z]{2})";
 
-        [Display(Description = "Unique identifier for an address.")]
-        [Example(Description = "b8592ff8-af97-49ad-9fb2-e5c3c717fd85")]
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public Guid? AddressId { get; set; }
-
-        [Required]
-        [Display(Description = "Unique identifier of a customer")]
-        [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
-        public Guid CustomerId { get; set; }
-
-        [Required]
         [StringLength(100)]
         [RegularExpression(AddressRegEx)]
         [Display(Description = "Customer home address line 1")]
@@ -50,7 +39,6 @@ namespace NCS.DSS.Address.Models
         [Example(Description = "Adddress Line 5")]
         public string Address5 { get; set; }
 
-        [Required]
         [StringLength(10)]
         [RegularExpression(PostcodeRegEx, ErrorMessage = "Please enter a valid postcode")]
         [Display(Description = "Customers postcode within England.")]
@@ -91,23 +79,5 @@ namespace NCS.DSS.Address.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid LastModifiedTouchpointId { get; set; }
-
-        public void Patch(AddressPatch addressPatch)
-        {
-            if (addressPatch == null)
-                return;
-
-            Address1 = addressPatch.Address1;
-            Address2 = addressPatch.Address2;
-            Address3 = addressPatch.Address3;
-            Address4 = addressPatch.Address4;
-            Address5 = addressPatch.Address5;
-            PostCode = addressPatch.PostCode;
-            AlternativePostCode = addressPatch.AlternativePostCode;
-            Longitude = addressPatch.Longitude;
-            Latitude = addressPatch.Latitude;
-            LastModifiedDate = addressPatch.LastModifiedDate;
-            LastModifiedTouchpointId = addressPatch.LastModifiedTouchpointId;
-        }
     }
 }
