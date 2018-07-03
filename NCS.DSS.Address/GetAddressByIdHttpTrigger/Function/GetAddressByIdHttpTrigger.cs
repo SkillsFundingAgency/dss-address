@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
+using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 
 namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
@@ -27,11 +28,25 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
         {
             log.Info("C# HTTP trigger function processed a request.");
 
-            if (!Guid.TryParse(addressId, out var addressGuid))
+            if (!Guid.TryParse(customerId, out var customerGuid) ||
+                !Guid.TryParse(addressId, out var addressGuid))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent(JsonConvert.SerializeObject(addressId),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
+            var resourceHelper = new ResourceHelper();
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent("Unable to find a customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
@@ -43,7 +58,8 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(addressId),
+                    Content = new StringContent("Unable to find address with Id of : " + 
+                                                JsonConvert.SerializeObject(addressId),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

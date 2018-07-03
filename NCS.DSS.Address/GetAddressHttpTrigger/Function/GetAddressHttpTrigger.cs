@@ -9,6 +9,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
+using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 
 namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
@@ -36,14 +37,28 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
                 };
             }
 
+            var resourceHelper = new ResourceHelper();
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent("Unable to find a customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+
             var service = new GetAddressHttpTriggerService();
-            var addresses = await service.GetAddressesAsync(customerGuid);
+            var addresses = service.GetAddressesAsync(customerGuid);
 
             if (addresses == null)
             {
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(customerId),
+                    Content = new StringContent("Unable to find addresses for customer with Id of : " + 
+                                                JsonConvert.SerializeObject(customerId),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

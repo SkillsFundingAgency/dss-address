@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Address.Annotations;
+using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
@@ -30,7 +31,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         {
             log.Info("C# HTTP trigger function processed a request.");
 
-            if (!Guid.TryParse(addressId, out var addressGuid))
+            if (!Guid.TryParse(customerId, out var customerGuid) || 
+                !Guid.TryParse(addressId, out var addressGuid))
             {
                 return new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
@@ -48,30 +50,45 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                return new HttpResponseMessage((HttpStatusCode)422)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(errors),
+                    Content = new StringContent("Validation error(s) : " +
+                                                JsonConvert.SerializeObject(errors),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
 
+            var resourceHelper = new ResourceHelper();
+            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+            if (!doesCustomerExist)
+            {
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
+                {
+                    Content = new StringContent("Unable to find a customer with Id of : " +
+                                                JsonConvert.SerializeObject(customerGuid),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
+            
             var addressPatchService = new PatchAddressHttpTriggerService();
             var address = await addressPatchService.GetAddressAsync(addressGuid);
 
             if (address == null)
             {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
-                    Content = new StringContent(JsonConvert.SerializeObject(errors),
+                    Content = new StringContent("Unable to find a address with Id of : " +
+                                                JsonConvert.SerializeObject(errors),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }
 
-           await addressPatchService.UpdateAsync(address, addressPatch);
+           var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatch);
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(JsonConvert.SerializeObject(addressGuid),
+                Content = new StringContent(JsonConvert.SerializeObject(updatedAddress),
                     System.Text.Encoding.UTF8, "application/json")
             };
         }
