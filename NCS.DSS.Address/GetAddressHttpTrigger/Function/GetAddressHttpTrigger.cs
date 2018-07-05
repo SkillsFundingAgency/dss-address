@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
+using NCS.DSS.Address.Ioc;
 
 namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 {
@@ -24,7 +25,9 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve all addresses for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetAddressHttpTriggerService getAddressService)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -37,7 +40,6 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
                 };
             }
 
-            var resourceHelper = new ResourceHelper();
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
@@ -50,8 +52,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
                 };
             }
 
-            var service = new GetAddressHttpTriggerService();
-            var addresses = service.GetAddressesAsync(customerGuid);
+            var addresses = await getAddressService.GetAddressesAsync(customerGuid);
 
             if (addresses == null)
             {

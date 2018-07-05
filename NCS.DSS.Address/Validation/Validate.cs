@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Address.Validation
 {
-    public class Validate
+    public class Validate : IValidate
     {
         public List<ValidationResult> ValidateResource<T>(T resource)
         {

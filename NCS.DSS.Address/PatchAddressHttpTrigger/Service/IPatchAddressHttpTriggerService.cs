@@ -6,6 +6,6 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
     public interface IPatchAddressHttpTriggerService
     {
         Task<Models.Address> UpdateAsync(Models.Address address, Models.AddressPatch addressPatch);
-        Task<Models.Address> GetAddressAsync(Guid addressId);
+        Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId);
     }
 }

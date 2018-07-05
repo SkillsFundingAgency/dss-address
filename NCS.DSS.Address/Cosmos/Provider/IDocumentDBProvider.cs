@@ -10,7 +10,8 @@ namespace NCS.DSS.Address.Cosmos.Provider
     {
         bool DoesCustomerResourceExist(Guid customerId);
         Task<ResourceResponse<Document>> GetAddressAsync(Guid addressId);
-        List<Models.Address> GetAddressesForCustomer(Guid customerId);
+        Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId);
+        Task<List<Models.Address>> GetAddressesForCustomerAsync(Guid customerId);
         Task<ResourceResponse<Document>> CreateAddressAsync(Models.Address address);
         Task<ResourceResponse<Document>> UpdateAddressAsync(Models.Address address);
     }

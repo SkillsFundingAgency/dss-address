@@ -10,6 +10,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.Helpers;
+using NCS.DSS.Address.Ioc;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
@@ -27,7 +29,11 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
+            [Inject]IValidate validate,
+            [Inject]IPatchAddressHttpTriggerService addressPatchService)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -42,10 +48,9 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
 
             // Get request body
-            var addressPatch = await req.Content.ReadAsAsync<Models.AddressPatch>();
+            var addressPatch = await httpRequestMessageHelper.GetDiversityFromRequest<Models.AddressPatch>(req);
 
             // validate the request
-            var validate = new Validate();
             var errors = validate.ValidateResource(addressPatch);
 
             if (errors != null && errors.Any())
@@ -58,7 +63,6 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 };
             }
 
-            var resourceHelper = new ResourceHelper();
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
@@ -71,8 +75,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 };
             }
             
-            var addressPatchService = new PatchAddressHttpTriggerService();
-            var address = await addressPatchService.GetAddressAsync(addressGuid);
+            var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
             {

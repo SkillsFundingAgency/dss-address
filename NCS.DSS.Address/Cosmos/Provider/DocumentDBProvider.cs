@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Address.Cosmos.Client;
 using NCS.DSS.Address.Cosmos.Helper;
 
@@ -48,8 +49,28 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
             return response;
         }
-        
-        public List<Models.Address> GetAddressesForCustomer(Guid customerId)
+
+        public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
+        {
+            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+
+            var client = _databaseClient.CreateDocumentClient();
+
+            var addressForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.Address>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId && x.AddressId == addressId)
+                .AsDocumentQuery();
+
+            if (addressForCustomerQuery == null)
+                return null;
+
+            var addressess = await addressForCustomerQuery.ExecuteNextAsync<Models.Address>();
+
+            return addressess?.FirstOrDefault();
+        }
+
+
+        public async Task<List<Models.Address>> GetAddressesForCustomerAsync(Guid customerId)
         {
             var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
 
@@ -59,9 +80,17 @@ namespace NCS.DSS.Address.Cosmos.Provider
                 return null;
 
             var queryAddresses = client.CreateDocumentQuery<Models.Address>(collectionUri)
-                .Where(so => so.CustomerId == customerId).ToList();
+                .Where(so => so.CustomerId == customerId).AsDocumentQuery();
 
-            return queryAddresses.Any() ? queryAddresses : null;
+            var addresses = new List<Models.Address>();
+
+            while (queryAddresses.HasMoreResults)
+            {
+                var response = await queryAddresses.ExecuteNextAsync<Models.Address>();
+                addresses.AddRange(response);
+            }
+
+            return addresses.Any() ? addresses : null;
 
         }
 

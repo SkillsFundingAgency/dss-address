@@ -22,16 +22,11 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             return responseStatusCode == HttpStatusCode.OK ? address : null;
         }
 
-        public async Task<Models.Address> GetAddressAsync(Guid addressId)
+        public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
             var documentDbProvider = new DocumentDBProvider();
-            var response = await documentDbProvider.GetAddressAsync(addressId);
-
-            if (response?.Resource == null)
-                return null;
-
-            var address = (Models.Address)(dynamic)response.Resource;
-
+            var address = await documentDbProvider.GetAddressForCustomerAsync(customerId, addressId);
+            
             return address;
         }
     }

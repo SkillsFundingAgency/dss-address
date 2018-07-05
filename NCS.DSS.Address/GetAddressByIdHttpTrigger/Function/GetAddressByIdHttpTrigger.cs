@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
+using NCS.DSS.Address.Ioc;
 
 namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 {
@@ -24,7 +25,9 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve a single address with a given AddressId for an individual customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId,
+            [Inject]IResourceHelper resourceHelper,
+            [Inject]IGetAddressByIdHttpTriggerService getAddressByIdService)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -38,7 +41,6 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
                 };
             }
 
-            var resourceHelper = new ResourceHelper();
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
@@ -51,8 +53,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
                 };
             }
 
-            var service = new GetAddressByIdHttpTriggerService();
-            var address = await service.GetAddressAsync(addressGuid);
+            var address = await getAddressByIdService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
             {
