@@ -90,7 +90,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return new HttpResponseMessage(HttpStatusCode.NoContent)
                 {
                     Content = new StringContent("Unable to find a address with Id of : " +
-                                                JsonConvert.SerializeObject(errors),
+                                                JsonConvert.SerializeObject(addressGuid),
                         System.Text.Encoding.UTF8, "application/json")
                 };
             }

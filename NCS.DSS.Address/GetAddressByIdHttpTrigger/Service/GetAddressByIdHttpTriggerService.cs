@@ -13,6 +13,5 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
 
             return address;
         }
-
     }
 }
