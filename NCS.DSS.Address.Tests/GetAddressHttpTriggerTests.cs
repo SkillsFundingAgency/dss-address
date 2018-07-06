@@ -1,61 +1,46 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs.Extensions;
 using Microsoft.Azure.WebJobs.Host;
 using NCS.DSS.Address.Cosmos.Helper;
-using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
+using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 using NSubstitute;
 using NUnit.Framework;
 
 namespace NCS.DSS.Address.Tests
 {
     [TestFixture]
-    public class GetAddressByIdHttpTriggerTests
+    public class GetAddressHttpTriggerTests
     {
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
-        private const string ValidAddressId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
-        private readonly Guid _addressId = Guid.Parse("aa57e39e-4469-4c79-a9e9-9cb4ef410382");
         private TraceWriter _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
-        private IGetAddressByIdHttpTriggerService _getAddressByIdHttpTriggerService;
-        private Models.Address _address;
+        private IGetAddressHttpTriggerService _getAddressHttpTriggerService;
 
         [SetUp]
         public void Setup()
         {
-            _address = Substitute.For<Models.Address>();
-
             _request = new HttpRequestMessage()
             {
                 Content = new StringContent(string.Empty),
                 RequestUri = 
-                    new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/Addressess/1e1a555c-9633-4e12-ab28-09ed60d51cb")
+                    new Uri($"http://localhost:7071/api/Customers/7E467BDB-213F-407A-B86A-1954053D3C24/Addressess/")
             };
             _log = new TraceMonitor();
             _resourceHelper = Substitute.For<IResourceHelper>();
-            _getAddressByIdHttpTriggerService = Substitute.For<IGetAddressByIdHttpTriggerService>();
+            _getAddressHttpTriggerService = Substitute.For<IGetAddressHttpTriggerService>();
         }
 
         [Test]
         public async Task GetAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
-            var result = await RunFunction(InValidId, ValidAddressId);
-
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
-        }
-
-        [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenAddressIdIsInvalid()
-        {
-            // Act
-            var result = await RunFunction(ValidCustomerId, InValidId);
+            var result = await RunFunction(InValidId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -68,7 +53,7 @@ namespace NCS.DSS.Address.Tests
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidAddressId);
+            var result = await RunFunction(ValidCustomerId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -80,10 +65,10 @@ namespace NCS.DSS.Address.Tests
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
 
-            _getAddressByIdHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _getAddressHttpTriggerService.GetAddressesAsync(Arg.Any<Guid>()).Returns(Task.FromResult<List<Models.Address>>(null).Result);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidAddressId);
+            var result = await RunFunction(ValidCustomerId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
@@ -95,20 +80,21 @@ namespace NCS.DSS.Address.Tests
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
 
-            _getAddressByIdHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(_address).Result);
+            var listOfAddresses = new List<Models.Address>();
+            _getAddressHttpTriggerService.GetAddressesAsync(Arg.Any<Guid>()).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses).Result);
 
             // Act
-            var result = await RunFunction(ValidCustomerId, ValidAddressId);
+            var result = await RunFunction(ValidCustomerId);
 
             // Assert
             Assert.IsInstanceOf<HttpResponseMessage>(result);
             Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string customerId, string addressId)
+        private async Task<HttpResponseMessage> RunFunction(string customerId)
         {
-            return await GetAddressByIdHttpTrigger.Function.GetAddressByIdHttpTrigger.Run(
-                _request, _log, customerId, addressId, _resourceHelper, _getAddressByIdHttpTriggerService).ConfigureAwait(false);
+            return await GetAddressHttpTrigger.Function.GetAddressHttpTrigger.Run(
+                _request, _log, customerId, _resourceHelper, _getAddressHttpTriggerService).ConfigureAwait(false);
         }
 
     }
