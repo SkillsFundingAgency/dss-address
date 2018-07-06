@@ -63,7 +63,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesntExist()
+        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
 
@@ -76,7 +76,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenAddressDoesntExist()
+        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenAddressDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
 

@@ -47,7 +47,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
 
             // Get request body
-            var address = await httpRequestMessageHelper.GetDiversityFromRequest<Models.Address>(req);
+            var address = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
 
             // validate the request
             var errors = validate.ValidateResource(address);

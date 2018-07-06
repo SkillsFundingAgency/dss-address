@@ -5,6 +5,6 @@ namespace NCS.DSS.Address.Helpers
 {
     public interface IHttpRequestMessageHelper
     {
-        Task<T> GetDiversityFromRequest<T>(HttpRequestMessage req);
+        Task<T> GetAddressFromRequest<T>(HttpRequestMessage req);
     }
 }

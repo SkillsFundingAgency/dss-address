@@ -5,7 +5,7 @@ namespace NCS.DSS.Address.Helpers
 {
     public class HttpRequestMessageHelper : IHttpRequestMessageHelper
     {
-        public async Task<T> GetDiversityFromRequest<T>(HttpRequestMessage req)
+        public async Task<T> GetAddressFromRequest<T>(HttpRequestMessage req)
         {
             return await req.Content.ReadAsAsync<T>();
         }

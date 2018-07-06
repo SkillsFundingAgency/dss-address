@@ -48,8 +48,16 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
 
             // Get request body
-            var addressPatch = await httpRequestMessageHelper.GetDiversityFromRequest<Models.AddressPatch>(req);
+            var addressPatch = await httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(req);
 
+            if (addressPatch == null)
+            {
+                return new HttpResponseMessage((HttpStatusCode)422)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(req), 
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
             // validate the request
             var errors = validate.ValidateResource(addressPatch);
 
@@ -88,6 +96,16 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
 
            var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatch);
+
+            if (updatedAddress == null)
+            {
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent("Unable to find update address with Id of : " +
+                                                JsonConvert.SerializeObject(errors),
+                        System.Text.Encoding.UTF8, "application/json")
+                };
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
