@@ -14,7 +14,6 @@ using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Ioc;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
-using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 {
@@ -37,81 +36,39 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         {
             log.Info("C# HTTP trigger function processed a request.");
 
-            if (!Guid.TryParse(customerId, out var customerGuid) || 
-                !Guid.TryParse(addressId, out var addressGuid))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(addressId),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+            if (!Guid.TryParse(customerId, out var customerGuid))
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
+
+            if (!Guid.TryParse(addressId, out var addressGuid))
+                return HttpResponseMessageHelper.BadRequest(addressGuid);
 
             // Get request body
             var addressPatch = await httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(req);
 
             if (addressPatch == null)
-            {
-                return new HttpResponseMessage((HttpStatusCode)422)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(req), 
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
+           
             // validate the request
             var errors = validate.ValidateResource(addressPatch);
 
             if (errors != null && errors.Any())
-            {
-                return new HttpResponseMessage((HttpStatusCode)422)
-                {
-                    Content = new StringContent("Validation error(s) : " +
-                                                JsonConvert.SerializeObject(errors),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
+                return HttpResponseMessageHelper.UnprocessableEntity("Validation error(s) : ", errors);
+           
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NoContent)
-                {
-                    Content = new StringContent("Unable to find a customer with Id of : " +
-                                                JsonConvert.SerializeObject(customerGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-            
+                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+           
             var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NoContent)
-                {
-                    Content = new StringContent("Unable to find a address with Id of : " +
-                                                JsonConvert.SerializeObject(addressGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.NoContent("Unable to find a address with Id of : ", addressGuid);
 
            var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatch);
 
-            if (updatedAddress == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("Unable to find update address with Id of : " +
-                                                JsonConvert.SerializeObject(errors),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(updatedAddress),
-                    System.Text.Encoding.UTF8, "application/json")
-            };
+            return updatedAddress == null ? 
+                HttpResponseMessageHelper.BadRequest("Unable to find update address with Id of : ", addressGuid) :
+                HttpResponseMessageHelper.Ok(updatedAddress);
         }
     }
 }

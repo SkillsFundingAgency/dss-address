@@ -14,7 +14,6 @@ using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Ioc;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
-using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
@@ -38,50 +37,30 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             log.Info("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-            {
-                return new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent(JsonConvert.SerializeObject(customerGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.BadRequest(customerGuid);
 
             // Get request body
             var address = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
+
+            if (address == null)
+                return HttpResponseMessageHelper.UnprocessableEntity(req);
 
             // validate the request
             var errors = validate.ValidateResource(address);
 
             if (errors != null && errors.Any())
-            {
-                return new HttpResponseMessage((HttpStatusCode)422)
-                {
-                    Content = new StringContent("Validation error(s) : " +
-                                                JsonConvert.SerializeObject(errors),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
+                return HttpResponseMessageHelper.UnprocessableEntity("Validation error(s) : ", errors);
 
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-            {
-                return new HttpResponseMessage(HttpStatusCode.NoContent)
-                {
-                    Content = new StringContent("Unable to find a customer with Id of : " + 
-                                                JsonConvert.SerializeObject(customerGuid),
-                        System.Text.Encoding.UTF8, "application/json")
-                };
-            }
-            
+                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+
             var addressId = await addressPostService.CreateAsync(address);
 
             return addressId == null
-                ? new HttpResponseMessage(HttpStatusCode.BadRequest)
-                : new HttpResponseMessage(HttpStatusCode.Created)
-                {
-                    Content = new StringContent("Created Address record with Id of : " + addressId)
-                };
+                ? HttpResponseMessageHelper.BadRequest("Unable to find create address for customer with Id of : ", customerGuid)
+                : HttpResponseMessageHelper.Created("Created Address record with Id of : ", addressId.GetValueOrDefault());
         }
     }
 }
