@@ -43,7 +43,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 
             return addresses == null ? 
                 HttpResponseMessageHelper.NoContent("Unable to find addresses for customer with Id of : ", customerGuid) :
-                HttpResponseMessageHelper.Ok(customerGuid);
+                HttpResponseMessageHelper.Ok(addresses);
         }
     }
 }
