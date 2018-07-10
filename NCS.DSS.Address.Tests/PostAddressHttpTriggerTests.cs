@@ -105,7 +105,7 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Guid?>(null).Result);
+            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Models.Address>(null).Result);
 
             var result = await RunFunction(ValidCustomerId);
 
@@ -121,7 +121,7 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Guid?>(Guid.NewGuid()).Result);
+            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Models.Address>(_address).Result);
 
             var result = await RunFunction(ValidCustomerId);
 

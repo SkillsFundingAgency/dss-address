@@ -5,6 +5,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {
     public interface IPostAddressHttpTriggerService
     {
-        Task<Guid?> CreateAsync(Models.Address address);
+        Task<Models.Address> CreateAsync(Models.Address address);
     }
 }

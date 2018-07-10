@@ -14,6 +14,7 @@ using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Ioc;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
@@ -39,28 +40,35 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
 
-            // Get request body
-            var address = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
+            Models.Address addressRequest;
 
-            if (address == null)
+            try
+            {
+                addressRequest = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+            }
+
+            if (addressRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            // validate the request
-            var errors = validate.ValidateResource(address);
+            var errors = validate.ValidateResource(addressRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity("Validation error(s) : ", errors);
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
 
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+                return HttpResponseMessageHelper.NoContent(customerGuid);
 
-            var addressId = await addressPostService.CreateAsync(address);
+            var address = await addressPostService.CreateAsync(addressRequest);
 
-            return addressId == null
-                ? HttpResponseMessageHelper.BadRequest("Unable to find create address for customer with Id of : ", customerGuid)
-                : HttpResponseMessageHelper.Created("Created Address record with Id of : ", addressId.GetValueOrDefault());
+            return address == null
+                ? HttpResponseMessageHelper.BadRequest(customerGuid)
+                : HttpResponseMessageHelper.Created(address);
         }
     }
 }

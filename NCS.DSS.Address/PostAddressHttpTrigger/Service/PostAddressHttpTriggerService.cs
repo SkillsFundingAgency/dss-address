@@ -7,7 +7,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {
     public class PostAddressHttpTriggerService : IPostAddressHttpTriggerService
     {
-        public async Task<Guid?> CreateAsync(Models.Address address)
+        public async Task<Models.Address> CreateAsync(Models.Address address)
         {
             if (address == null)
                 return null;
@@ -19,7 +19,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 
             var response = await documentDbProvider.CreateAddressAsync(address);
 
-            return response.StatusCode == HttpStatusCode.Created ? addressId : (Guid?) null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : (Guid?) null;
         }
     }
 }

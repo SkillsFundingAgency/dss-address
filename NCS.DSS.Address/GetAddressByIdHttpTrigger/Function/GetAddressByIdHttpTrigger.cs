@@ -40,12 +40,12 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+                return HttpResponseMessageHelper.NoContent(customerGuid);
 
             var address = await getAddressByIdService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             return address == null ? 
-                HttpResponseMessageHelper.NoContent("Unable to find address with Id of : ", addressGuid) :
+                HttpResponseMessageHelper.NoContent(addressGuid) :
                 HttpResponseMessageHelper.Ok(address);
         }
     }

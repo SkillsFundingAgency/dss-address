@@ -37,12 +37,12 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+                return HttpResponseMessageHelper.NoContent(customerGuid);
             
             var addresses = await getAddressService.GetAddressesAsync(customerGuid);
 
             return addresses == null ? 
-                HttpResponseMessageHelper.NoContent("Unable to find addresses for customer with Id of : ", customerGuid) :
+                HttpResponseMessageHelper.NoContent(customerGuid) :
                 HttpResponseMessageHelper.Ok(addresses);
         }
     }

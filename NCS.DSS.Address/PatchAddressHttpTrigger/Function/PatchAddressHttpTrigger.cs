@@ -12,8 +12,10 @@ using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Ioc;
+using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
+using Newtonsoft.Json;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 {
@@ -42,32 +44,39 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (!Guid.TryParse(addressId, out var addressGuid))
                 return HttpResponseMessageHelper.BadRequest(addressGuid);
 
-            // Get request body
-            var addressPatch = await httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(req);
+            AddressPatch addressPatchRequest;
 
-            if (addressPatch == null)
+            try
+            {
+                addressPatchRequest = await httpRequestMessageHelper.GetAddressFromRequest<AddressPatch>(req);
+            }
+            catch (JsonSerializationException ex)
+            {
+                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+            }
+
+            if (addressPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
            
-            // validate the request
-            var errors = validate.ValidateResource(addressPatch);
+            var errors = validate.ValidateResource(addressPatchRequest);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity("Validation error(s) : ", errors);
+                return HttpResponseMessageHelper.UnprocessableEntity(errors);
            
             var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent("Unable to find a customer with Id of : ", customerGuid);
+                return HttpResponseMessageHelper.NoContent(customerGuid);
            
             var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
-                return HttpResponseMessageHelper.NoContent("Unable to find a address with Id of : ", addressGuid);
+                return HttpResponseMessageHelper.NoContent(addressGuid);
 
-           var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatch);
+           var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
 
             return updatedAddress == null ? 
-                HttpResponseMessageHelper.BadRequest("Unable to find update address with Id of : ", addressGuid) :
+                HttpResponseMessageHelper.BadRequest(addressGuid) :
                 HttpResponseMessageHelper.Ok(updatedAddress);
         }
     }
