@@ -13,7 +13,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Service
             var documentDbProvider = new DocumentDBProvider();
             var customerAddresses = await documentDbProvider.GetAddressesForCustomerAsync(customerId);
 
-            return customerAddresses.Any() ? customerAddresses : null;
+            return customerAddresses;
         }
     }
 }
