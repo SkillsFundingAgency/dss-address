@@ -40,35 +40,43 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
 
-            Models.Address addressRequest;
-
             try
             {
-                addressRequest = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
+                Models.Address addressRequest;
+
+                try
+                {
+                    addressRequest = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
+                }
+                catch (Exception ex)
+                {
+                    return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                }
+
+                if (addressRequest == null)
+                    return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+                var errors = validate.ValidateResource(addressRequest);
+
+                if (errors != null && errors.Any())
+                    return HttpResponseMessageHelper.UnprocessableEntity(errors);
+
+                var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+
+                if (!doesCustomerExist)
+                    return HttpResponseMessageHelper.NoContent(customerGuid);
+
+                var address = await addressPostService.CreateAsync(addressRequest);
+
+                return address == null
+                    ? HttpResponseMessageHelper.BadRequest(customerGuid)
+                    : HttpResponseMessageHelper.Created(address);
             }
             catch (Exception ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
-
-            if (addressRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
-
-            var errors = validate.ValidateResource(addressRequest);
-
-            if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
-
-            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
-
-            if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
-
-            var address = await addressPostService.CreateAsync(addressRequest);
-
-            return address == null
-                ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(address);
+            
         }
     }
 }
