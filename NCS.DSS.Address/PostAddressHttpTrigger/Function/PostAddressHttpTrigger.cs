@@ -46,7 +46,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             {
                 addressRequest = await httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (Exception ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }
