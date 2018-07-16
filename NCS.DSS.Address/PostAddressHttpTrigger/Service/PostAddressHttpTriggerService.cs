@@ -15,6 +15,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
             var addressId = Guid.NewGuid();
             address.AddressId = addressId;
 
+            if (!address.LastModifiedDate.HasValue)
+                address.LastModifiedDate = DateTime.Now;
+
             var documentDbProvider = new DocumentDBProvider();
 
             var response = await documentDbProvider.CreateAddressAsync(address);

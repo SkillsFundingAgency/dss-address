@@ -12,6 +12,9 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             if (address == null)
                 return null;
 
+            if (!addressPatch.LastModifiedDate.HasValue)
+                addressPatch.LastModifiedDate = DateTime.Now;
+
             address.Patch(addressPatch);
 
             var documentDbProvider = new DocumentDBProvider();
