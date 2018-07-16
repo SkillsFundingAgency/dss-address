@@ -119,7 +119,13 @@ namespace NCS.DSS.Address.Models
             if (addressPatch.Latitude.HasValue)
                 Latitude = addressPatch.Latitude;
 
-            if(addressPatch.LastModifiedDate.HasValue)
+            if (addressPatch.EffectiveFrom.HasValue)
+                EffectiveFrom = addressPatch.EffectiveFrom;
+
+            if (addressPatch.EffectiveTo.HasValue)
+                EffectiveTo = addressPatch.EffectiveTo;
+
+            if (addressPatch.LastModifiedDate.HasValue)
                 LastModifiedDate = addressPatch.LastModifiedDate;
 
             if (addressPatch.LastModifiedTouchpointId.HasValue)
