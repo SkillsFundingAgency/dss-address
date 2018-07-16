@@ -92,17 +92,38 @@ namespace NCS.DSS.Address.Models
             if (addressPatch == null)
                 return;
 
-            Address1 = addressPatch.Address1;
-            Address2 = addressPatch.Address2;
-            Address3 = addressPatch.Address3;
-            Address4 = addressPatch.Address4;
-            Address5 = addressPatch.Address5;
-            PostCode = addressPatch.PostCode;
-            AlternativePostCode = addressPatch.AlternativePostCode;
-            Longitude = addressPatch.Longitude;
-            Latitude = addressPatch.Latitude;
-            LastModifiedDate = addressPatch.LastModifiedDate;
-            LastModifiedTouchpointId = addressPatch.LastModifiedTouchpointId;
+            if(!string.IsNullOrEmpty(addressPatch.Address1))
+                Address1 = addressPatch.Address1;
+
+            if (!string.IsNullOrEmpty(addressPatch.Address2))
+                Address2 = addressPatch.Address2;
+
+            if (!string.IsNullOrEmpty(addressPatch.Address3))
+                Address3 = addressPatch.Address3;
+
+            if (!string.IsNullOrEmpty(addressPatch.Address4))
+                Address4 = addressPatch.Address4;
+
+            if (!string.IsNullOrEmpty(addressPatch.Address5))
+                Address5 = addressPatch.Address5;
+
+            if (!string.IsNullOrEmpty(addressPatch.PostCode))
+                PostCode = addressPatch.PostCode;
+
+            if (!string.IsNullOrEmpty(addressPatch.AlternativePostCode))
+                AlternativePostCode = addressPatch.AlternativePostCode;
+
+            if(addressPatch.Longitude.HasValue)
+                Longitude = addressPatch.Longitude;
+
+            if (addressPatch.Latitude.HasValue)
+                Latitude = addressPatch.Latitude;
+
+            if(addressPatch.LastModifiedDate.HasValue)
+                LastModifiedDate = addressPatch.LastModifiedDate;
+
+            if (addressPatch.LastModifiedTouchpointId.HasValue)
+                LastModifiedTouchpointId = addressPatch.LastModifiedTouchpointId;
         }
     }
 }
