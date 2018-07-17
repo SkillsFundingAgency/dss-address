@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("NCS.DSS.Address.Tests")]
@@ -12,7 +13,7 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-[assembly: Guid("846a5ee9-b56d-4750-b52c-7c2c013e914f")]
+[assembly: Guid("d724cb0b-f74e-4e06-9177-391ecd943252")]
 
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
