@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
@@ -25,11 +26,11 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve a single address with a given AddressId for an individual customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, ILogger log, string customerId, string addressId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IGetAddressByIdHttpTriggerService getAddressByIdService)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

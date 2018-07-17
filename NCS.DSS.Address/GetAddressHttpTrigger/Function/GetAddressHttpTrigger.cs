@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http.Description;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
@@ -25,11 +26,11 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is unknown or invalid", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Display(Name = "Get", Description = "Ability to retrieve all addresses for a given customer.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IGetAddressHttpTriggerService getAddressService)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

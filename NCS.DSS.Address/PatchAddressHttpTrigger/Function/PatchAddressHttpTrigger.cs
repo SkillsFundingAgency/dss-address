@@ -8,6 +8,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Helpers;
@@ -30,13 +31,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, TraceWriter log, string customerId, string addressId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, ILogger log, string customerId, string addressId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
             [Inject]IPatchAddressHttpTriggerService addressPatchService)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

@@ -8,6 +8,7 @@ using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Helpers;
@@ -29,13 +30,13 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, TraceWriter log, string customerId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
             [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
             [Inject]IPostAddressHttpTriggerService addressPostService)
         {
-            log.Info("C# HTTP trigger function processed a request.");
+            log.LogInformation("C# HTTP trigger function processed a request.");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
