@@ -41,7 +41,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
+        public async Task GetAddressByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenCustomerIdIsInvalid()
         {
             // Act
             var result = await RunFunction(InValidId, ValidAddressId);
@@ -52,7 +52,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenAddressIdIsInvalid()
+        public async Task GetAddressByIdHttpTrigger_ReturnsStatusCodeBadRequest_WhenAddressIdIsInvalid()
         {
             // Act
             var result = await RunFunction(ValidCustomerId, InValidId);
@@ -63,7 +63,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
+        public async Task GetAddressByIdHttpTrigger_ReturnsStatusCodeNoContent_WhenCustomerDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(false);
 
@@ -76,7 +76,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeNoContent_WhenAddressDoesNotExist()
+        public async Task GetAddressByIdHttpTrigger_ReturnsStatusCodeNoContent_WhenAddressDoesNotExist()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
 
@@ -91,7 +91,7 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
-        public async Task GetAddressHttpTrigger_ReturnsStatusCodeOk_WhenAddressExists()
+        public async Task GetAddressByIdHttpTrigger_ReturnsStatusCodeOk_WhenAddressExists()
         {
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).Returns(true);
 

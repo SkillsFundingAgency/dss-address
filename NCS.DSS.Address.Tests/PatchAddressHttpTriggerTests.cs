@@ -137,15 +137,33 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
+        public async Task PatchAddressHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsNotValid()
+        {
+            _httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
+
+            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(null).Result);
+
+            var result = await RunFunction(ValidCustomerId, ValidAddressId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsValid()
         {
             _httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(_address).Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
 
-            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(_address).Result);
+            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult(_address).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 

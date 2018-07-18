@@ -115,13 +115,29 @@ namespace NCS.DSS.Address.Tests
         }
 
         [Test]
+        public async Task PostAddressHttpTrigger_ReturnsStatusCodeCreated_WhenRequestNotIsValid()
+        {
+            _httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(_request).Returns(Task.FromResult(_address).Result);
+
+            _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
+
+            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Models.Address>(null).Result);
+
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+        }
+
+        [Test]
         public async Task PostAddressHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
             _httpRequestMessageHelper.GetAddressFromRequest<Models.Address>(_request).Returns(Task.FromResult(_address).Result);
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult<Models.Address>(_address).Result);
+            _postAddressHttpTriggerService.CreateAsync(Arg.Any<Models.Address>()).Returns(Task.FromResult(_address).Result);
 
             var result = await RunFunction(ValidCustomerId);
 
