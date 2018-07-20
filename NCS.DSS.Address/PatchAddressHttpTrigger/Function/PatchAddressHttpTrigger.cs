@@ -51,7 +51,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             {
                 addressPatchRequest = await httpRequestMessageHelper.GetAddressFromRequest<AddressPatch>(req);
             }
-            catch (JsonSerializationException ex)
+            catch (JsonException ex)
             {
                 return HttpResponseMessageHelper.UnprocessableEntity(ex);
             }

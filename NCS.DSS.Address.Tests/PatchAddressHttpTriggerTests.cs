@@ -9,7 +9,9 @@ using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
+using Newtonsoft.Json;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace NCS.DSS.Address.Tests
@@ -77,8 +79,7 @@ namespace NCS.DSS.Address.Tests
         [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeUnprocessableEntity_WhenAddressRequestIsInvalid()
         {
-            var validationResults = new List<ValidationResult> { new ValidationResult("Customer Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.AddressPatch>()).Returns(validationResults);
+            _httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(_request).Throws(new JsonException());
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 

@@ -102,7 +102,7 @@ namespace NCS.DSS.Address.Helpers
             };
         }
 
-        public static HttpResponseMessage UnprocessableEntity(Exception requestException)
+        public static HttpResponseMessage UnprocessableEntity(JsonException requestException)
         {
             return new HttpResponseMessage((HttpStatusCode)422)
             {
