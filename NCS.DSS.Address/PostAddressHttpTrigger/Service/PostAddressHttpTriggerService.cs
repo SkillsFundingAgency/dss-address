@@ -11,12 +11,8 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
         {
             if (address == null)
                 return null;
-          
-            var addressId = Guid.NewGuid();
-            address.AddressId = addressId;
 
-            if (!address.LastModifiedDate.HasValue)
-                address.LastModifiedDate = DateTime.Now;
+            address.SetDefaultValues();
 
             var documentDbProvider = new DocumentDBProvider();
 

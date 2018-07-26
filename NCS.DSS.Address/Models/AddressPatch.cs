@@ -4,7 +4,7 @@ using NCS.DSS.Address.Annotations;
 
 namespace NCS.DSS.Address.Models
 {
-    public class AddressPatch
+    public class AddressPatch : IAddress
     {
         private const string AddressRegEx = @"[A-Za-z0-9 ~!@&amp;'\()*+,\-.\/:;]{1,100}";
         private const string PostcodeRegEx = @"([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\s?[0-9][A-Za-z]{2})";
@@ -74,5 +74,11 @@ namespace NCS.DSS.Address.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "d1307d77-af23-4cb4-b600-a60e04f8c3df")]
         public Guid? LastModifiedTouchpointId { get; set; }
+
+        public void SetDefaultValues()
+        {
+            if (!LastModifiedDate.HasValue)
+                LastModifiedDate = DateTime.Now;
+        }
     }
 }
