@@ -6,6 +6,6 @@ namespace NCS.DSS.Address.Validation
 {
     public interface IValidate
     {
-        List<ValidationResult> ValidateResource(IAddress resource);
+        List<ValidationResult> ValidateResource(IAddress resource, bool validateModelForPost);
     }
 }

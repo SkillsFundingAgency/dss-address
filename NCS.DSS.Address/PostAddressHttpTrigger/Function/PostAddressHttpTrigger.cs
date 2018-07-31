@@ -55,7 +55,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (addressRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            var errors = validate.ValidateResource(addressRequest);
+            var errors = validate.ValidateResource(addressRequest, true);
 
             if (errors != null && errors.Any())
                 return HttpResponseMessageHelper.UnprocessableEntity(errors);

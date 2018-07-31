@@ -93,7 +93,7 @@ namespace NCS.DSS.Address.Models
             AddressId = addressId;
 
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
         }
 
         public void Patch(AddressPatch addressPatch)

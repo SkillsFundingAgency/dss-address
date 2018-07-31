@@ -59,7 +59,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (addressPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
            
-            var errors = validate.ValidateResource(addressPatchRequest);
+            var errors = validate.ValidateResource(addressPatchRequest, false);
 
             if (errors != null && errors.Any())
                 return HttpResponseMessageHelper.UnprocessableEntity(errors);

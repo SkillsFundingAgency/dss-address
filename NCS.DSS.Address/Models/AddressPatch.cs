@@ -78,7 +78,7 @@ namespace NCS.DSS.Address.Models
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
-                LastModifiedDate = DateTime.Now;
+                LastModifiedDate = DateTime.UtcNow;
         }
     }
 }

@@ -67,7 +67,7 @@ namespace NCS.DSS.Address.Tests
             _httpRequestMessageHelper.GetAddressFromRequest<Models.AddressPatch>(_request).Returns(Task.FromResult(_addressPatch).Result);
 
             var validationResults = new List<ValidationResult> { new ValidationResult("address Id is Required") };
-            _validate.ValidateResource(Arg.Any<Models.AddressPatch>()).Returns(validationResults);
+            _validate.ValidateResource(Arg.Any<Models.AddressPatch>(), false).Returns(validationResults);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
