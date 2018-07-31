@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
+using NCS.DSS.Address.Helpers;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -19,6 +20,7 @@ namespace NCS.DSS.Address.Tests
         private ILogger _log;
         private HttpRequestMessage _request;
         private IResourceHelper _resourceHelper;
+        private IHttpRequestMessageHelper _httpRequestMessageHelper;
         private IGetAddressHttpTriggerService _getAddressHttpTriggerService;
 
         [SetUp]
@@ -33,7 +35,23 @@ namespace NCS.DSS.Address.Tests
 
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _getAddressHttpTriggerService = Substitute.For<IGetAddressHttpTriggerService>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+
+        }
+
+        [Test]
+        public async Task GetAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
@@ -94,7 +112,7 @@ namespace NCS.DSS.Address.Tests
         private async Task<HttpResponseMessage> RunFunction(string customerId)
         {
             return await GetAddressHttpTrigger.Function.GetAddressHttpTrigger.Run(
-                _request, _log, customerId, _resourceHelper, _getAddressHttpTriggerService).ConfigureAwait(false);
+                _request, _log, customerId, _resourceHelper, _httpRequestMessageHelper, _getAddressHttpTriggerService).ConfigureAwait(false);
         }
 
     }

@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.Http.Description;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
@@ -37,7 +36,14 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             [Inject]IValidate validate,
             [Inject]IPatchAddressHttpTriggerService addressPatchService)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);
@@ -58,6 +64,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (addressPatchRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
+
+            addressPatchRequest.LastModifiedTouchpointId = touchpointId;
            
             var errors = validate.ValidateResource(addressPatchRequest, false);
 

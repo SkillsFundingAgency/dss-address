@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
@@ -28,9 +27,17 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to retrieve all addresses for a given customer.")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")]HttpRequestMessage req, ILogger log, string customerId,
             [Inject]IResourceHelper resourceHelper,
+            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IGetAddressHttpTriggerService getAddressService)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
+            if (touchpointId == null)
+            {
+                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
+            log.LogInformation("Get Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return HttpResponseMessageHelper.BadRequest(customerGuid);

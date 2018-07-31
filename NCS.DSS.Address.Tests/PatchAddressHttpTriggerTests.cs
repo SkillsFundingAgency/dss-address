@@ -49,6 +49,20 @@ namespace NCS.DSS.Address.Tests
             _validate = Substitute.For<IValidate>();
             _httpRequestMessageHelper = Substitute.For<IHttpRequestMessageHelper>();
             _patchAddressHttpTriggerService = Substitute.For<IPatchAddressHttpTriggerService>();
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns(new Guid());
+        }
+
+        [Test]
+        public async Task PatchAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
+        {
+            _httpRequestMessageHelper.GetTouchpointId(_request).Returns((Guid?)null);
+
+            // Act
+            var result = await RunFunction(ValidCustomerId, ValidAddressId);
+
+            // Assert
+            Assert.IsInstanceOf<HttpResponseMessage>(result);
+            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         [Test]
