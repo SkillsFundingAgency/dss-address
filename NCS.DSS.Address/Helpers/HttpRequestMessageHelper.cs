@@ -9,6 +9,10 @@ namespace NCS.DSS.Address.Helpers
     {
         public async Task<T> GetAddressFromRequest<T>(HttpRequestMessage req)
         {
+            if (req == null)
+                return default(T);
+
+            req.Content.Headers.ContentType.MediaType = "application/json";
             return await req.Content.ReadAsAsync<T>();
         }
 
