@@ -86,7 +86,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             return updatedAddress == null ? 
                 HttpResponseMessageHelper.BadRequest(addressGuid) :
-                HttpResponseMessageHelper.Ok(updatedAddress);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedAddress));
         }
     }
 }

@@ -54,7 +54,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 
             return address == null ? 
                 HttpResponseMessageHelper.NoContent(addressGuid) :
-                HttpResponseMessageHelper.Ok(address);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(address));
         }
     }
 }

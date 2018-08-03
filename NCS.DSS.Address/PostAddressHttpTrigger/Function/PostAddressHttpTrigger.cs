@@ -77,7 +77,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             return address == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
-                : HttpResponseMessageHelper.Created(address);
+                : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(address));
         }
     }
 }

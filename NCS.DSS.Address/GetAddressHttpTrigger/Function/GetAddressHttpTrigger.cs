@@ -51,7 +51,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 
             return addresses == null ? 
                 HttpResponseMessageHelper.NoContent(customerGuid) :
-                HttpResponseMessageHelper.Ok(addresses);
+                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObjects(addresses));
         }
     }
 }
