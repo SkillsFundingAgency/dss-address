@@ -16,7 +16,7 @@ namespace NCS.DSS.Address.Models
         DateTime? EffectiveFrom { get; set; }
         DateTime? EffectiveTo { get; set; }
         DateTime? LastModifiedDate { get; set; }
-        Guid? LastModifiedTouchpointId { get; set; }
+        string LastModifiedTouchpointId { get; set; }
 
         void SetDefaultValues();
 
