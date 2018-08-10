@@ -38,7 +38,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                log.LogInformation("Unable to locate 'APIM-TouchpointId' in request header");
+                log.LogInformation("Unable to locate 'TouchpointId' in request header");
                 return HttpResponseMessageHelper.BadRequest();
             }
 
@@ -61,7 +61,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (addressRequest == null)
                 return HttpResponseMessageHelper.UnprocessableEntity(req);
 
-            addressRequest.LastModifiedTouchpointId = touchpointId;
+            addressRequest.SetIds(customerGuid, touchpointId);
 
             var errors = validate.ValidateResource(addressRequest, true);
 

@@ -14,7 +14,6 @@ namespace NCS.DSS.Address.Models
         [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         public Guid? AddressId { get; set; }
 
-        [Required]
         [Display(Description = "Unique identifier of a customer")]
         [Example(Description = "2730af9c-fc34-4c2b-a905-c4b584b0f379")]
         public Guid? CustomerId { get; set; }
@@ -95,6 +94,13 @@ namespace NCS.DSS.Address.Models
 
             if (!LastModifiedDate.HasValue)
                 LastModifiedDate = DateTime.UtcNow;
+        }
+
+        public void SetIds(Guid customerId, string touchpointId)
+        {
+            AddressId = Guid.NewGuid();
+            CustomerId = customerId;
+            LastModifiedTouchpointId = touchpointId;
         }
 
         public void Patch(AddressPatch addressPatch)
