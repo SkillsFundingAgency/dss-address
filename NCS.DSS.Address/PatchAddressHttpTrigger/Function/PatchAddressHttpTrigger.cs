@@ -82,7 +82,10 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (address == null)
                 return HttpResponseMessageHelper.NoContent(addressGuid);
 
-           var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
+            var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
+
+            if (updatedAddress != null)
+                await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, req.RequestUri.AbsoluteUri);
 
             return updatedAddress == null ? 
                 HttpResponseMessageHelper.BadRequest(addressGuid) :
