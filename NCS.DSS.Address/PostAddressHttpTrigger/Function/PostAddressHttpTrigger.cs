@@ -75,6 +75,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             var address = await addressPostService.CreateAsync(addressRequest);
 
+            if (address != null)
+                await addressPostService.SendToServiceBusQueueAsync(address, req.RequestUri.AbsoluteUri);
+
             return address == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
                 : HttpResponseMessageHelper.Created(JsonHelper.SerializeObject(address));

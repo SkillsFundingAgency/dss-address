@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using NCS.DSS.Address.Cosmos.Provider;
+using NCS.DSS.Address.ServiceBus;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 {
@@ -29,6 +30,11 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             var address = await documentDbProvider.GetAddressForCustomerAsync(customerId, addressId);
             
             return address;
+        }
+
+        public async Task SendToServiceBusQueueAsync(Models.Address address, Guid customerId, string reqUrl)
+        {
+            await ServiceBusClient.SendPatchMessageAsync(address, customerId, reqUrl);
         }
     }
 }
