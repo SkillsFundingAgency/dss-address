@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NCS.DSS.Address.Cosmos.Provider;
 
 namespace NCS.DSS.Address.Cosmos.Helper
@@ -11,6 +12,14 @@ namespace NCS.DSS.Address.Cosmos.Helper
             var doesCustomerExist = documentDbProvider.DoesCustomerResourceExist(customerId);
 
             return doesCustomerExist;
+        }
+
+        public async Task<bool> IsCustomerReadOnly(Guid customerId)
+        {
+            var documentDbProvider = new DocumentDBProvider();
+            var isCustomerReadOnly = await documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
+
+            return isCustomerReadOnly;
         }
     }
 }

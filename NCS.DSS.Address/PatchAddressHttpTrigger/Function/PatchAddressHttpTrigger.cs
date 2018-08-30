@@ -76,7 +76,12 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
-           
+
+            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+
+            if (isCustomerReadOnly)
+                return HttpResponseMessageHelper.Forbidden(customerGuid);
+
             var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
