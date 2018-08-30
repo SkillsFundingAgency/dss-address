@@ -73,6 +73,11 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
 
+            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+
+            if (isCustomerReadOnly)
+                return HttpResponseMessageHelper.Forbidden(customerGuid);
+
             var address = await addressPostService.CreateAsync(addressRequest);
 
             if (address != null)
