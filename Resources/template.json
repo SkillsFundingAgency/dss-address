@@ -38,6 +38,18 @@
     "sharedAppServicePlanResourceGroup": {
       "type": "string"
     },
+    "serviceBusAccessKey": {
+      "type": "string"
+    },
+    "serviceBusAccessKeyName": {
+      "type": "string"
+    },
+    "serviceBusBaseAddress": {
+      "type": "string"
+    },
+    "serviceBusQueueName": {
+      "type": "string"
+    },
     "templateBaseUrl": {
       "type": "string"
     }
