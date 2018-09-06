@@ -8,5 +8,6 @@ namespace NCS.DSS.Address.Helpers
     {
         Task<T> GetAddressFromRequest<T>(HttpRequestMessage req);
         string GetTouchpointId(HttpRequestMessage req);
+        string GetApimURL(HttpRequestMessage req);
     }
 }

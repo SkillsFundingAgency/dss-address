@@ -42,6 +42,13 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 return HttpResponseMessageHelper.BadRequest();
             }
 
+            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            if (string.IsNullOrEmpty(ApimURL))
+            {
+                log.LogInformation("Unable to locate 'apimurl' in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
             log.LogInformation("Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
@@ -81,7 +88,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             var address = await addressPostService.CreateAsync(addressRequest);
 
             if (address != null)
-                await addressPostService.SendToServiceBusQueueAsync(address, req.RequestUri.AbsoluteUri);
+                await addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
 
             return address == null
                 ? HttpResponseMessageHelper.BadRequest(customerGuid)
