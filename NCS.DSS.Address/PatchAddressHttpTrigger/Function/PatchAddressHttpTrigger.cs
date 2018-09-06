@@ -43,6 +43,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return HttpResponseMessageHelper.BadRequest();
             }
 
+            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            if (string.IsNullOrEmpty(ApimURL))
+            {
+                log.LogInformation("Unable to locate 'apimurl' in request header");
+                return HttpResponseMessageHelper.BadRequest();
+            }
+
             log.LogInformation("Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
@@ -85,7 +92,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
 
             if (updatedAddress != null)
-                await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, req.RequestUri.AbsoluteUri);
+                await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);
 
             return updatedAddress == null ? 
                 HttpResponseMessageHelper.BadRequest(addressGuid) :
