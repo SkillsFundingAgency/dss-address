@@ -52,7 +52,7 @@ namespace NCS.DSS.Address.ServiceBus
                 TitleMessage = "Address record modification for {" + customerId + "} at " + DateTime.UtcNow,
                 CustomerGuid = customerId,
                 LastModifiedDate = address.LastModifiedDate,
-                URL = reqUrl,
+                URL = reqUrl + "/" + address.AddressId,
                 IsNewCustomer = false,
                 TouchpointId = address.LastModifiedTouchpointId
 
