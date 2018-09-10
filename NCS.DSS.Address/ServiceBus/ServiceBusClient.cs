@@ -27,7 +27,7 @@ namespace NCS.DSS.Address.ServiceBus
                 TitleMessage = "New Address record {" + address.AddressId + "} added for {" + address.CustomerId + "} at " + DateTime.UtcNow,
                 CustomerGuid = address.CustomerId,
                 LastModifiedDate = address.LastModifiedDate,
-                URL = reqUrl,
+                URL = reqUrl + "/" + address.AddressId,
                 IsNewCustomer = false,
                 TouchpointId = address.LastModifiedTouchpointId
             };
