@@ -12,20 +12,11 @@ namespace NCS.DSS.Address.Cosmos.Provider
 {
     public class DocumentDBProvider : IDocumentDBProvider
     {
-        private readonly DocumentDBHelper _documentDbHelper;
-        private readonly DocumentDBClient _databaseClient;
-
-        public DocumentDBProvider()
-        {
-            _documentDbHelper = new DocumentDBHelper();
-            _databaseClient = new DocumentDBClient();
-        }
-
         public bool DoesCustomerResourceExist(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return false;
@@ -36,9 +27,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateCustomerDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateCustomerDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var customerByIdQuery = client
                 ?.CreateDocumentQuery<Document>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -62,9 +53,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> GetAddressAsync(Guid addressId)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(addressId);
+            var documentUri = DocumentDBHelper.CreateDocumentUri(addressId);
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -76,9 +67,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             var addressForCustomerQuery = client
                 ?.CreateDocumentQuery<Models.Address>(collectionUri, new FeedOptions { MaxItemCount = 1 })
@@ -96,9 +87,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<List<Models.Address>> GetAddressesForCustomerAsync(Guid customerId)
         {
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -121,9 +112,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
         public async Task<ResourceResponse<Document>> CreateAddressAsync(Models.Address address)
         {
 
-            var collectionUri = _documentDbHelper.CreateDocumentCollectionUri();
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
@@ -136,9 +127,9 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<ResourceResponse<Document>> UpdateAddressAsync(Models.Address address)
         {
-            var documentUri = _documentDbHelper.CreateDocumentUri(address.AddressId.GetValueOrDefault());
+            var documentUri = DocumentDBHelper.CreateDocumentUri(address.AddressId.GetValueOrDefault());
 
-            var client = _databaseClient.CreateDocumentClient();
+            var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
