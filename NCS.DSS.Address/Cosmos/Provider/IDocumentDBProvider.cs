@@ -8,7 +8,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
 {
     public interface IDocumentDBProvider
     {
-        bool DoesCustomerResourceExist(Guid customerId);
+        Task<bool> DoesCustomerResourceExist(Guid customerId);
         Task<bool> DoesCustomerHaveATerminationDate(Guid customerId);
         Task<ResourceResponse<Document>> GetAddressAsync(Guid addressId);
         Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId);

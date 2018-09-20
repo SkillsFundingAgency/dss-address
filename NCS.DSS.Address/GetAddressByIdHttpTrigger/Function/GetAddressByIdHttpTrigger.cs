@@ -45,7 +45,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
             if (!Guid.TryParse(addressId, out var addressGuid))
                 return HttpResponseMessageHelper.BadRequest(addressGuid);
 
-            var doesCustomerExist = resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return HttpResponseMessageHelper.NoContent(customerGuid);
