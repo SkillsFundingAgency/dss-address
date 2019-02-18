@@ -18,7 +18,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace NCS.DSS.Address.Tests
+namespace NCS.DSS.Address.Tests.FunctionTest
 {
     [TestFixture]
     public class PostAddressHttpTriggerTests

@@ -48,7 +48,7 @@ namespace NCS.DSS.Address.Ioc
             builder.Services.AddTransient<IGetAddressByIdHttpTriggerService, GetAddressByIdHttpTriggerService>();
             builder.Services.AddTransient<IPostAddressHttpTriggerService, PostAddressHttpTriggerService>();
             builder.Services.AddTransient<IPatchAddressHttpTriggerService, PatchAddressHttpTriggerService>();
-            //builder.Services.AddScoped<IAddressPatchService, AddressPatchService>();
+            builder.Services.AddScoped<IAddressPatchService, AddressPatchService>();
         }
 
         private void RegisterDataProviders(IWebJobsBuilder builder)

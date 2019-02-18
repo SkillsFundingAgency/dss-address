@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
-using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.Address.Tests
+namespace NCS.DSS.Address.Tests.FunctionTest
 {
     [TestFixture]
     public class GetAddressByIdHttpTriggerTests

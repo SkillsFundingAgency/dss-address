@@ -57,18 +57,24 @@ namespace NCS.DSS.Address.Cosmos.Provider
             }
         }
 
-        public async Task<ResourceResponse<Document>> GetAddressAsync(Guid addressId)
+        public async Task<string> GetAddressByIdForUpdateAsync(Guid customerId, Guid addressId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(addressId);
+
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
-            if (client == null)
+            var addressForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.Address>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId && x.AddressId == addressId)
+                .AsDocumentQuery();
+
+            if (addressForCustomerQuery == null)
                 return null;
 
-            var response = await client.ReadDocumentAsync(documentUri);
+            var address = await addressForCustomerQuery.ExecuteNextAsync();
 
-            return response;
+            return address?.FirstOrDefault()?.ToString();
         }
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)

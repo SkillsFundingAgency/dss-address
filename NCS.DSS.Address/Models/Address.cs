@@ -109,50 +109,5 @@ namespace NCS.DSS.Address.Models
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
         }
-
-        public void Patch(AddressPatch addressPatch)
-        {
-            if (addressPatch == null)
-                return;
-
-            if(!string.IsNullOrEmpty(addressPatch.Address1))
-                Address1 = addressPatch.Address1;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address2))
-                Address2 = addressPatch.Address2;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address3))
-                Address3 = addressPatch.Address3;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address4))
-                Address4 = addressPatch.Address4;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address5))
-                Address5 = addressPatch.Address5;
-
-            if (!string.IsNullOrEmpty(addressPatch.PostCode))
-                PostCode = addressPatch.PostCode;
-
-            if (!string.IsNullOrEmpty(addressPatch.AlternativePostCode))
-                AlternativePostCode = addressPatch.AlternativePostCode;
-
-            if(addressPatch.Longitude.HasValue)
-                Longitude = addressPatch.Longitude;
-
-            if (addressPatch.Latitude.HasValue)
-                Latitude = addressPatch.Latitude;
-
-            if (addressPatch.EffectiveFrom.HasValue)
-                EffectiveFrom = addressPatch.EffectiveFrom;
-
-            if (addressPatch.EffectiveTo.HasValue)
-                EffectiveTo = addressPatch.EffectiveTo;
-
-            if (addressPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = addressPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(addressPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = addressPatch.LastModifiedTouchpointId;
-        }
     }
 }

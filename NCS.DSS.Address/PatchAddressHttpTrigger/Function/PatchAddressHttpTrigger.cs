@@ -113,17 +113,23 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
-            if (address == null)
+            if(string.IsNullOrEmpty(address))
+                return httpResponseMessageHelper.NoContent(customerGuid);
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get patch customer resource {0}", customerGuid));
+            var patchedCustomer = addressPatchService.PatchResource(address, addressPatchRequest);
+
+            if (patchedCustomer == null)
                 return httpResponseMessageHelper.NoContent(addressGuid);
 
-            var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
+            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedCustomer, addressPatchRequest);
 
             if (updatedAddress != null)
                 await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);
 
             return updatedAddress == null ? 
                 httpResponseMessageHelper.BadRequest(addressGuid) :
-                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
+                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(updatedAddress, "id", "AddressId"));
         }
     }
 }

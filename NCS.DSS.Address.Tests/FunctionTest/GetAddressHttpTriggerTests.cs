@@ -14,7 +14,7 @@ using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace NCS.DSS.Address.Tests
+namespace NCS.DSS.Address.Tests.FunctionTest
 {
     [TestFixture]
     public class GetAddressHttpTriggerTests
