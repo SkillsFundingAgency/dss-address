@@ -4,14 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http.Description;
+using DFC.Common.Standard.Logging;
+using DFC.Functions.DI.Standard.Attributes;
+using DFC.HTTP.Standard;
+using DFC.JSON.Standard;
+using DFC.Swagger.Standard.Annotations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using NCS.DSS.Address.Annotations;
 using NCS.DSS.Address.Cosmos.Helper;
-using NCS.DSS.Address.Helpers;
-using NCS.DSS.Address.Ioc;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
@@ -22,7 +25,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
     public static class PatchAddressHttpTrigger
     {
         [FunctionName("Patch")]
-        [ResponseType(typeof(Models.AddressPatch))]
+        [ProducesResponseType(typeof(AddressPatch), 200)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Address Updated", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Address does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.BadRequest, Description = "Request was malformed", ShowSchema = false)]
@@ -30,69 +33,88 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequestMessage req, ILogger log, string customerId, string addressId,
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequest req, ILogger log, string customerId, string addressId,
             [Inject]IResourceHelper resourceHelper,
-            [Inject]IHttpRequestMessageHelper httpRequestMessageHelper,
             [Inject]IValidate validate,
-            [Inject]IPatchAddressHttpTriggerService addressPatchService)
+            [Inject]IPatchAddressHttpTriggerService addressPatchService,
+            [Inject]ILoggerHelper loggerHelper,
+            [Inject]IHttpRequestHelper httpRequestHelper,
+            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
+            [Inject]IJsonHelper jsonHelper)
         {
-            var touchpointId = httpRequestMessageHelper.GetTouchpointId(req);
-            if (string.IsNullOrEmpty(touchpointId))
+            loggerHelper.LogMethodEnter(log);
+
+            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            if (string.IsNullOrEmpty(correlationId))
+                log.LogInformation("Unable to locate 'DssCorrelationId; in request header");
+
+            if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                log.LogInformation("Unable to Parse 'DssCorrelationId' to a Guid");
+                correlationGuid = Guid.NewGuid();
             }
 
-            var ApimURL = httpRequestMessageHelper.GetApimURL(req);
+            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            if (string.IsNullOrEmpty(touchpointId))
+            {
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
+                return httpResponseMessageHelper.BadRequest();
+            }
+
+            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return HttpResponseMessageHelper.BadRequest();
+                return httpResponseMessageHelper.BadRequest();
             }
 
-            log.LogInformation("Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            var subContractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subContractorId))
+                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return HttpResponseMessageHelper.BadRequest(customerGuid);
+                return httpResponseMessageHelper.BadRequest(customerGuid);
 
             if (!Guid.TryParse(addressId, out var addressGuid))
-                return HttpResponseMessageHelper.BadRequest(addressGuid);
+                return httpResponseMessageHelper.BadRequest(addressGuid);
 
             AddressPatch addressPatchRequest;
 
             try
             {
-                addressPatchRequest = await httpRequestMessageHelper.GetAddressFromRequest<AddressPatch>(req);
+                addressPatchRequest = await httpRequestHelper.GetResourceFromRequest<AddressPatch>(req);
             }
             catch (JsonException ex)
             {
-                return HttpResponseMessageHelper.UnprocessableEntity(ex);
+                return httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (addressPatchRequest == null)
-                return HttpResponseMessageHelper.UnprocessableEntity(req);
+                return httpResponseMessageHelper.UnprocessableEntity(req);
 
-            addressPatchRequest.LastModifiedTouchpointId = touchpointId;
-           
+            addressPatchRequest.SetIds(touchpointId, subContractorId);
+
             var errors = validate.ValidateResource(addressPatchRequest, false);
 
             if (errors != null && errors.Any())
-                return HttpResponseMessageHelper.UnprocessableEntity(errors);
+                return httpResponseMessageHelper.UnprocessableEntity(errors);
            
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return HttpResponseMessageHelper.NoContent(customerGuid);
+                return httpResponseMessageHelper.NoContent(customerGuid);
 
             var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return HttpResponseMessageHelper.Forbidden(customerGuid);
+                return httpResponseMessageHelper.Forbidden(customerGuid);
 
             var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (address == null)
-                return HttpResponseMessageHelper.NoContent(addressGuid);
+                return httpResponseMessageHelper.NoContent(addressGuid);
 
             var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
 
@@ -100,8 +122,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);
 
             return updatedAddress == null ? 
-                HttpResponseMessageHelper.BadRequest(addressGuid) :
-                HttpResponseMessageHelper.Ok(JsonHelper.SerializeObject(updatedAddress));
+                httpResponseMessageHelper.BadRequest(addressGuid) :
+                httpResponseMessageHelper.Ok(jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
         }
     }
 }
