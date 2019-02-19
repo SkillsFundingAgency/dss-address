@@ -25,7 +25,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 
             var response = await _documentDbProvider.CreateAddressAsync(address);
 
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : (Guid?) null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Address address, string reqUrl)
