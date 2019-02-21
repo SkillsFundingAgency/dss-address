@@ -124,7 +124,7 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<string>(null).Result);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
@@ -141,9 +141,9 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(_address).Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult<string>(_address.ToString()).Result);
 
-            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
@@ -159,9 +159,9 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address.ToString()).Result);
 
-            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
@@ -177,9 +177,9 @@ namespace NCS.DSS.Address.Tests
 
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
 
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address.ToString()).Result);
 
-            _patchAddressHttpTriggerService.UpdateAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult(_address).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 

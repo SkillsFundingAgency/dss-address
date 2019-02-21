@@ -89,12 +89,17 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (isCustomerReadOnly)
                 return HttpResponseMessageHelper.Forbidden(customerGuid);
 
-            var address = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
+            var addressForCustomer = await addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
-            if (address == null)
+            if (addressForCustomer == null)
                 return HttpResponseMessageHelper.NoContent(addressGuid);
 
-            var updatedAddress = await addressPatchService.UpdateAsync(address, addressPatchRequest);
+            var patchedAddress = addressPatchService.PatchResource(addressForCustomer, addressPatchRequest);
+
+            if (patchedAddress == null)
+                return HttpResponseMessageHelper.NoContent(addressGuid);
+
+            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
 
             if (updatedAddress != null)
                 await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);

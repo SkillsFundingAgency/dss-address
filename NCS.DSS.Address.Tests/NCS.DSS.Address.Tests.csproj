@@ -84,11 +84,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GetAddressByIdHttpTriggerTests.cs" />
-    <Compile Include="GetAddressHttpTriggerTests.cs" />
-    <Compile Include="PatchAddressHttpTriggerTests.cs" />
-    <Compile Include="PostAddressHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetAddressByIdHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\GetAddressHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PatchAddressHttpTriggerTests.cs" />
+    <Compile Include="FunctionTests\PostAddressHttpTriggerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceTests\AddressPatchServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
