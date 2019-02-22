@@ -19,7 +19,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             _addressPatchService = addressPatchService;
         }
 
-        public Models.Address PatchResource(string addressJson, AddressPatch addressPatch)
+        public string PatchResource(string addressJson, AddressPatch addressPatch)
         {
             if (string.IsNullOrEmpty(addressJson))
                 return null;
@@ -32,13 +32,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             return _addressPatchService.Patch(addressJson, addressPatch);
         }
 
-        public async Task<Models.Address> UpdateCosmosAsync(Models.Address address, AddressPatch addressPatch)
+        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId)
         {
-            var response = await _documentDbProvider.UpdateAddressAsync(address);
+            var response = await _documentDbProvider.UpdateAddressAsync(addressJson, addressId);
 
             var responseStatusCode = response?.StatusCode;
 
-            return responseStatusCode == HttpStatusCode.OK ? address : null;
+            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
 
         public async Task<string> GetAddressForCustomerAsync(Guid customerId, Guid addressId)

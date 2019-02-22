@@ -14,6 +14,6 @@ namespace NCS.DSS.Address.Cosmos.Provider
         Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId);
         Task<List<Models.Address>> GetAddressesForCustomerAsync(Guid customerId);
         Task<ResourceResponse<Document>> CreateAddressAsync(Models.Address address);
-        Task<ResourceResponse<Document>> UpdateAddressAsync(Models.Address address);
+        Task<ResourceResponse<Document>> UpdateAddressAsync(string addressJson, Guid addressId);
     }
 }

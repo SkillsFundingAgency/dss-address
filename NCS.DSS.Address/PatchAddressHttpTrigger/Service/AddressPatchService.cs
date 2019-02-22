@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
 using NCS.DSS.Address.Models;
 using Newtonsoft.Json.Linq;
 
@@ -17,7 +14,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             _jsonHelper = jsonHelper;
         }
 
-        public Models.Address Patch(string addressJson, AddressPatch addressPatch)
+        public string Patch(string addressJson, AddressPatch addressPatch)
         {
             if (string.IsNullOrEmpty(addressJson))
                 return null;
@@ -71,7 +68,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                     _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], addressPatch.SubcontractorId);
             }
 
-            return obj.ToObject<Models.Address>();
+            return obj.ToString();
 
         }
     }

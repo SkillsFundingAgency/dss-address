@@ -122,7 +122,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (patchedCustomer == null)
                 return httpResponseMessageHelper.NoContent(addressGuid);
 
-            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedCustomer, addressPatchRequest);
+            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedCustomer, addressGuid);
 
             if (updatedAddress != null)
                 await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);

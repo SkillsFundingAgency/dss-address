@@ -38,6 +38,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
 
         private Models.Address _address;
         private Models.AddressPatch _addressPatch;
+        private string _addressString;
 
         [SetUp]
         public void Setup()
@@ -55,6 +56,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
             _jsonHelper = Substitute.For<IJsonHelper>();
+            _addressString = JsonConvert.SerializeObject(_address);
 
             _patchAddressHttpTriggerService = Substitute.For<IPatchAddressHttpTriggerService>();
 
@@ -63,7 +65,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _resourceHelper.DoesCustomerExist(Arg.Any<Guid>()).ReturnsForAnyArgs(true);
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
             _httpRequestHelper.GetDssApimUrl(_request).Returns("http://localhost:7071/");
-            _patchAddressHttpTriggerService.PatchResource(_address.ToString(), _addressPatch).ReturnsForAnyArgs(_address);
+            _patchAddressHttpTriggerService.PatchResource(_addressString, _addressPatch).ReturnsForAnyArgs(_addressString);
             SetUpHttpResponseMessageHelper();
         }
 
@@ -144,9 +146,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenUnableToUpdateAddressRecord()
         {
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("address").Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_addressString).Result);
 
-            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
@@ -158,9 +160,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsNotValid()
         {
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("address").Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_addressString).Result);
 
-            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult<Models.Address>(null).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult<Models.Address>(null).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
@@ -172,9 +174,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         [Test]
         public async Task PatchAddressHttpTrigger_ReturnsStatusCodeOK_WhenRequestIsValid()
         {
-            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult("address").Result);
+            _patchAddressHttpTriggerService.GetAddressForCustomerAsync(Arg.Any<Guid>(), Arg.Any<Guid>()).Returns(Task.FromResult(_addressString).Result);
 
-            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<Models.Address>(), Arg.Any<Models.AddressPatch>()).Returns(Task.FromResult(_address).Result);
+            _patchAddressHttpTriggerService.UpdateCosmosAsync(Arg.Any<string>(), Arg.Any<Guid>()).Returns(Task.FromResult(_address).Result);
 
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
 
