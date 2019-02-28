@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Address.Annotations;
+using DFC.Swagger.Standard.Annotations;
 
 namespace NCS.DSS.Address.Models
 {
@@ -86,6 +86,12 @@ namespace NCS.DSS.Address.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
+        
+        [StringLength(50)]
+        [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
+        [Example(Description = "01234567899876543210")]
+        public string SubcontractorId { get; set; }
+
 
         public void SetDefaultValues()
         {
@@ -96,56 +102,12 @@ namespace NCS.DSS.Address.Models
                 LastModifiedDate = DateTime.UtcNow;
         }
 
-        public void SetIds(Guid customerId, string touchpointId)
+        public void SetIds(Guid customerId, string touchpointId, string subcontractorId)
         {
             AddressId = Guid.NewGuid();
             CustomerId = customerId;
             LastModifiedTouchpointId = touchpointId;
-        }
-
-        public void Patch(AddressPatch addressPatch)
-        {
-            if (addressPatch == null)
-                return;
-
-            if(!string.IsNullOrEmpty(addressPatch.Address1))
-                Address1 = addressPatch.Address1;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address2))
-                Address2 = addressPatch.Address2;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address3))
-                Address3 = addressPatch.Address3;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address4))
-                Address4 = addressPatch.Address4;
-
-            if (!string.IsNullOrEmpty(addressPatch.Address5))
-                Address5 = addressPatch.Address5;
-
-            if (!string.IsNullOrEmpty(addressPatch.PostCode))
-                PostCode = addressPatch.PostCode;
-
-            if (!string.IsNullOrEmpty(addressPatch.AlternativePostCode))
-                AlternativePostCode = addressPatch.AlternativePostCode;
-
-            if(addressPatch.Longitude.HasValue)
-                Longitude = addressPatch.Longitude;
-
-            if (addressPatch.Latitude.HasValue)
-                Latitude = addressPatch.Latitude;
-
-            if (addressPatch.EffectiveFrom.HasValue)
-                EffectiveFrom = addressPatch.EffectiveFrom;
-
-            if (addressPatch.EffectiveTo.HasValue)
-                EffectiveTo = addressPatch.EffectiveTo;
-
-            if (addressPatch.LastModifiedDate.HasValue)
-                LastModifiedDate = addressPatch.LastModifiedDate;
-
-            if (!string.IsNullOrEmpty(addressPatch.LastModifiedTouchpointId))
-                LastModifiedTouchpointId = addressPatch.LastModifiedTouchpointId;
+            SubcontractorId = subcontractorId;
         }
     }
 }

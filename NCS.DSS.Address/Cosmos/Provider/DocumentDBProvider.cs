@@ -7,6 +7,7 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using NCS.DSS.Address.Cosmos.Client;
 using NCS.DSS.Address.Cosmos.Helper;
+using Newtonsoft.Json.Linq;
 
 namespace NCS.DSS.Address.Cosmos.Provider
 {
@@ -57,18 +58,24 @@ namespace NCS.DSS.Address.Cosmos.Provider
             }
         }
 
-        public async Task<ResourceResponse<Document>> GetAddressAsync(Guid addressId)
+        public async Task<string> GetAddressByIdForUpdateAsync(Guid customerId, Guid addressId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(addressId);
+
+            var collectionUri = DocumentDBHelper.CreateDocumentCollectionUri();
 
             var client = DocumentDBClient.CreateDocumentClient();
 
-            if (client == null)
+            var addressForCustomerQuery = client
+                ?.CreateDocumentQuery<Models.Address>(collectionUri, new FeedOptions { MaxItemCount = 1 })
+                .Where(x => x.CustomerId == customerId && x.AddressId == addressId)
+                .AsDocumentQuery();
+
+            if (addressForCustomerQuery == null)
                 return null;
 
-            var response = await client.ReadDocumentAsync(documentUri);
+            var address = await addressForCustomerQuery.ExecuteNextAsync();
 
-            return response;
+            return address?.FirstOrDefault()?.ToString();
         }
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
@@ -131,16 +138,22 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         }
 
-        public async Task<ResourceResponse<Document>> UpdateAddressAsync(Models.Address address)
+        public async Task<ResourceResponse<Document>> UpdateAddressAsync(string addressJson, Guid addressId)
         {
-            var documentUri = DocumentDBHelper.CreateDocumentUri(address.AddressId.GetValueOrDefault());
+
+            if (string.IsNullOrEmpty(addressJson))
+                return null;
+
+            var documentUri = DocumentDBHelper.CreateDocumentUri(addressId);
 
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
                 return null;
 
-            var response = await client.ReplaceDocumentAsync(documentUri, address);
+            var addressDocumentObject = JObject.Parse(addressJson);
+
+            var response = await client.ReplaceDocumentAsync(documentUri, addressDocumentObject);
 
             return response;
         }

@@ -8,6 +8,14 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {
     public class PostAddressHttpTriggerService : IPostAddressHttpTriggerService
     {
+
+        private readonly IDocumentDBProvider _documentDbProvider;
+
+        public PostAddressHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        {
+            _documentDbProvider = documentDbProvider;
+        }
+
         public async Task<Models.Address> CreateAsync(Models.Address address)
         {
             if (address == null)
@@ -15,11 +23,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 
             address.SetDefaultValues();
 
-            var documentDbProvider = new DocumentDBProvider();
+            var response = await _documentDbProvider.CreateAddressAsync(address);
 
-            var response = await documentDbProvider.CreateAddressAsync(address);
-
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : (Guid?) null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Address address, string reqUrl)
