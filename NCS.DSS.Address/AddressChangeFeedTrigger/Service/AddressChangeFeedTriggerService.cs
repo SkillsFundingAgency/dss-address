@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
@@ -11,7 +10,7 @@ namespace NCS.DSS.Address.AddressChangeFeedTrigger.Service
     public class AddressChangeFeedTriggerService : IAddressChangeFeedTriggerService
     {
         private readonly string _queueName = Environment.GetEnvironmentVariable("ChangeFeedQueueName");
-        private readonly string _serviceBusConnectionString = Environment.GetEnvironmentVariable("ChangeFeedServiceBusConnectionString");
+        private readonly string _serviceBusConnectionString = Environment.GetEnvironmentVariable("ServiceBusConnectionString");
 
         public async Task SendMessageToChangeFeedQueueAsync(Document document)
         {
