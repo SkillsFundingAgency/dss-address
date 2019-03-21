@@ -74,20 +74,16 @@
               "value": "[reference(concat('microsoft.insights/components/', variables('appInsightsName'))).InstrumentationKey]"
             },
             {
+              "name": "AddressConnectionString",
+              "value": "[concat('AccountEndpoint=', parameters('cosmosDbEndpoint'), '/;AccountKey=', parameters('cosmosDbKey'), ';')]"
+            },
+            {
               "name": "CollectionId",
               "value": "[parameters('cosmosDbCollectionId')]"
             },
             {
               "name": "DatabaseId",
               "value": "[parameters('cosmosDbDatabaseId')]"
-            },
-            {
-              "name": "Endpoint",
-              "value": "[parameters('cosmosDbEndpoint')]"
-            },
-            {
-              "name": "Key",
-              "value": "[parameters('cosmosDbKey')]"
             },
             {
               "name": "CustomerDatabaseId",
@@ -98,8 +94,20 @@
               "value": "customers"
             },
             {
+              "name": "LeaseCollectionName",
+              "value": "addressChangeFeed-lease"
+            },
+            {
+              "name": "LeaseCollectionPrefix",
+              "value": "addressChangeFeedPrefix"
+            },
+            {
               "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
+            },
+            {
+              "name": "ChangeFeedQueueName",
+              "value": "dss.changefeedqueue"
             },
             {
               "name": "QueueName",

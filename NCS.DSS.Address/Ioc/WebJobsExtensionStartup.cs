@@ -6,6 +6,7 @@ using DFC.Swagger.Standard;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using NCS.DSS.Address.AddressChangeFeedTrigger.Service;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
@@ -49,6 +50,7 @@ namespace NCS.DSS.Address.Ioc
             builder.Services.AddTransient<IPostAddressHttpTriggerService, PostAddressHttpTriggerService>();
             builder.Services.AddTransient<IPatchAddressHttpTriggerService, PatchAddressHttpTriggerService>();
             builder.Services.AddScoped<IAddressPatchService, AddressPatchService>();
+            builder.Services.AddScoped<IAddressChangeFeedTriggerService, AddressChangeFeedTriggerService>();
         }
 
         private void RegisterDataProviders(IWebJobsBuilder builder)
