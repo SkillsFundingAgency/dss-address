@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
 using DFC.Functions.DI.Standard.Attributes;
+using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -15,6 +16,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
@@ -39,7 +41,8 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             [Inject]ILoggerHelper loggerHelper,
             [Inject]IHttpRequestHelper httpRequestHelper,
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+            [Inject]IJsonHelper jsonHelper,
+            [Inject]IGeoCodingService geoCodingService)
         {
             loggerHelper.LogMethodEnter(log);
 
@@ -96,6 +99,21 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
                 return httpResponseMessageHelper.UnprocessableEntity(errors);
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
+            Position position;
+
+            try
+            {
+                position = await geoCodingService.GetPositionForPostcodeAsync(addressRequest.PostCode);
+            }
+            catch (Exception e)
+            {
+                loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
+                throw;
+            }
+
+            addressRequest.SetLongitudeAndLatitude(position);
 
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
