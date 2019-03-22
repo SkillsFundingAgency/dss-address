@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
 using DFC.Functions.DI.Standard.Attributes;
+using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -15,6 +16,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
@@ -40,7 +42,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             [Inject]ILoggerHelper loggerHelper,
             [Inject]IHttpRequestHelper httpRequestHelper,
             [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper)
+            [Inject]IJsonHelper jsonHelper,
+            [Inject]IGeoCodingService geoCodingService)
         {
             loggerHelper.LogMethodEnter(log);
 
@@ -100,7 +103,26 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
                 return httpResponseMessageHelper.UnprocessableEntity(errors);
-           
+
+            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
+
+            if (!string.IsNullOrEmpty(addressPatchRequest.PostCode))
+            {
+                Position position;
+
+                try
+                {
+                    position = await geoCodingService.GetPositionForPostcodeAsync(addressPatchRequest.PostCode);
+                }
+                catch (Exception e)
+                {
+                    loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressPatchRequest.PostCode), e);
+                    throw;
+                }
+
+                addressPatchRequest.SetLongitudeAndLatitude(position);
+            }
+            
             var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
@@ -117,12 +139,12 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return httpResponseMessageHelper.NoContent(customerGuid);
 
             loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get patch customer resource {0}", customerGuid));
-            var patchedCustomer = addressPatchService.PatchResource(address, addressPatchRequest);
-
-            if (patchedCustomer == null)
+            var patchedAddress = addressPatchService.PatchResource(address, addressPatchRequest);
+            
+            if (patchedAddress == null)
                 return httpResponseMessageHelper.NoContent(addressGuid);
 
-            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedCustomer, addressGuid);
+            var updatedAddress = await addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
 
             if (updatedAddress != null)
                 await addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);

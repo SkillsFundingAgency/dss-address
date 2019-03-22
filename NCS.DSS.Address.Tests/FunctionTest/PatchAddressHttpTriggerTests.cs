@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
@@ -35,6 +36,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private IHttpRequestHelper _httpRequestHelper;
         private IHttpResponseMessageHelper _httpResponseMessageHelper;
         private IJsonHelper _jsonHelper;
+        private IGeoCodingService _geoCodingService;
 
         private Models.Address _address;
         private Models.AddressPatch _addressPatch;
@@ -56,6 +58,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper = Substitute.For<IHttpRequestHelper>();
             _httpResponseMessageHelper = Substitute.For<IHttpResponseMessageHelper>();
             _jsonHelper = Substitute.For<IJsonHelper>();
+            _geoCodingService = Substitute.For<IGeoCodingService>();
             _addressString = JsonConvert.SerializeObject(_address);
 
             _patchAddressHttpTriggerService = Substitute.For<IPatchAddressHttpTriggerService>();
@@ -198,7 +201,8 @@ namespace NCS.DSS.Address.Tests.FunctionTest
                 _loggerHelper,
                 _httpRequestHelper,
                 _httpResponseMessageHelper,
-                _jsonHelper).ConfigureAwait(false);
+                _jsonHelper, 
+                _geoCodingService).ConfigureAwait(false);
         }
 
         private void SetUpHttpResponseMessageHelper()
