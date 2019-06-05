@@ -5,6 +5,12 @@
     "appServicePlanId": {
       "type": "string"
     },
+    "apiVersion": {
+      "type": "string"
+    },
+    "azureMapURL": {
+      "type": "string"
+    },
     "configEnvironmentName": {
       "type": "string"
     },
@@ -33,7 +39,10 @@
       "type": "string"
     },
     "storageAccountKey": {
-      "type": "string"
+      "type": "securestring"
+    },
+    "subscriptionKey": {
+      "type": "securestring"
     }
   },
   "variables": {
@@ -64,6 +73,14 @@
             {
               "name": "MSDEPLOY_RENAME_LOCKED_FILES",
               "value": "1"
+            },
+            {
+              "name": "ApiVersion",
+              "value": "[parameters('apiVersion')]"
+            },
+            {
+              "name": "AzureMapURL",
+              "value": "[parameters('azureMapURL')]"
             },
             {
               "name": "AzureWebJobsStorage",
@@ -100,6 +117,10 @@
             {
               "name": "ServiceBusConnectionString",
               "value": "[parameters('serviceBusConnectionString')]"
+            },
+            {
+              "name": "SubscriptionKey",
+              "value": "[parameters('subscriptionKey')]"
             },
             {
               "name": "QueueName",
