@@ -54,7 +54,9 @@
       "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
-      "dependsOn": [ "[variables('appInsightsName')]" ],
+      "dependsOn": [
+        "[variables('appInsightsName')]"
+      ],
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "properties": {
