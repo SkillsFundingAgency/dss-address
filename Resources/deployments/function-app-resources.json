@@ -5,10 +5,10 @@
     "appServicePlanId": {
       "type": "string"
     },
-    "apiVersion": {
+    "azureMapsApiVersion": {
       "type": "string"
     },
-    "azureMapURL": {
+    "azureMapsUrl": {
       "type": "string"
     },
     "configEnvironmentName": {
@@ -78,11 +78,11 @@
             },
             {
               "name": "ApiVersion",
-              "value": "[parameters('apiVersion')]"
+              "value": "[parameters('azureMapsApiVersion')]"
             },
             {
               "name": "AzureMapURL",
-              "value": "[parameters('azureMapURL')]"
+              "value": "[parameters('azureMapsUrl')]"
             },
             {
               "name": "AzureWebJobsStorage",

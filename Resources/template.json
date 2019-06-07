@@ -2,10 +2,10 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "azureMapURL": {
+        "azureMapsApiVersion": {
             "type": "string"
         },
-        "apiVersion": {
+        "azureMapsUrl": {
             "type": "string"
         },
         "cosmosDbCollectionId": {
@@ -70,11 +70,11 @@
                     "functionAppName": {
                         "value": "[parameters('functionAppNames')[copyIndex()]]"
                     },
-                    "apiVersion": {
-                        "value": "[parameters('apiVersion')]"
+                    "azureMapsApiVersion": {
+                        "value": "[parameters('azureMapsApiVersion')]"
                     },
-                    "azureMapURL": {
-                        "value": "[parameters('azureMapURL')]"
+                    "azureMapsUrl": {
+                        "value": "[parameters('azureMapsUrl')]"
                     },
                     "appServicePlanId": {
                         "value": "[variables('sharedAppServicePlanId')]"
