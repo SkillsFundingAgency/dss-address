@@ -5,6 +5,9 @@
     "appServicePlanId": {
       "type": "string"
     },
+    "azureMapsSubscriptionKey": {
+      "type": "securestring"
+    },
     "azureMapsApiVersion": {
       "type": "string"
     },
@@ -39,9 +42,6 @@
       "type": "string"
     },
     "storageAccountKey": {
-      "type": "securestring"
-    },
-    "subscriptionKey": {
       "type": "securestring"
     }
   },
@@ -122,7 +122,7 @@
             },
             {
               "name": "SubscriptionKey",
-              "value": "[parameters('subscriptionKey')]"
+              "value": "[parameters('azureMapsSubscriptionKey')]"
             },
             {
               "name": "QueueName",

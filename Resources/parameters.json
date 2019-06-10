@@ -2,11 +2,14 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "azureMapsUrl": {
-            "value": "__azureMapsUrl__"
-        },
         "azureMapsApiVersion": {
-            "value": "__azureMapsApiVersion__"
+            "value": "__AzureMapsApiVersion__"
+        },
+        "azureMapsSubscriptionKey": {
+            "value": "__AzureMapsSubscriptionKey__"
+        },
+        "azureMapsUrl": {
+            "value": "__AzureMapsUrl__"
         },
         "cosmosDbCollectionId": {
             "value": "__ApiResourceName__"
@@ -43,9 +46,6 @@
         },
         "storageAccountKey": {
             "value": "__SharedStorageAccountKey__"
-        },
-        "subscriptionKey": {
-            "value": "__SubscriptionKeyVault__"
         },
         "templateBaseUrl": {
             "value": "__NestedArmTemplateBaseUrl__"

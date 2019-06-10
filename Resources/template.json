@@ -5,6 +5,9 @@
         "azureMapsApiVersion": {
             "type": "string"
         },
+        "azureMapsSubscriptionKey": {
+            "type": "securestring"
+        },
         "azureMapsUrl": {
             "type": "string"
         },
@@ -44,9 +47,6 @@
         "storageAccountKey": {
             "type": "securestring"
         },
-        "subscriptionKey": {
-            "type": "securestring"
-        },
         "templateBaseUrl": {
             "type": "string"
         }
@@ -72,6 +72,9 @@
                     },
                     "azureMapsApiVersion": {
                         "value": "[parameters('azureMapsApiVersion')]"
+                    },
+                    "azureMapsSubscriptionKey": {
+                        "value": "[parameters('azureMapsSubscriptionKey')]"
                     },
                     "azureMapsUrl": {
                         "value": "[parameters('azureMapsUrl')]"
@@ -105,9 +108,6 @@
                     },
                     "storageAccountKey": {
                         "value": "[parameters('storageAccountKey')]"
-                    },
-                    "subscriptionKey": {
-                        "value": "[parameters('subscriptionKey')]"
                     }
                 }
             },
