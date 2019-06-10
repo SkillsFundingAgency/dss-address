@@ -5,6 +5,15 @@
     "appServicePlanId": {
       "type": "string"
     },
+    "azureMapsSubscriptionKey": {
+      "type": "securestring"
+    },
+    "azureMapsApiVersion": {
+      "type": "string"
+    },
+    "azureMapsUrl": {
+      "type": "string"
+    },
     "configEnvironmentName": {
       "type": "string"
     },
@@ -33,7 +42,7 @@
       "type": "string"
     },
     "storageAccountKey": {
-      "type": "string"
+      "type": "securestring"
     }
   },
   "variables": {
@@ -45,7 +54,9 @@
       "name": "[parameters('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
-      "dependsOn": [ "[variables('appInsightsName')]" ],
+      "dependsOn": [
+        "[variables('appInsightsName')]"
+      ],
       "location": "[resourceGroup().location]",
       "kind": "functionapp",
       "properties": {
@@ -64,6 +75,14 @@
             {
               "name": "MSDEPLOY_RENAME_LOCKED_FILES",
               "value": "1"
+            },
+            {
+              "name": "ApiVersion",
+              "value": "[parameters('azureMapsApiVersion')]"
+            },
+            {
+              "name": "AzureMapURL",
+              "value": "[parameters('azureMapsUrl')]"
             },
             {
               "name": "AzureWebJobsStorage",
@@ -108,6 +127,10 @@
             {
               "name": "ChangeFeedQueueName",
               "value": "dss.changefeedqueue"
+            },
+            {
+              "name": "SubscriptionKey",
+              "value": "[parameters('azureMapsSubscriptionKey')]"
             },
             {
               "name": "QueueName",
