@@ -81,6 +81,10 @@
               "value": "[parameters('azureMapsApiVersion')]"
             },
             {
+              "name": "AzureMapSubscriptionKey",
+              "value": "[parameters('azureMapsSubscriptionKey')]"
+            },
+            {
               "name": "AzureMapURL",
               "value": "[parameters('azureMapsUrl')]"
             },
@@ -125,8 +129,8 @@
               "value": "[parameters('serviceBusConnectionString')]"
             },
             {
-              "name": "AzureMapSubscriptionKey",
-              "value": "[parameters('azureMapsSubscriptionKey')]"
+              "name": "ChangeFeedQueueName",
+              "value": "dss.changefeedqueue"
             },
             {
               "name": "QueueName",
