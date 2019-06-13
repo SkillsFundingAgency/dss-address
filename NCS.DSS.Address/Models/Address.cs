@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 
 namespace NCS.DSS.Address.Models
@@ -92,6 +93,8 @@ namespace NCS.DSS.Address.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
+        [JsonIgnoreOnSerialize]
+        public string CreatedBy { get; set; }
 
         public void SetDefaultValues()
         {
@@ -108,6 +111,7 @@ namespace NCS.DSS.Address.Models
             CustomerId = customerId;
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
+            CreatedBy = touchpointId;
         }
     }
 }
