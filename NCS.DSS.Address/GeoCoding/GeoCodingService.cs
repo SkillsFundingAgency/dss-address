@@ -16,6 +16,9 @@ namespace NCS.DSS.Address.GeoCoding
 
         public async Task<Position> GetPositionForPostcodeAsync(string postcode)
         {
+            if (string.IsNullOrEmpty(postcode))
+                return null;
+
             return await _azureMapService.GetPositionForAddress(postcode);
         }
     }

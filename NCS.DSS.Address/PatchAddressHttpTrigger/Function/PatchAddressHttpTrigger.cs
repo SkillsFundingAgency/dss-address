@@ -112,7 +112,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
                 try
                 {
-                    position = await geoCodingService.GetPositionForPostcodeAsync(addressPatchRequest.PostCode);
+                    var postcode = addressPatchRequest.PostCode.Replace(" ", string.Empty);
+                    position = await geoCodingService.GetPositionForPostcodeAsync(postcode);
                 }
                 catch (Exception e)
                 {

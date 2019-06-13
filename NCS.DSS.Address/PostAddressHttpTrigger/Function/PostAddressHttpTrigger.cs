@@ -105,7 +105,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             try
             {
-                position = await geoCodingService.GetPositionForPostcodeAsync(addressRequest.PostCode);
+                var postcode = addressRequest.PostCode.Replace(" ", string.Empty);
+                position = await geoCodingService.GetPositionForPostcodeAsync(postcode);
+
             }
             catch (Exception e)
             {
