@@ -1,5 +1,6 @@
 ﻿using DFC.Common.Standard.Logging;
 using DFC.Functions.DI.Standard;
+using DFC.GeoCoding.Standard.AzureMaps.Service;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.Address.AddressChangeFeedTrigger.Service;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Cosmos.Provider;
+using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 using NCS.DSS.Address.Ioc;
@@ -51,6 +53,8 @@ namespace NCS.DSS.Address.Ioc
             builder.Services.AddTransient<IPatchAddressHttpTriggerService, PatchAddressHttpTriggerService>();
             builder.Services.AddScoped<IAddressPatchService, AddressPatchService>();
             builder.Services.AddScoped<IAddressChangeFeedTriggerService, AddressChangeFeedTriggerService>();
+            builder.Services.AddScoped<IGeoCodingService, GeoCodingService>();
+            builder.Services.AddScoped<IAzureMapService, AzureMapService>();          
         }
 
         private void RegisterDataProviders(IWebJobsBuilder builder)

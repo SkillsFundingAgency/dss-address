@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
@@ -35,6 +36,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private IJsonHelper _jsonHelper;
         private IPostAddressHttpTriggerService _postAddressHttpTriggerService;
         private Models.Address _address;
+        private IGeoCodingService _geoCodingService;
 
         [SetUp]
         public void Setup()
@@ -52,6 +54,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _jsonHelper = Substitute.For<IJsonHelper>();
             _log = Substitute.For<ILogger>();
             _resourceHelper = Substitute.For<IResourceHelper>();
+            _geoCodingService = Substitute.For<IGeoCodingService>();
 
             _postAddressHttpTriggerService = Substitute.For<IPostAddressHttpTriggerService>();
             _httpRequestHelper.GetDssTouchpointId(_request).Returns("0000000001");
@@ -184,7 +187,8 @@ namespace NCS.DSS.Address.Tests.FunctionTest
                 _loggerHelper,
                 _httpRequestHelper,
                 _httpResponseMessageHelper,
-                _jsonHelper).ConfigureAwait(false);
+                _jsonHelper,
+                _geoCodingService).ConfigureAwait(false);
         }
 
         private void SetUpHttpResponseMessageHelper()
