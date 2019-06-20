@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
+using DFC.JSON.Standard.Attributes;
 using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.Swagger.Standard.Annotations;
 
@@ -93,6 +94,8 @@ namespace NCS.DSS.Address.Models
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
 
+        [JsonIgnoreOnSerialize]
+        public string CreatedBy { get; set; }
 
         public void SetDefaultValues()
         {
@@ -109,6 +112,7 @@ namespace NCS.DSS.Address.Models
             CustomerId = customerId;
             LastModifiedTouchpointId = touchpointId;
             SubcontractorId = subcontractorId;
+            CreatedBy = touchpointId;
         }
 
         public void SetLongitudeAndLatitude(Position position)
