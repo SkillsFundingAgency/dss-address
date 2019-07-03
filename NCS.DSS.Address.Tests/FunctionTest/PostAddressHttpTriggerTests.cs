@@ -42,6 +42,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         public void Setup()
         {
             _address = Substitute.For<Models.Address>();
+            _address.PostCode = string.Empty;
 
             _request = new DefaultHttpRequest(new DefaultHttpContext());
 
