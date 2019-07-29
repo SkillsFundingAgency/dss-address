@@ -123,6 +123,10 @@
             {
               "name": "QueueName",
               "value": "[parameters('serviceBusQueueName')]"
+            },
+            {
+              "name": "CountrySet",
+              "value": "GB"
             }
           ]
         }
