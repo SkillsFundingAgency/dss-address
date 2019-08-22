@@ -127,6 +127,10 @@
             {
               "name": "AzureCountrySet",
               "value": "GB"
+            },
+            {
+              "name": "CustomerSearchIndexName",
+              "value": "customer-search-index-v2"
             }
           ]
         }
