@@ -49,6 +49,12 @@
         },
         "templateBaseUrl": {
             "value": "__NestedArmTemplateBaseUrl__"
+        },
+        "SearchServiceAdminApiKey": {
+            "value": "__SearchServiceAdminApiKey__"
+        },
+        "SearchServiceName": {
+            "value": "__SearchServiceName__"
         }
     }
 }

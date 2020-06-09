@@ -43,6 +43,12 @@
     },
     "storageAccountKey": {
       "type": "securestring"
+    },
+    "SearchServiceAdminApiKey": {
+      "type": "string"
+    },
+    "SearchServiceName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -131,6 +137,14 @@
             {
               "name": "CustomerSearchIndexName",
               "value": "customer-search-index-v2"
+            },
+            {
+              "name": "SearchServiceName",
+              "value": "[parameters('SearchServiceName')]"
+            },
+            {
+              "name": "SearchServiceAdminApiKey",
+              "value": "[parameters('SearchServiceAdminApiKey')]"
             }
           ]
         }
