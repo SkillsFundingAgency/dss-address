@@ -5,6 +5,7 @@ using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using NCS.DSS.Address;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
@@ -13,6 +14,7 @@ using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 
+[assembly: FunctionsStartup(typeof(Startup))]
 namespace NCS.DSS.Address
 {
     public class Startup : FunctionsStartup
