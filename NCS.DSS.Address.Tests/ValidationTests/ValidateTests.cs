@@ -1,8 +1,8 @@
-﻿using System;
+﻿using NCS.DSS.Address.Validation;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Address.Validation;
-using NUnit.Framework;
 
 namespace NCS.DSS.Address.Tests.ValidationTests
 {
@@ -13,6 +13,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenAddressIsNotSuppliedForPost()
         {
+            // Arrange
             var address = new Models.Address
             {
                PostCode = "CV1 1VC"
@@ -20,6 +21,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
 
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(address, true);
 
             // Assert
@@ -31,6 +33,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenPostcodeIsNotSuppliedForPost()
         {
+            // Arrange
             var address = new Models.Address
             {
                 Address1 = "Address Line 1"
@@ -38,6 +41,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
 
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(address, true);
 
             // Assert
@@ -49,6 +53,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenEffectiveFromIsInTheFuture()
         {
+            // Arrange
             var address = new Models.Address
             {
                 Address1 = "Address Line 1",
@@ -58,6 +63,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
 
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(address, false);
 
             // Assert
@@ -69,6 +75,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenLastModifiedDateIsInTheFuture()
         {
+            // Arrange
             var address = new Models.Address
             {
                 Address1 = "Address Line 1",
@@ -78,6 +85,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
 
             var validation = new Validate();
 
+            // Act
             var result = validation.ValidateResource(address, false);
 
             // Assert

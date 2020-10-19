@@ -1,6 +1,6 @@
-﻿using System;
-using NSubstitute;
+﻿using Moq;
 using NUnit.Framework;
+using System;
 
 namespace NCS.DSS.Address.Tests.ModelTests
 {
@@ -35,7 +35,7 @@ namespace NCS.DSS.Address.Tests.ModelTests
         {
             var address = new Models.Address();
 
-            address.SetIds(Arg.Any<Guid>(), Arg.Any<string>(), Arg.Any<string>());
+            address.SetIds(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.AreNotSame(Guid.Empty, address.AddressId);
@@ -47,7 +47,7 @@ namespace NCS.DSS.Address.Tests.ModelTests
             var address = new Models.Address();
 
             var customerId = Guid.NewGuid();
-            address.SetIds(customerId, Arg.Any<string>(), Arg.Any<string>());
+            address.SetIds(customerId, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             Assert.AreEqual(customerId, address.CustomerId);
@@ -58,7 +58,7 @@ namespace NCS.DSS.Address.Tests.ModelTests
         {
             var address = new Models.Address();
 
-            address.SetIds(Arg.Any<Guid>(), "0000000000", Arg.Any<string>());
+            address.SetIds(It.IsAny<Guid>(), "0000000000", It.IsAny<string>());
 
             // Assert
             Assert.AreEqual("0000000000", address.LastModifiedTouchpointId);
