@@ -7,6 +7,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using NCS.DSS.Address;
 using NCS.DSS.Address.Cosmos.Helper;
+using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
@@ -35,6 +36,7 @@ namespace NCS.DSS.Address
             builder.Services.AddScoped<IAddressPatchService, AddressPatchService>();
             builder.Services.AddScoped<IGeoCodingService, GeoCodingService>();
             builder.Services.AddScoped<IAzureMapService, AzureMapService>();
+            builder.Services.AddTransient<IDocumentDBProvider, DocumentDBProvider>();
         }
     }
 }
