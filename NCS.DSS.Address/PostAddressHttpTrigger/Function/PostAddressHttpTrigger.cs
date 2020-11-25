@@ -1,11 +1,4 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using DFC.Common.Standard.Logging;
-using DFC.Functions.DI.Standard.Attributes;
 using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
@@ -20,11 +13,45 @@ using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
-    public static class PostAddressHttpTrigger
+    public class PostAddressHttpTrigger
     {
+        private IResourceHelper _resourceHelper;
+        private IValidate _validate;
+        private IPostAddressHttpTriggerService _addressPostService;
+        private ILoggerHelper _loggerHelper;
+        private IHttpRequestHelper _httpRequestHelper;
+        private IHttpResponseMessageHelper _httpResponseMessageHelper;
+        private IJsonHelper _jsonHelper;
+        private IGeoCodingService _geoCodingService;
+
+        public PostAddressHttpTrigger(IResourceHelper resourceHelper,
+            IValidate validate,
+            IPostAddressHttpTriggerService addressPostService,
+            ILoggerHelper loggerHelper,
+            IHttpRequestHelper httpRequestHelper,
+            IHttpResponseMessageHelper httpResponseMessageHelper,
+            IJsonHelper jsonHelper,
+            IGeoCodingService geoCodingService)
+        {
+            _resourceHelper = resourceHelper;
+            _validate = validate;
+            _addressPostService = addressPostService;
+            _loggerHelper = loggerHelper;
+            _httpRequestHelper = httpRequestHelper;
+            _httpResponseMessageHelper = httpResponseMessageHelper;
+            _jsonHelper = jsonHelper;
+            _geoCodingService = geoCodingService;
+        }
+
         [FunctionName("Post")]
         [ProducesResponseType(typeof(Models.Address), 201)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Address Created", ShowSchema = true)]
@@ -34,19 +61,11 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequest req, ILogger log, string customerId,
-            [Inject]IResourceHelper resourceHelper,
-            [Inject]IValidate validate,
-            [Inject]IPostAddressHttpTriggerService addressPostService,
-            [Inject]ILoggerHelper loggerHelper,
-            [Inject]IHttpRequestHelper httpRequestHelper,
-            [Inject]IHttpResponseMessageHelper httpResponseMessageHelper,
-            [Inject]IJsonHelper jsonHelper,
-            [Inject]IGeoCodingService geoCodingService)
+        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequest req, ILogger log, string customerId)
         {
-            loggerHelper.LogMethodEnter(log);
+            _loggerHelper.LogMethodEnter(log);
 
-            var correlationId = httpRequestHelper.GetDssCorrelationId(req);
+            var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
                 log.LogInformation("Unable to locate 'DssCorrelationId; in request header");
 
@@ -56,87 +75,87 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 correlationGuid = Guid.NewGuid();
             }
 
-            var touchpointId = httpRequestHelper.GetDssTouchpointId(req);
+            var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
-                return httpResponseMessageHelper.BadRequest();
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
+                return _httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = httpRequestHelper.GetDssApimUrl(req);
+            var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
-                return httpResponseMessageHelper.BadRequest();
+                return _httpResponseMessageHelper.BadRequest();
             }
 
-            var subContractorId = httpRequestHelper.GetDssSubcontractorId(req);
+            var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subContractorId))
-                loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, "Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return httpResponseMessageHelper.BadRequest(customerGuid);
+                return _httpResponseMessageHelper.BadRequest(customerGuid);
 
             Models.Address addressRequest;
 
             try
             {
-                addressRequest = await httpRequestHelper.GetResourceFromRequest<Models.Address>(req);
+                addressRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Address>(req);
             }
             catch (JsonException ex)
             {
-                return httpResponseMessageHelper.UnprocessableEntity(ex);
+                return _httpResponseMessageHelper.UnprocessableEntity(ex);
             }
 
             if (addressRequest == null)
-                return httpResponseMessageHelper.UnprocessableEntity(req);
+                return _httpResponseMessageHelper.UnprocessableEntity(req);
 
             addressRequest.SetIds(customerGuid, touchpointId, subContractorId);
 
-            var errors = validate.ValidateResource(addressRequest, true);
+            var errors = _validate.ValidateResource(addressRequest, true);
 
             if (errors != null && errors.Any())
-                return httpResponseMessageHelper.UnprocessableEntity(errors);
+                return _httpResponseMessageHelper.UnprocessableEntity(errors);
 
-            loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
+            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
             Position position;
 
             try
             {
                 var postcode = addressRequest.PostCode.Replace(" ", string.Empty);
-                position = await geoCodingService.GetPositionForPostcodeAsync(postcode);
+                position = await _geoCodingService.GetPositionForPostcodeAsync(postcode);
 
             }
             catch (Exception e)
             {
-                loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
+                _loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
                 throw;
             }
 
             addressRequest.SetLongitudeAndLatitude(position);
 
-            var doesCustomerExist = await resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return httpResponseMessageHelper.NoContent(customerGuid);
+                return _httpResponseMessageHelper.NoContent(customerGuid);
 
-            var isCustomerReadOnly = await resourceHelper.IsCustomerReadOnly(customerGuid);
+            var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return httpResponseMessageHelper.Forbidden(customerGuid);
+                return _httpResponseMessageHelper.Forbidden(customerGuid);
 
-            var address = await addressPostService.CreateAsync(addressRequest);
+            var address = await _addressPostService.CreateAsync(addressRequest);
 
             if (address != null)
-                await addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
+                await _addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
 
-            loggerHelper.LogMethodExit(log);
+            _loggerHelper.LogMethodExit(log);
 
             return address == null
-                ? httpResponseMessageHelper.BadRequest(customerGuid) :
-                httpResponseMessageHelper.Created(jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
+                ? _httpResponseMessageHelper.BadRequest(customerGuid) :
+                _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
         }
     }
 }
