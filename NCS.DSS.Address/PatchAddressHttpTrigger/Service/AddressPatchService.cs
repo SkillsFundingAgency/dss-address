@@ -24,22 +24,22 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             if (!string.IsNullOrEmpty(addressPatch.Address1))
                 _jsonHelper.UpdatePropertyValue(obj["Address1"], addressPatch.Address1);
 
-            if (!string.IsNullOrEmpty(addressPatch.Address2))
+            if (addressPatch.Address2 != null)
                 _jsonHelper.UpdatePropertyValue(obj["Address2"], addressPatch.Address2);
 
-            if (!string.IsNullOrEmpty(addressPatch.Address3))
+            if (addressPatch.Address3 != null)
                 _jsonHelper.UpdatePropertyValue(obj["Address3"], addressPatch.Address3);
 
-            if (!string.IsNullOrEmpty(addressPatch.Address4))
+            if (addressPatch.Address4 != null)
                 _jsonHelper.UpdatePropertyValue(obj["Address4"], addressPatch.Address4);
 
-            if (!string.IsNullOrEmpty(addressPatch.Address5))
+            if (addressPatch.Address5 != null)
                 _jsonHelper.UpdatePropertyValue(obj["Address5"], addressPatch.Address5);
 
             if (!string.IsNullOrEmpty(addressPatch.PostCode))
                 _jsonHelper.UpdatePropertyValue(obj["PostCode"], addressPatch.PostCode);
 
-            if (!string.IsNullOrEmpty(addressPatch.AlternativePostCode))
+            if (addressPatch.AlternativePostCode != null)
                 _jsonHelper.UpdatePropertyValue(obj["AlternativePostCode"], addressPatch.AlternativePostCode);
 
             if (addressPatch.Longitude.HasValue)
