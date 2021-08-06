@@ -13,23 +13,14 @@ namespace NCS.DSS.Address.Validation
             var results = new List<ValidationResult>();
 
             Validator.TryValidateObject(resource, context, results, true);
-            ValidateAddressRules(resource, results, validateModelForPost);
+            ValidateAddressRules(resource, results);
             return results;
         }
 
-        private void ValidateAddressRules(IAddress addressResource, List<ValidationResult> results, bool validateModelForPost)
+        private void ValidateAddressRules(IAddress addressResource, List<ValidationResult> results)
         {
             if (addressResource == null)
                 return;
-
-            if (validateModelForPost)
-            {
-                if (string.IsNullOrWhiteSpace(addressResource.Address1))
-                    results.Add(new ValidationResult("Address 1 is a required field", new[] { "Address1" }));
-
-                if (string.IsNullOrWhiteSpace(addressResource.PostCode))
-                    results.Add(new ValidationResult("PostCode is a required field", new[] { "PostCode" }));
-            }
 
             if (addressResource.EffectiveFrom.HasValue && addressResource.EffectiveFrom.Value > DateTime.UtcNow)
                 results.Add(new ValidationResult("Effective From Agreed must be less the current date/time", new[] { "EffectiveFrom" }));
