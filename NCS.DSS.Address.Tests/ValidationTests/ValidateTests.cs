@@ -27,7 +27,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(1, result.Count);
         }
 
         [Test]
@@ -47,7 +47,7 @@ namespace NCS.DSS.Address.Tests.ValidationTests
             // Assert
             Assert.IsInstanceOf<List<ValidationResult>>(result);
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count);
+            Assert.AreEqual(1, result.Count);
         }
 
         [Test]
