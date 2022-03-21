@@ -1,0 +1,30 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "CollectionId": "addresses",
+    "DatabaseId": "addresses",
+    "CustomerDatabaseId": "customers",
+    "CustomerCollectionId": "customers",
+
+    //CHANGE FEED
+    // ########################################################################################################################################################################################################
+
+    "LeaseCollectionName": "customer-lease",
+    "LeaseCollectionPrefix": "customerChangeFeedPrefix",
+    "ChangeFeedQueueName": "dss.changefeedqueue",
+
+    //Customer Service Bus
+    // ########################################################################################################################################################################################################
+
+    "QueueName": "dss.contentqueue",
+    "ServiceBusConnectionString": "Endpoint=sb://dss-at-shared-ns.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=UZqdAlpLBmUnkJ4S3p7ozUYIm9UfPHQUw6jZm1Jh7OQ=",
+
+    //ConnectionStrings
+    // #########################################################################################################################################################################################################
+
+    "AddressConnectionString": "AccountEndpoint=https://dss-at-shared-cdb.documents.azure.com:443/;AccountKey=gN8fmksIp9YAz7a3GHARnMlr7EdA3MWg3vEVEHkIrWfqHhl9Mpxd651fwmgqfCEgmuFEaGDU3OJLNouL6zlbmQ==;"
+  }
+}

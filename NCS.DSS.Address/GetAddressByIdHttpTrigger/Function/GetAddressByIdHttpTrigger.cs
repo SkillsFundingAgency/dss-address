@@ -61,6 +61,13 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 
             log.LogInformation("Get Address By Id C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+            {
+                log.LogInformation("Unable to locate 'SubcontractorId' in request header");
+                return _httpResponseMessageHelper.BadRequest();
+            }
+
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return _httpResponseMessageHelper.BadRequest(customerGuid);
 
