@@ -90,9 +90,12 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
-            if (string.IsNullOrEmpty(subContractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
+            var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
+            if (string.IsNullOrEmpty(subcontractorId))
+            {
+                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-SubcontractorId' in request header");
+                return _httpResponseMessageHelper.BadRequest();
+            }
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
@@ -116,7 +119,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (addressPatchRequest == null)
                 return _httpResponseMessageHelper.UnprocessableEntity(req);
 
-            addressPatchRequest.SetIds(touchpointId, subContractorId);
+            addressPatchRequest.SetIds(touchpointId, subcontractorId);
 
             var errors = _validate.ValidateResource(addressPatchRequest, false);
 
