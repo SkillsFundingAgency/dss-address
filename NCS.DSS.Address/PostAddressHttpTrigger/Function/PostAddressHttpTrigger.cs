@@ -115,7 +115,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (addressRequest == null)
                 return _httpResponseMessageHelper.UnprocessableEntity(req);
 
-            addressRequest.SetIds(customerGuid, touchpointId, subContractorId);
+            addressRequest.SetIds(customerGuid, touchpointId, subcontractorId);
 
             var errors = _validate.ValidateResource(addressRequest, true);
 
