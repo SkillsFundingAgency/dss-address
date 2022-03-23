@@ -59,6 +59,8 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
+            // add subcontractorId
+
             log.LogInformation("Get Address By Id C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
