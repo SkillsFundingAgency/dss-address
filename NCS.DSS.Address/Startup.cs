@@ -37,8 +37,6 @@ namespace NCS.DSS.Address
             builder.Services.AddScoped<IGeoCodingService, GeoCodingService>();
             builder.Services.AddScoped<IAzureMapService, AzureMapService>();
             builder.Services.AddTransient<IDocumentDBProvider, DocumentDBProvider>();
-            builder.Services.AddLogging();
-
         }
     }
 }

@@ -14,7 +14,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
     {
         private IJsonHelper _jsonHelper;
         private IAddressPatchService _addressPatchService;
-        private Models.Address _address;
+        private AddressPatch _addressPatch;
         private string _json;
 
         [SetUp]
@@ -22,18 +22,9 @@ namespace NCS.DSS.Address.Tests.ServiceTests
         {
             _jsonHelper = new JsonHelper();
             _addressPatchService = new AddressPatchService(_jsonHelper);
-            _address = new Models.Address() { 
-                Address1 = "Some Address1", 
-                Address2="some  Address2", 
-                Address3="Some Address3", 
-                Address4 = "some Address",
-                Address5 = "SomeAddress5",
-                AddressId = Guid.NewGuid(), 
-                PostCode = "CV22 8BA",
-                AlternativePostCode = "CV22 9BA"
-            };
+            _addressPatch = new AddressPatch();
 
-            _json = JsonConvert.SerializeObject(_address);
+            _json = JsonConvert.SerializeObject(_addressPatch);
         }
 
         [Test]
@@ -253,77 +244,6 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             // Assert
             Assert.AreEqual("0000000111", address.SubcontractorId);
-        }
-
-        [Test]
-        public void AddressPatchServiceTests_PatchesAddress2EmptyString_WhenPatchIsCalledWithEmptyString()
-        {
-            // Arrange
-            var addressPatch = new AddressPatch { Address2 = "" };
-
-            // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch);
-            var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
-
-            // Assert
-            Assert.IsEmpty(address.Address2);
-        }
-
-        [Test]
-        public void AddressPatchServiceTests_PatchesAddress3EmptyString_WhenPatchIsCalledWithEmptyString()
-        {
-            // Arrange
-            var addressPatch = new AddressPatch { Address3 = "" };
-
-            // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch);
-            var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
-
-            // Assert
-            Assert.IsEmpty(address.Address3);
-        }
-
-
-        [Test]
-        public void AddressPatchServiceTests_PatchesAddress4EmptyString_WhenPatchIsCalledWithEmptyString()
-        {
-            // Arrange
-            var addressPatch = new AddressPatch { Address4 = "" };
-
-            // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch);
-            var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
-
-            // Assert
-            Assert.IsEmpty(address.Address4);
-        }
-
-        [Test]
-        public void AddressPatchServiceTests_PatchesAddress5EmptyString_WhenPatchIsCalledWithEmptyString()
-        {
-            // Arrange
-            var addressPatch = new AddressPatch { Address5 = "" };
-
-            // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch);
-            var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
-
-            // Assert
-            Assert.IsEmpty(address.Address5);
-        }
-
-        [Test]
-        public void AddressPatchServiceTests_PatchesAlternativePostcodeEmptyString_WhenPatchIsCalledWithEmptyString()
-        {
-            // Arrange
-            var addressPatch = new AddressPatch { AlternativePostCode = "" };
-
-            // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch);
-            var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
-
-            // Assert
-            Assert.IsEmpty(address.AlternativePostCode);
         }
     }
 }
