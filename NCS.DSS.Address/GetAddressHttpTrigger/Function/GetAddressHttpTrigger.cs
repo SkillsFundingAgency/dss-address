@@ -67,7 +67,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            log.LogInformation("Get Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            log.LogInformation($"Get Address C# HTTP trigger function  processed a request. By Touchpoint {touchpointId} and subcontractorId {subcontractorId}");
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return _httpResponseMessageHelper.BadRequest(customerGuid);

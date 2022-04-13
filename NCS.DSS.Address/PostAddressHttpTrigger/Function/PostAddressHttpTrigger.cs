@@ -89,14 +89,14 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
+            _loggerHelper.LogInformationMessage(log, correlationGuid, $"Post Address C# HTTP trigger function  processed a request. By Touchpoint {touchpointId} and subcontractorId {subContractorId}");
+
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
             {
                 log.LogInformation("Unable to locate 'apimurl' in request header");
                 return _httpResponseMessageHelper.BadRequest();
             }
-
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return _httpResponseMessageHelper.BadRequest(customerGuid);

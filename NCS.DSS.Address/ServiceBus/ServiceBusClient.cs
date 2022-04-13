@@ -22,7 +22,8 @@ namespace NCS.DSS.Address.ServiceBus
                 LastModifiedDate = address.LastModifiedDate,
                 URL = reqUrl + "/" + address.AddressId,
                 IsNewCustomer = false,
-                TouchpointId = address.LastModifiedTouchpointId
+                TouchpointId = address.LastModifiedTouchpointId,
+                SubcontractorId = address.SubcontractorId
             };
 
             var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
@@ -45,7 +46,8 @@ namespace NCS.DSS.Address.ServiceBus
                 LastModifiedDate = address.LastModifiedDate,
                 URL = reqUrl,
                 IsNewCustomer = false,
-                TouchpointId = address.LastModifiedTouchpointId
+                TouchpointId = address.LastModifiedTouchpointId,
+                SubcontractorId = address.SubcontractorId
             };
 
             var msg = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messageModel)))
@@ -66,6 +68,7 @@ namespace NCS.DSS.Address.ServiceBus
         public string URL { get; set; }
         public bool IsNewCustomer { get; set; }
         public string TouchpointId { get; set; }
+        public string SubcontractorId { get; set; }
     }
 
 }

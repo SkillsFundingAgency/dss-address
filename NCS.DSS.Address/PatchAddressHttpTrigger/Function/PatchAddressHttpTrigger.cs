@@ -83,13 +83,6 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
-            if (string.IsNullOrEmpty(ApimURL))
-            {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
-
             var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subContractorId))
             {
@@ -97,7 +90,15 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.BadRequest();
             }
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            _loggerHelper.LogInformationMessage(log, correlationGuid, $"Patch Address C# HTTP trigger function  processed a request. By Touchpoint {touchpointId} and subcontractorId {subContractorId}");
+
+            var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
+            if (string.IsNullOrEmpty(ApimURL))
+            {
+                log.LogInformation("Unable to locate 'apimurl' in request header");
+                return _httpResponseMessageHelper.BadRequest();
+            }
+
 
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return _httpResponseMessageHelper.BadRequest(customerGuid);
