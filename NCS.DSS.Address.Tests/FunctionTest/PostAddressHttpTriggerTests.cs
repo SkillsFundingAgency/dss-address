@@ -70,6 +70,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             // Arrange
             _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -85,6 +86,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
 
             // Act
             var result = await RunFunction(InValidId);
@@ -100,6 +102,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             var val = new Mock<IValidate>();
             var validationResults = new List<ValidationResult> { new ValidationResult("address Id is Required") };
@@ -127,6 +130,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(It.IsAny<HttpRequest>())).Throws(new JsonException());
 
@@ -146,6 +150,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _address.PostCode = "NE99 5EB";
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
@@ -165,6 +170,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _address.PostCode = "NE99 5EB";
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _postAddressHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.Address>())).Returns(Task.FromResult<Models.Address>(null));
@@ -185,6 +191,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _address.PostCode = "NE99 5EB";
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
+            _httpRequestHelper.Setup(x => x.GetDssSubcontractorId(_request)).Returns("9999999999");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>())).Returns(Task.FromResult<Models.Address>(_address));
