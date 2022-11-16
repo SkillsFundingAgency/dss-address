@@ -23,8 +23,8 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             SearchHelper.GetSearchServiceClient();
 
             log.LogInformation("get search service client");
-
-            var indexClient = SearchHelper.GetIndexClient();
+                      
+            var client = SearchHelper.GetSearchServiceClient();
 
             log.LogInformation("get index client");
             
@@ -32,7 +32,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
             if (documents.Count > 0)
             {
-                var address = documents.Select(doc => new Models.Address()
+                var address = documents.Select(doc => new
                     {
                         CustomerId = doc.GetPropertyValue<Guid>("CustomerId"),
                         Address1 = doc.GetPropertyValue<string>("Address1"),
@@ -44,12 +44,18 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                 try
                 {
-                    log.LogInformation("attempting to merge docs to azure search");
+                    log.LogInformation("attempting to merge docs to azure search");                    
 
-                    await indexClient.IndexDocumentsAsync(batch);
+                    var results = await client.IndexDocumentsAsync(batch);
+
+                    var failed = results.Value.Results.Where(r => !r.Succeeded).Select(r => r.Key).ToList();
+
+                    if (failed.Any())
+                    {
+                        log.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
+                    }                    
 
                     log.LogInformation("successfully merged docs to azure search");
-
                 }
                 catch (RequestFailedException e)
                 {
