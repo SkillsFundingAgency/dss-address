@@ -1,5 +1,9 @@
 ﻿using System;
-using Microsoft.Azure.Search;
+using Azure;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
+using Azure.Search.Documents.Models;
 
 namespace NCS.DSS.Address.Helpers
 {
@@ -9,25 +13,30 @@ namespace NCS.DSS.Address.Helpers
         private static readonly string SearchServiceKey = Environment.GetEnvironmentVariable("SearchServiceAdminApiKey");
         private static readonly string SearchServiceIndexName = Environment.GetEnvironmentVariable("CustomerSearchIndexName");
 
-        private static SearchServiceClient _serviceClient;
-        private static ISearchIndexClient _indexClient;
+        private static SearchIndexClient _serviceClient;
+        private static SearchClient _indexClient;
 
-        public static SearchServiceClient GetSearchServiceClient()
+        public static SearchIndexClient GetSearchServiceClient()
         {
             if (_serviceClient != null)
-                return _serviceClient;
+                return _serviceClient;            
 
-            _serviceClient = new SearchServiceClient(SearchServiceName, new SearchCredentials(SearchServiceKey));
+            Uri endpoint = new Uri($"https://{SearchServiceName}.search.windows.net");
+            AzureKeyCredential credential = new AzureKeyCredential(SearchServiceKey);
+            _serviceClient = new SearchIndexClient(endpoint, credential);            
 
             return _serviceClient;
         }
         
-        public static ISearchIndexClient GetIndexClient()
+        public static SearchClient GetIndexClient()
         {
             if (_indexClient != null)
                 return _indexClient;
 
-            _indexClient = _serviceClient?.Indexes?.GetClient(SearchServiceIndexName);
+            //_indexClient = _serviceClient?.Indexes?.GetClient(SearchServiceIndexName);
+            _indexClient = new SearchClient(new Uri($"https://{SearchServiceName}.search.windows.net"), SearchServiceIndexName, new AzureKeyCredential(SearchServiceKey));
+
+
 
             return _indexClient;
         }
