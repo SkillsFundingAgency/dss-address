@@ -1,5 +1,6 @@
 ﻿using System;
-using Microsoft.Azure.Search;
+using Azure;
+using Azure.Search.Documents;
 
 namespace NCS.DSS.Address.Helpers
 {
@@ -9,28 +10,17 @@ namespace NCS.DSS.Address.Helpers
         private static readonly string SearchServiceKey = Environment.GetEnvironmentVariable("SearchServiceAdminApiKey");
         private static readonly string SearchServiceIndexName = Environment.GetEnvironmentVariable("CustomerSearchIndexName");
 
-        private static SearchServiceClient _serviceClient;
-        private static ISearchIndexClient _indexClient;
+        private static SearchClient _client;
 
-        public static SearchServiceClient GetSearchServiceClient()
+        public static SearchClient GetSearchServiceClient()
         {
-            if (_serviceClient != null)
-                return _serviceClient;
+            if (_client != null)
+                return _client;
 
-            _serviceClient = new SearchServiceClient(SearchServiceName, new SearchCredentials(SearchServiceKey));
+            var searchServiceEndpoint = $"https://{SearchServiceName}.search.windows.net";
+            _client = new SearchClient(new Uri(searchServiceEndpoint), SearchServiceIndexName, new AzureKeyCredential(SearchServiceKey));
 
-            return _serviceClient;
+            return _client;
         }
-        
-        public static ISearchIndexClient GetIndexClient()
-        {
-            if (_indexClient != null)
-                return _indexClient;
-
-            _indexClient = _serviceClient?.Indexes?.GetClient(SearchServiceIndexName);
-
-            return _indexClient;
-        }
-
     }
 }
