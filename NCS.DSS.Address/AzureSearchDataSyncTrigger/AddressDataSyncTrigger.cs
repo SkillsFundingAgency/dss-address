@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
+using Azure;
+using Azure.Search.Documents.Models;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Helpers;
 using Document = Microsoft.Azure.Documents.Document;
@@ -24,8 +23,8 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             SearchHelper.GetSearchServiceClient();
 
             log.LogInformation("get search service client");
-
-            var indexClient = SearchHelper.GetIndexClient();
+                      
+            var client = SearchHelper.GetSearchServiceClient();
 
             log.LogInformation("get index client");
             
@@ -33,7 +32,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
             if (documents.Count > 0)
             {
-                var address = documents.Select(doc => new Models.Address()
+                var address = documents.Select(doc => new
                     {
                         CustomerId = doc.GetPropertyValue<Guid>("CustomerId"),
                         Address1 = doc.GetPropertyValue<string>("Address1"),
@@ -41,21 +40,26 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
                     })
                     .ToList();
 
-                var batch = IndexBatch.MergeOrUpload(address);
+                var batch = IndexDocumentsBatch.MergeOrUpload(address);
 
                 try
                 {
-                    log.LogInformation("attempting to merge docs to azure search");
+                    log.LogInformation("attempting to merge docs to azure search");                    
 
-                    await indexClient.Documents.IndexAsync(batch);
+                    var results = await client.IndexDocumentsAsync(batch);
+
+                    var failed = results.Value.Results.Where(r => !r.Succeeded).Select(r => r.Key).ToList();
+
+                    if (failed.Any())
+                    {
+                        log.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
+                    }                    
 
                     log.LogInformation("successfully merged docs to azure search");
-
                 }
-                catch (IndexBatchException e)
+                catch (RequestFailedException e)
                 {
-                    log.LogError(string.Format("Failed to index some of the documents: {0}",
-                        string.Join(", ", e.IndexingResults.Where(r => !r.Succeeded).Select(r => r.Key))));
+                    log.LogError(string.Format("Failed to index some of the documents."));
 
                     log.LogError(e.ToString());
                 }
