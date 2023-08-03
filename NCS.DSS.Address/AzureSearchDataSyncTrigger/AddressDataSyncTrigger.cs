@@ -23,6 +23,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             // Add input paramenters to the log message
             var inputMessage =  "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}",documents.Count);
+            
             log.LogInformation(inputMessage);
 
             SearchHelper.GetSearchServiceClient();
