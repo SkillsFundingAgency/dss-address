@@ -20,6 +20,13 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
         {
             log.LogInformation("Entered SyncDataForCustomerSearchTrigger");
 
+            // Add input paramenters to the log message
+            var inputMessage =  "Input Paramenters for CosmosDBTrigger" + Environment.NewLine;
+            inputMessage += string.Format("ConnectionStringSetting:{0}, LeaseCollectionName: {1}",ConnectionStringSetting,LeaseCollectionName) + Environment.NewLine;
+            inputMessage += string.Format("CreateLeaseCollectionIfNotExists:{0}",CreateLeaseCollectionIfNotExists) + Environment.NewLine;
+            inputMessage += string.Format("Number of Documents:{0}",documents.Count);
+            log.LogInformation(inputMessage);
+
             SearchHelper.GetSearchServiceClient();
 
             log.LogInformation("get search service client");
@@ -59,8 +66,8 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
                 }
                 catch (RequestFailedException e)
                 {
-                    log.LogError(string.Format("Failed to index some of the documents."));
-
+                    // Added Error Code to the error message
+                    log.LogError(string.Format("Failed to index some of the documents. Error Code: {0}",e.ErrorCode));
                     log.LogError(e.ToString());
                 }
             }
