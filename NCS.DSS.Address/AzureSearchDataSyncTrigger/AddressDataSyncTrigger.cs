@@ -21,9 +21,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             log.LogInformation("Entered SyncDataForCustomerSearchTrigger");
 
             // Add input paramenters to the log message
-            var inputMessage =  "Input Paramenters for CosmosDBTrigger" + Environment.NewLine;
-            inputMessage += string.Format("ConnectionStringSetting:{0}, LeaseCollectionName: {1}",ConnectionStringSetting,LeaseCollectionName) + Environment.NewLine;
-            inputMessage += string.Format("CreateLeaseCollectionIfNotExists:{0}",CreateLeaseCollectionIfNotExists) + Environment.NewLine;
+            var inputMessage =  "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}",documents.Count);
             log.LogInformation(inputMessage);
 
