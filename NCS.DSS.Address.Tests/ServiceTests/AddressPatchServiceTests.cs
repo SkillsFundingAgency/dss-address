@@ -14,7 +14,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
     public class AddressPatchServiceTests
     {
         private IJsonHelper _jsonHelper;
-        private readonly Mock<ILogger<AddressPatchService>> _mockLogger;
+        private Mock<ILogger<AddressPatchService>> _mockLogger;
         private IAddressPatchService _addressPatchService;
         private Models.Address _address;
         private string _json;
