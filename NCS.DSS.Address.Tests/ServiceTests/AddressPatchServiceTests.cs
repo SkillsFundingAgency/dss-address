@@ -5,6 +5,7 @@ using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using Microsoft.Extensions.Logging;
 
 namespace NCS.DSS.Address.Tests.ServiceTests
 {
@@ -13,6 +14,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
     public class AddressPatchServiceTests
     {
         private IJsonHelper _jsonHelper;
+        private readonly Mock<ILogger<AddressPatchService>> _mockLogger;
         private IAddressPatchService _addressPatchService;
         private Models.Address _address;
         private string _json;
@@ -21,7 +23,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
         public void Setup()
         {
             _jsonHelper = new JsonHelper();
-            _addressPatchService = new AddressPatchService(_jsonHelper);
+            _mockLogger = new Mock<ILogger<AddressPatchService>>();
+            _addressPatchService = new AddressPatchService(_jsonHelper,_mockLogger.Object);
             _address = new Models.Address() { 
                 Address1 = "Some Address1", 
                 Address2="some  Address2", 
