@@ -26,11 +26,11 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             
             log.LogInformation(inputMessage);
 
-            SearchHelper.GetSearchServiceClient();
+            SearchHelper.GetSearchServiceClient(log);
 
             log.LogInformation("get search service client");
                       
-            var client = SearchHelper.GetSearchServiceClient();
+            var client = SearchHelper.GetSearchServiceClient(log);
 
             log.LogInformation("get index client");
             
