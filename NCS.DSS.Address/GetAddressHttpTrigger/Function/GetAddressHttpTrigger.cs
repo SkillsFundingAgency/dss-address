@@ -81,7 +81,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
             
             log.LogInformation($"{addresses.Count} Addresses found. Returning Addresses in Json format as a Response");
 
-            return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(addresses, "id", "AddressId"));
+            return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(addresses, "id", "AddressId"));
             
         }
     }
