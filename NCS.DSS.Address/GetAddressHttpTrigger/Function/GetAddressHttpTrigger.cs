@@ -79,7 +79,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.NoContent(customerGuid);
             }
             
-            //log.LogInformation($"{addresses.Count} Addresses found. Returning Addresses in Json format as a Response");
+            log.LogInformation($"{addresses.Count} Addresses found. Returning Addresses in Json format as a Response");
 
             return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(addresses, "id", "AddressId"));
             

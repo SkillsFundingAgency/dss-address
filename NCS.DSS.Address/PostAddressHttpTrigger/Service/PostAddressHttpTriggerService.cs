@@ -11,20 +11,18 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
     {
 
         private readonly IDocumentDBProvider _documentDbProvider;
-        private readonly ILogger _logger;
-        public PostAddressHttpTriggerService(IDocumentDBProvider documentDbProvider, ILogger logger)
+        public PostAddressHttpTriggerService(IDocumentDBProvider documentDbProvider)
         {
             _documentDbProvider = documentDbProvider;
-            _logger = logger;
         }
 
-        public async Task<Models.Address> CreateAsync(Models.Address address)
+        public async Task<Models.Address> CreateAsync(Models.Address address, ILogger logger)
         {
-            _logger.LogInformation("Started creating address with Address POST request");
+            logger.LogInformation("Started creating address with Address POST request");
 
             if (address == null)
             {
-                _logger.LogInformation("Address Can't be created because input address object is null");
+                logger.LogInformation("Address Can't be created because input address object is null");
                 return null;
             }    
 
@@ -32,7 +30,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 
             var response = await _documentDbProvider.CreateAddressAsync(address);
 
-            _logger.LogInformation($"Completed creating address with Address POST request. Response Code [{response.StatusCode}]");
+            logger.LogInformation($"Completed creating address with Address POST request. Response Code [{response.StatusCode}]");
 
             return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
         }

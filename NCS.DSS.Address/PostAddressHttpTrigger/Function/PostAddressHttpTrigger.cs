@@ -146,7 +146,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (isCustomerReadOnly)
                 return _httpResponseMessageHelper.Forbidden(customerGuid);
 
-            var address = await _addressPostService.CreateAsync(addressRequest);
+            var address = await _addressPostService.CreateAsync(addressRequest,log);
 
             if (address != null)
                 await _addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
