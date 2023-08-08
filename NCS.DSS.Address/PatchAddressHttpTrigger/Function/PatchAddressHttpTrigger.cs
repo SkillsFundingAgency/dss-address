@@ -159,12 +159,12 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 return _httpResponseMessageHelper.NoContent(customerGuid);
 
             _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get patch customer resource {0}", customerGuid));
-            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest);
+            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest,log);
 
             if (patchedAddress == null)
                 return _httpResponseMessageHelper.NoContent(addressGuid);
 
-            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
+            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid,log);
 
             if (updatedAddress != null)
                 await _addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);

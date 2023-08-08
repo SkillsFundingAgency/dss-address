@@ -13,47 +13,45 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 
         private readonly IDocumentDBProvider _documentDbProvider;
         private readonly IAddressPatchService _addressPatchService;
-        private readonly ILogger _logger;
 
-        public PatchAddressHttpTriggerService(IDocumentDBProvider documentDbProvider, IAddressPatchService addressPatchService, ILogger logger)
+        public PatchAddressHttpTriggerService(IDocumentDBProvider documentDbProvider, IAddressPatchService addressPatchService)
         {
             _documentDbProvider = documentDbProvider;
             _addressPatchService = addressPatchService;
-            _logger = logger;
         }
 
-        public string PatchResource(string addressJson, AddressPatch addressPatch)
+        public string PatchResource(string addressJson, AddressPatch addressPatch, ILogger logger)
         {
-            _logger.LogInformation("started patching address");
+            logger.LogInformation("started patching address");
             if (string.IsNullOrEmpty(addressJson))
             {
-                _logger.LogInformation("Can't patch address because input address json is null");
+                logger.LogInformation("Can't patch address because input address json is null");
                 return null;
             }   
 
             if (addressPatch == null)
             {
-                _logger.LogInformation("Can't patch address because input addressPatch object is null");
+                logger.LogInformation("Can't patch address because input addressPatch object is null");
                 return null;
             }   
 
             addressPatch.SetDefaultValues();
-            var addressObj = _addressPatchService.Patch(addressJson, addressPatch);
+            var addressObj = _addressPatchService.Patch(addressJson, addressPatch,logger);
 
-            _logger.LogInformation("completed patching address");
+            logger.LogInformation("completed patching address");
             
             return addressObj;
         }
 
-        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId)
+        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId, ILogger logger)
         {
-            _logger.LogInformation($"started updating address in Cosmos DB for Id [{addressId}]");
+            logger.LogInformation($"started updating address in Cosmos DB for Id [{addressId}]");
 
             var response = await _documentDbProvider.UpdateAddressAsync(addressJson, addressId);
 
             var responseStatusCode = response?.StatusCode;
 
-            _logger.LogInformation($"Completed updating address in Cosmos DB. Response Code [{responseStatusCode}]");
+            logger.LogInformation($"Completed updating address in Cosmos DB. Response Code [{responseStatusCode}]");
 
             return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
         }
