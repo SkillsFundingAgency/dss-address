@@ -56,33 +56,47 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
             log.LogInformation(string.Format("Start getting address by the CustomerId [{0}]",customerId));
             
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
+            
             if (string.IsNullOrEmpty(touchpointId))
-            {
-                log.LogInformation("Unable to locate 'TouchpointId' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
+                return ReturnBadRequest( log,"Unable to locate 'TouchpointId' in request header.");
 
             log.LogInformation("Get Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                return ReturnBadRequest(log,$"Failed to parse customerId to Guid [{customerId}].",customerGuid);                
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+                return ReturnNoContent(log,$"Customer with given Customer Guid does not exist.",customerGuid); 
 
             var addresses = await _getAddressService.GetAddressesAsync(customerGuid);
 
-            if(addresses == null){
-                log.LogInformation("Addresses not found. Returning NO CONTENT Response");
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+            if(addresses != null){
+                var okResponse = _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(addresses, "id", "AddressId"));
+                log.LogInformation($"{addresses.Count} Addresses found. Returning Addresses in Json format as a Response. Response Code [{okResponse.StatusCode}]");
+                return okResponse;
             }
-            
-            log.LogInformation($"{addresses.Count} Addresses found. Returning Addresses in Json format as a Response");
 
-            return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectsAndRenameIdProperty(addresses, "id", "AddressId"));
-            
+            return ReturnNoContent(log,$"No Addresses Found on a given customer id.",customerGuid); 
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest();
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message,Guid guid)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest(guid);
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnNoContent(ILogger log,string message,Guid guid)
+        {
+             var noContent = _httpResponseMessageHelper.NoContent(guid);
+            log.LogWarning($"{message}. Response Code [{noContent.StatusCode}]");
+            return noContent;
         }
     }
 }

@@ -63,40 +63,36 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequest req, ILogger log, string customerId)
         {
-            _loggerHelper.LogMethodEnter(log);
+            log.LogInformation($"Started Executing Address POST Request for CustomerId [{customerId}]");
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId; in request header");
+                log.LogWarning("Unable to locate 'DssCorrelationId; in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to Parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
+                log.LogWarning($"Unable to Parse 'DssCorrelationId' to a Guid. New Guid Generated");
             }
+
+            log.LogInformation($" 'DssCorrelationId' is [{correlationGuid}]");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
-            {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
+                return ReturnBadRequest( log,"Unable to locate 'APIM-TouchpointId' in request header.");
 
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
-            {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
+                return ReturnBadRequest( log,"Unable to locate 'apimurl' in request header.");
 
             var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subContractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
+                log.LogInformation( "Unable to locate 'SubContractorId' in request header. Continuing POST Process");
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            log.LogInformation("Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                return ReturnBadRequest( log,"Unable to Parse customerId to Guid.",customerGuid);
 
             Models.Address addressRequest;
 
@@ -106,19 +102,29 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
             catch (JsonException ex)
             {
-                return _httpResponseMessageHelper.UnprocessableEntity(ex);
+                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(ex);
+                log.LogWarning($"Failed to Prase Json object. Response Code [{unProcessed.StatusCode}]. Exception Message: [{ex.Message}]");
+                return unProcessed;
             }
 
             if (addressRequest == null)
-                return _httpResponseMessageHelper.UnprocessableEntity(req);
+            {
+                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(req);
+                log.LogWarning($"Address Request is Empty. Response Code [{unProcessed.StatusCode}]");
+                return unProcessed;
+            }    
 
             addressRequest.SetIds(customerGuid, touchpointId, subContractorId);
 
             var errors = _validate.ValidateResource(addressRequest, true);
 
             if (errors != null && errors.Any())
-                return _httpResponseMessageHelper.UnprocessableEntity(errors);
-
+            {
+                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(errors);
+                log.LogWarning($"Validation errors occured while processing request. Response Code [{unProcessed.StatusCode}]");
+                return unProcessed;
+            }
+                
             _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
             Position position;
 
@@ -126,7 +132,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             {
                 var postcode = addressRequest.PostCode.Replace(" ", string.Empty);
                 position = await _geoCodingService.GetPositionForPostcodeAsync(postcode);
-
             }
             catch (Exception e)
             {
@@ -138,13 +143,19 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
-            if (!doesCustomerExist)
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+            if (!doesCustomerExist){
+                var noContent = _httpResponseMessageHelper.NoContent(customerGuid);
+                log.LogWarning($"Customer Does not exist. Response Code [{noContent.StatusCode}]");
+                return noContent;
+            }                
 
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
-            if (isCustomerReadOnly)
-                return _httpResponseMessageHelper.Forbidden(customerGuid);
+            if (isCustomerReadOnly){
+                var forbidden = _httpResponseMessageHelper.Forbidden(customerGuid);
+                log.LogWarning($"Readonly Customer. Response Code [{forbidden.StatusCode}]");
+                return forbidden;                
+            }               
 
             var address = await _addressPostService.CreateAsync(addressRequest,log);
 
@@ -153,9 +164,34 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            return address == null
-                ? _httpResponseMessageHelper.BadRequest(customerGuid) :
-                _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
+            if(address == null)
+            {
+                var badRequest = _httpResponseMessageHelper.BadRequest(customerGuid);
+                log.LogWarning($"Null Address Found. Response Code [{badRequest.StatusCode}]");
+                return badRequest;
+            }
+
+            var created =  _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
+            log.LogInformation($"Address Found. Response Code [{created.StatusCode}]");
+            return created;
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest();
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message,Guid guid)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest(guid);
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnNoContent(ILogger log,string message,Guid guid)
+        {
+             var noContent = _httpResponseMessageHelper.NoContent(guid);
+            log.LogWarning($"{message}. Response Code [{noContent.StatusCode}]");
+            return noContent;
         }
     }
 }
