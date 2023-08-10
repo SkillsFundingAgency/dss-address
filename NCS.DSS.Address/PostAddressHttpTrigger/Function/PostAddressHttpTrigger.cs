@@ -122,6 +122,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             {
                 var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(errors);
                 log.LogWarning($"Validation errors occured while processing request. Response Code [{unProcessed.StatusCode}]");
+                log.LogWarning($"Validation Failures are [{string.Join(',',errors)}]");
                 return unProcessed;
             }
                 
