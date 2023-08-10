@@ -148,7 +148,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return ReturnNoContent(log,"Customer with given Customer Guid does not exist.",customerGuid);
+                return ReturnNoContent(log,"Customer with given Customer Guid does not exist",customerGuid);
 
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 

@@ -92,7 +92,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             log.LogInformation("Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return ReturnBadRequest( log,"Unable to Parse customerId to Guid.",customerGuid);
+                return ReturnBadRequest( log,"Unable to Parse customerId to Guid",customerGuid);
 
             Models.Address addressRequest;
 
@@ -144,11 +144,8 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
-            if (!doesCustomerExist){
-                var noContent = _httpResponseMessageHelper.NoContent(customerGuid);
-                log.LogWarning($"Customer Does not exist. Response Code [{noContent.StatusCode}]");
-                return noContent;
-            }                
+            if (!doesCustomerExist)
+                return ReturnNoContent(log,"Customer with given Customer Guid does not exist",customerGuid);              
 
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
@@ -165,13 +162,9 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             _loggerHelper.LogMethodExit(log);
 
-            if(address == null)
-            {
-                var badRequest = _httpResponseMessageHelper.BadRequest(customerGuid);
-                log.LogWarning($"Null Address Found. Response Code [{badRequest.StatusCode}]");
-                return badRequest;
-            }
-
+            if(address == null)            
+                return ReturnBadRequest( log,"Null Address Found",customerGuid);
+            
             var created =  _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
             log.LogInformation($"Address Found. Response Code [{created.StatusCode}]");
             return created;
