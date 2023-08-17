@@ -52,6 +52,8 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to retrieve a single address with a given AddressId for an individual customer.")]
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses/{addressId}")]HttpRequest req, ILogger log, string customerId, string addressId)
         {
+            log.LogInformation(string.Format("Start getting address by the AddressId [{0}] and CustomerId [{1}]",addressId,customerId));
+            
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
@@ -74,9 +76,14 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 
             var address = await _getAddressByIdService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
-            return address == null ?
-                _httpResponseMessageHelper.NoContent(addressGuid) :
-                _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
+            if(address == null){
+                log.LogInformation("Address not found. Returning NO CONTENT Response");
+                return _httpResponseMessageHelper.NoContent(addressGuid);
+            }
+            
+            log.LogInformation("Address found. Returning Address in Json format as a Response");
+
+            return _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
         }
     }
 }

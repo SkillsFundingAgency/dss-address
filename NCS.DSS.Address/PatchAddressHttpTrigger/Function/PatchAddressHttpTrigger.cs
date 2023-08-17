@@ -64,43 +64,39 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")] HttpRequest req, ILogger log, string customerId, string addressId)
         {
-            _loggerHelper.LogMethodEnter(log);
+            log.LogInformation($"Started Executing Address PATCH Request for an AddressId [{addressId}] and CustomerId [{customerId}]");
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
-                log.LogInformation("Unable to locate 'DssCorrelationId; in request header");
+                log.LogWarning("Unable to locate 'DssCorrelationId; in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
-                log.LogInformation("Unable to Parse 'DssCorrelationId' to a Guid");
                 correlationGuid = Guid.NewGuid();
+                log.LogWarning($"Unable to Parse 'DssCorrelationId' to a Guid. New Guid Generated");
             }
+
+            log.LogInformation($" 'DssCorrelationId' is [{correlationGuid}]");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
-            {
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'APIM-TouchpointId' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
+                return ReturnBadRequest( log,"Unable to locate 'APIM-TouchpointId' in request header.");
 
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
-            {
-                log.LogInformation("Unable to locate 'apimurl' in request header");
-                return _httpResponseMessageHelper.BadRequest();
-            }
+                return ReturnBadRequest( log,"Unable to locate 'apimurl' in request header.");
 
             var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subContractorId))
-                _loggerHelper.LogInformationMessage(log, correlationGuid, "Unable to locate 'SubContractorId' in request header");
+                log.LogInformation( "Unable to locate 'SubContractorId' in request header. Continuing Patch Process");
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            log.LogInformation("Patch Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return _httpResponseMessageHelper.BadRequest(customerGuid);
+                return ReturnBadRequest( log,"Unable to Parse customerId to Guid.",customerGuid);
 
             if (!Guid.TryParse(addressId, out var addressGuid))
-                return _httpResponseMessageHelper.BadRequest(addressGuid);
+                return ReturnBadRequest( log,"Unable to Parse Address Id to Guid.",addressGuid);
 
             AddressPatch addressPatchRequest;
 
@@ -109,12 +105,18 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 addressPatchRequest = await _httpRequestHelper.GetResourceFromRequest<AddressPatch>(req);
             }
             catch (JsonException ex)
-            {
-                return _httpResponseMessageHelper.UnprocessableEntity(ex);
+              {
+                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(ex);
+                log.LogWarning($"Failed to Prase Json object. Response Code [{unProcessed.StatusCode}]. Exception Message: [{ex.Message}]");
+                return unProcessed;
             }
 
             if (addressPatchRequest == null)
-                return _httpResponseMessageHelper.UnprocessableEntity(req);
+            {
+                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(req);
+                log.LogWarning($"Address Request is Empty. Response Code [{unProcessed.StatusCode}]");
+                return unProcessed;
+            }    
 
             addressPatchRequest.SetIds(touchpointId, subContractorId);
 
@@ -123,7 +125,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (errors != null && errors.Any())
                 return _httpResponseMessageHelper.UnprocessableEntity(errors);
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
+            log.LogInformation("Attempting to get long and lat for postcode");
 
             if (!string.IsNullOrEmpty(addressPatchRequest.PostCode))
             {
@@ -136,7 +138,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 }
                 catch (Exception e)
                 {
-                    _loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressPatchRequest.PostCode), e);
+                    log.LogError(e, $"Unable to get long and lat for postcode: {addressPatchRequest.PostCode}");
                     throw;
                 }
 
@@ -146,32 +148,60 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+                return ReturnNoContent(log,"Customer with given Customer Guid does not exist",customerGuid);
 
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-                return _httpResponseMessageHelper.Forbidden(customerGuid);
+            {
+                var forbidden = _httpResponseMessageHelper.Forbidden(customerGuid);
+                log.LogWarning($"Readonly Customer. Response Code [{forbidden.StatusCode}]");
+                return forbidden;                
+            }    
 
             var address = await _addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
-            if (string.IsNullOrEmpty(address))
-                return _httpResponseMessageHelper.NoContent(customerGuid);
+            if (string.IsNullOrEmpty(address)) 
+                return ReturnNoContent(log,"No Address record associated with the given customerId.",customerGuid);
 
-            _loggerHelper.LogInformationMessage(log, correlationGuid, string.Format("Attempting to get patch customer resource {0}", customerGuid));
-            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest);
+            log.LogInformation($"Attempting to get patch customer resource {customerGuid}");
 
-            if (patchedAddress == null)
-                return _httpResponseMessageHelper.NoContent(addressGuid);
+            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest,log);
 
-            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
+            if (patchedAddress == null) 
+                return ReturnNoContent(log,$"Related patch address not found for the address guid [{addressGuid}].",addressGuid);
+
+
+            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid,log);
 
             if (updatedAddress != null)
+            {
                 await _addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);
+                var okResponse = _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedAddress, "id", "AddressId"));
+                log.LogInformation($"End of PATCH Addres Request. Address Update Complete and Response Status Code [{okResponse.StatusCode}]");
+                return okResponse;
+            }
 
-            return updatedAddress == null ?
-                _httpResponseMessageHelper.BadRequest(addressGuid) :
-                _httpResponseMessageHelper.Ok(_jsonHelper.SerializeObjectAndRenameIdProperty(updatedAddress, "id", "AddressId"));
+            return ReturnBadRequest( log,"End of PATCH Addres Request. Updated Address is null.",addressGuid);
+        
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest();
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnBadRequest(ILogger log,string message,Guid guid)
+        {
+             var badRequest = _httpResponseMessageHelper.BadRequest(guid);
+            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
+            return badRequest;
+        }
+        private HttpResponseMessage ReturnNoContent(ILogger log,string message,Guid guid)
+        {
+             var noContent = _httpResponseMessageHelper.NoContent(guid);
+            log.LogWarning($"{message}. Response Code [{noContent.StatusCode}]");
+            return noContent;
         }
     }
 }
