@@ -20,11 +20,17 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
         {
             log.LogInformation("Entered SyncDataForCustomerSearchTrigger");
 
-            SearchHelper.GetSearchServiceClient();
+            // Add input paramenters to the log message
+            var inputMessage =  "Input Paramenters " + Environment.NewLine;
+            inputMessage += string.Format("Number of Documents:{0}",documents.Count);
+            
+            log.LogInformation(inputMessage);
+
+            SearchHelper.GetSearchServiceClient(log);
 
             log.LogInformation("get search service client");
                       
-            var client = SearchHelper.GetSearchServiceClient();
+            var client = SearchHelper.GetSearchServiceClient(log);
 
             log.LogInformation("get index client");
             
@@ -59,8 +65,8 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
                 }
                 catch (RequestFailedException e)
                 {
-                    log.LogError(string.Format("Failed to index some of the documents."));
-
+                    // Added Error Code to the error message
+                    log.LogError(string.Format("Failed to index some of the documents. Error Code: {0}",e.ErrorCode));
                     log.LogError(e.ToString());
                 }
             }
