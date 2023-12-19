@@ -38,19 +38,13 @@
     "sharedAppServicePlanResourceGroup": {
       "type": "string"
     },
-    "serviceBusAccessKey": {
-      "type": "string"
-    },
-    "serviceBusAccessKeyName": {
-      "type": "string"
-    },
-    "serviceBusBaseAddress": {
-      "type": "string"
-    },
-    "serviceBusQueueName": {
-      "type": "string"
-    },
     "templateBaseUrl": {
+      "type": "string"
+    },
+    "workspaceName": {
+      "type": "string"
+    },
+    "workspaceResourceGroup": {
       "type": "string"
     }
   },
@@ -102,6 +96,9 @@
                 },
                 "serviceBusQueueName": {
                   "value": "[parameters('serviceBusQueueName')]"
+                },
+                "workspaceId": {
+                  "value": "[resourceId(parameters('workspaceResourceGroup'), 'Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
                 }
               }
             },
