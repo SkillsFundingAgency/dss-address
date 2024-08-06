@@ -4,18 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents.Models;
-using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Helpers;
 using Document = Microsoft.Azure.Documents.Document;
+using Microsoft.Azure.Functions.Worker;
 
 namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 {
     public static class AddressDataSyncTrigger
     {
-        [FunctionName("SyncAddressDataSyncTrigger")]
-        public static async Task Run([CosmosDBTrigger("addresses", "addresses", ConnectionStringSetting = "AddressConnectionString",
-                LeaseCollectionName = "addresses-leases", CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document> documents,
+        [Function("SyncAddressDataSyncTrigger")]
+        public static async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
+                LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<Document> documents,
             ILogger log)
         {
             log.LogInformation("Entered SyncDataForCustomerSearchTrigger");

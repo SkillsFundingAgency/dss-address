@@ -43,8 +43,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
         {
             var result = _addressPatchService.Patch(string.Empty, It.IsAny<AddressPatch>(),_log.Object);
 
-            // Assert
-            Assert.IsNull(result);
+            // Assert            
+            Assert.That(result, Is.Null);
         }
 
         [Test]
@@ -58,8 +58,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("Address 1", address.Address1);
+            // Assert            
+            Assert.That(address.Address1, Is.EqualTo("Address 1"));
         }
 
         [Test]
@@ -73,8 +73,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("Address 2", address.Address2);
+            // Assert            
+            Assert.That(address.Address2, Is.EqualTo("Address 2"));
         }
 
         [Test]
@@ -88,8 +88,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("Address 3", address.Address3);
+            // Assert            
+            Assert.That(address.Address3, Is.EqualTo("Address 3"));
         }
 
         [Test]
@@ -103,8 +103,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("Address 4", address.Address4);
+            // Assert            
+            Assert.That(address.Address4, Is.EqualTo("Address 4"));
         }
 
         [Test]
@@ -118,8 +118,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("Address 5", address.Address5);
+            // Assert            
+            Assert.That(address.Address5, Is.EqualTo("Address 5"));
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("CV1 1VC", address.PostCode);
+            // Assert            
+            Assert.That(address.PostCode, Is.EqualTo("CV1 1VC"));
         }
 
         [Test]
@@ -148,8 +148,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("CV1 1VC", address.AlternativePostCode);
+            // Assert            
+            Assert.That(address.AlternativePostCode, Is.EqualTo("CV1 1VC"));
         }
 
         [Test]
@@ -163,8 +163,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual((decimal?)64.7511, address.Longitude);
+            // Assert            
+            Assert.That(address.Longitude, Is.EqualTo((decimal?)64.7511));
         }
 
         [Test]
@@ -178,8 +178,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual((decimal?)147.3494, address.Latitude);
+            // Assert            
+            Assert.That(address.Latitude, Is.EqualTo((decimal?)147.3494));
         }
 
         [Test]
@@ -193,8 +193,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, address.EffectiveFrom);
+            // Assert            
+            Assert.That(address.EffectiveFrom, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -208,8 +208,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, address.EffectiveTo);
+            // Assert            
+            Assert.That(address.EffectiveTo, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -223,8 +223,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, address.LastModifiedDate);
+            // Assert            
+            Assert.That(address.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -238,8 +238,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("0000000111", address.LastModifiedTouchpointId);
+            // Assert            
+            Assert.That(address.LastModifiedTouchpointId, Is.EqualTo("0000000111"));
         }
 
         [Test]
@@ -253,8 +253,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.AreEqual("0000000111", address.SubcontractorId);
+            // Assert            
+            Assert.That(address.SubcontractorId, Is.EqualTo("0000000111"));
         }
 
         [Test]
@@ -267,8 +267,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.IsEmpty(address.Address2);
+            // Assert            
+            Assert.That(address.Address2, Is.Empty);
         }
 
         [Test]
@@ -281,8 +281,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.IsEmpty(address.Address3);
+            // Assert            
+            Assert.That(address.Address3, Is.Empty);
         }
 
 
@@ -296,8 +296,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.IsEmpty(address.Address4);
+            // Assert            
+            Assert.That(address.Address4, Is.Empty);
         }
 
         [Test]
@@ -310,8 +310,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.IsEmpty(address.Address5);
+            // Assert            
+            Assert.That(address.Address5, Is.Empty);
         }
 
         [Test]
@@ -324,8 +324,8 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
-            // Assert
-            Assert.IsEmpty(address.AlternativePostCode);
+            // Assert            
+            Assert.That(address.AlternativePostCode, Is.Empty);
         }
     }
 }

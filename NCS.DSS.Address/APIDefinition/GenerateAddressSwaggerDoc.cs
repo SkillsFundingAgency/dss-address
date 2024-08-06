@@ -1,10 +1,8 @@
 ﻿using DFC.Swagger.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.AspNetCore.Mvc;
 
 namespace NCS.DSS.Address.APIDefinition
 {
@@ -15,7 +13,7 @@ namespace NCS.DSS.Address.APIDefinition
         public const string ApiDefRoute = ApiTitle + "/" + ApiDefinitionName;
         public const string ApiDescription = "To support the Data Collections integration with DSS SubcontractorId has been added as an attribute. " +
                                              "Geocoding has also been added to the PostCode attribute.";
-        public const string ApiVersion = "2.0.0";
+        public const string ApiVersion = "3.0.0";
         private ISwaggerDocumentGenerator _swaggerDocumentGenerator;
 
         public GenerateAddressSwaggerDoc(ISwaggerDocumentGenerator swaggerDocumentGenerator)
@@ -23,19 +21,16 @@ namespace NCS.DSS.Address.APIDefinition
             _swaggerDocumentGenerator = swaggerDocumentGenerator;
         }
 
-        [FunctionName(ApiDefinitionName)]
-        public HttpResponseMessage Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
+        [Function(ApiDefinitionName)]
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
         {
             var swagger = _swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
                 ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());
 
             if (string.IsNullOrEmpty(swagger))
-                return new HttpResponseMessage(HttpStatusCode.NoContent);
+                return new NoContentResult();
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(swagger)
-            };
+            return new OkObjectResult(swagger);
         }
     }
 }

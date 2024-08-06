@@ -2,7 +2,7 @@
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Address.Cosmos.Helper;
@@ -11,8 +11,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
+using AddressFunction = NCS.DSS.Address.GetAddressHttpTrigger.Function;
 
 namespace NCS.DSS.Address.Tests.FunctionTest
 {
@@ -25,27 +25,21 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private Mock<ILogger> _log;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<ILoggerHelper> _loggerHelper;
-        private Mock<IHttpRequestHelper> _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
+        private Mock<IHttpRequestHelper> _httpRequestHelper;        
         private Mock<IGetAddressHttpTriggerService> _getAddressHttpTriggerService;
-        private GetAddressHttpTrigger.Function.GetAddressHttpTrigger _function;
+        private AddressFunction.GetAddressHttpTrigger _function;
+        private Mock<ILogger<AddressFunction.GetAddressHttpTrigger>> _logger;
 
         [SetUp]
         public void Setup()
-        {
-
-            _request = new DefaultHttpRequest(new DefaultHttpContext());
-
-            _log = new Mock<ILogger>();
+        {            
+            _request = new DefaultHttpContext().Request;            
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILoggerHelper>();
-            _httpRequestHelper = new Mock<IHttpRequestHelper >();
-            _httpResponseMessageHelper = new HttpResponseMessageHelper();
-            _jsonHelper = new JsonHelper();
-            _log = new Mock<ILogger>();
+            _httpRequestHelper = new Mock<IHttpRequestHelper >();            
+            _logger = new Mock<ILogger<AddressFunction.GetAddressHttpTrigger>>();
             _getAddressHttpTriggerService = new Mock<IGetAddressHttpTriggerService>();
-            _function = new GetAddressHttpTrigger.Function.GetAddressHttpTrigger(_resourceHelper.Object, _getAddressHttpTriggerService.Object, _loggerHelper.Object, _httpRequestHelper.Object, _httpResponseMessageHelper, _jsonHelper);
+            _function = new AddressFunction.GetAddressHttpTrigger(_resourceHelper.Object, _getAddressHttpTriggerService.Object, _httpRequestHelper.Object, _logger.Object);
         }
 
         [Test]
@@ -57,9 +51,8 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Act
             var result = await RunFunction(ValidCustomerId);
 
-            // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            // Assert            
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -72,8 +65,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             var result = await RunFunction(InValidId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<BadRequestObjectResult>());
         }
 
         [Test]
@@ -87,8 +79,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -103,8 +94,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             var result = await RunFunction(ValidCustomerId);
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.NoContent, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<NoContentResult>());
         }
 
         [Test]
@@ -117,18 +107,19 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _getAddressHttpTriggerService.Setup(x=>x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses));
 
             // Act
-            var result = await RunFunction(ValidCustomerId);
+            var result = await RunFunction(ValidCustomerId);            
 
             // Assert
-            Assert.IsInstanceOf<HttpResponseMessage>(result);
-            Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+            Assert.That(result, Is.InstanceOf<JsonResult>());
+
+            var responseResult = result as JsonResult;
+            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
 
-        private async Task<HttpResponseMessage> RunFunction(string customerId)
+        private async Task<IActionResult> RunFunction(string customerId)
         {
             return await _function.Run(
                 _request,
-                _log.Object,
                 customerId).ConfigureAwait(false);
         }
     }

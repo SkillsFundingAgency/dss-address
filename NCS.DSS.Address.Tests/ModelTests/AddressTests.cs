@@ -15,8 +15,9 @@ namespace NCS.DSS.Address.Tests.ModelTests
             address.SetDefaultValues();
 
             // Assert
-            Assert.IsNotNull(address.AddressId);
-            Assert.IsNotNull(address.LastModifiedDate);
+            
+            Assert.That(address.AddressId, Is.Not.Null);
+            Assert.That(address.LastModifiedDate, Is.Not.Null);
         }
 
         [Test]
@@ -26,8 +27,8 @@ namespace NCS.DSS.Address.Tests.ModelTests
 
             address.SetDefaultValues();
 
-            // Assert
-            Assert.AreEqual(DateTime.MaxValue, address.LastModifiedDate);
+            // Assert            
+            Assert.That(address.LastModifiedDate, Is.EqualTo(DateTime.MaxValue));
         }
 
         [Test]
@@ -37,8 +38,8 @@ namespace NCS.DSS.Address.Tests.ModelTests
 
             address.SetIds(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>());
 
-            // Assert
-            Assert.AreNotSame(Guid.Empty, address.AddressId);
+            // Assert            
+            Assert.That(address.AddressId, Is.Not.SameAs(Guid.Empty));
         }
 
         [Test]
@@ -49,8 +50,8 @@ namespace NCS.DSS.Address.Tests.ModelTests
             var customerId = Guid.NewGuid();
             address.SetIds(customerId, It.IsAny<string>(), It.IsAny<string>());
 
-            // Assert
-            Assert.AreEqual(customerId, address.CustomerId);
+            // Assert            
+            Assert.That(address.CustomerId, Is.EqualTo(customerId));
         }
 
        [Test]
@@ -60,8 +61,8 @@ namespace NCS.DSS.Address.Tests.ModelTests
 
             address.SetIds(It.IsAny<Guid>(), "0000000000", It.IsAny<string>());
 
-            // Assert
-            Assert.AreEqual("0000000000", address.LastModifiedTouchpointId);
+            // Assert            
+            Assert.That(address.LastModifiedTouchpointId, Is.EqualTo("0000000000"));
         }
     }
 }
