@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Provider;
 
 namespace NCS.DSS.Address.Cosmos.Helper
@@ -17,6 +18,13 @@ namespace NCS.DSS.Address.Cosmos.Helper
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
             var doesCustomerExist = await _documentDbProvider.DoesCustomerResourceExist(customerId);
+
+            return doesCustomerExist;
+        }
+
+        public async Task<bool> DoesCustomerExist(Guid customerId, ILogger logger)
+        {
+            var doesCustomerExist = await _documentDbProvider.DoesCustomerResourceExist(customerId, logger);
 
             return doesCustomerExist;
         }

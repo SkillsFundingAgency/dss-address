@@ -160,7 +160,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>(), It.IsAny<ILogger>())).Returns(Task.FromResult(true));
             _postAddressHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.Address>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(null));
 
             // Act
@@ -179,7 +179,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>(), It.IsAny<ILogger>())).Returns(Task.FromResult(true));
             _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
 
             // Act

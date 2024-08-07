@@ -137,7 +137,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             addressRequest.SetLongitudeAndLatitude(position);
 
-            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid, _logger);
 
             if (!doesCustomerExist)
                 return ReturnNoContent("Customer with given Customer Guid does not exist", customerGuid);

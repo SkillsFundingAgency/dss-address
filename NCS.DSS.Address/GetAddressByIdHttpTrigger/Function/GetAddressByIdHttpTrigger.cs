@@ -60,7 +60,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
             if (!Guid.TryParse(addressId, out var addressGuid))
                 return new BadRequestObjectResult(addressGuid);
 
-            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid, _logger);
 
             if (!doesCustomerExist)
                 return new NoContentResult();
