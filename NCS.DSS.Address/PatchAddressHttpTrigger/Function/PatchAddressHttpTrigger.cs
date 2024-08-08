@@ -139,7 +139,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 addressPatchRequest.SetLongitudeAndLatitude(position);
             }
 
-            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid, _logger);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return ReturnNoContent("Customer with given Customer Guid does not exist", customerGuid);

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
-using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Client;
 using NCS.DSS.Address.Cosmos.Helper;
 using Newtonsoft.Json.Linq;
@@ -16,32 +15,8 @@ namespace NCS.DSS.Address.Cosmos.Provider
     {
         public async Task<bool> DoesCustomerResourceExist(Guid customerId)
         {
-            var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);            
-
-            var client = DocumentDBClient.CreateDocumentClient();
-
-            if (client == null)
-                return false;
-            try
-            {
-                var response = await client.ReadDocumentAsync(documentUri);
-                if (response.Resource != null)
-                    return true;
-            }
-            catch (DocumentClientException ex)
-            {                
-                return false;
-            }
-
-            return false;
-        }
-
-        public async Task<bool> DoesCustomerResourceExist(Guid customerId, ILogger logger)
-        {
             var documentUri = DocumentDBHelper.CreateCustomerDocumentUri(customerId);
 
-            logger.LogInformation($"documentUri: {documentUri.ToString()}");
-
             var client = DocumentDBClient.CreateDocumentClient();
 
             if (client == null)
@@ -52,9 +27,8 @@ namespace NCS.DSS.Address.Cosmos.Provider
                 if (response.Resource != null)
                     return true;
             }
-            catch (DocumentClientException ex)
+            catch (DocumentClientException)
             {
-                logger.LogInformation($"Exception occurred. Message is {ex.Message} and Stack Trace: {ex.StackTrace}");
                 return false;
             }
 

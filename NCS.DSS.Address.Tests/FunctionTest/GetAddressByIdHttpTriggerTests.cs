@@ -119,7 +119,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request.Object)).Returns("0000000001");
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>(), It.IsAny<ILogger>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _getAddressByIdHttpTriggerService.Setup(x => x.GetAddressForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Address>(_address));
 
             // Act

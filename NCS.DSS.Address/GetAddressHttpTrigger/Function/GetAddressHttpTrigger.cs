@@ -57,7 +57,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
                 return ReturnBadRequest($"Failed to parse customerId to Guid [{customerId}].", customerGuid);
 
-            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid, _logger);
+            var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
                 return ReturnNoContent($"Customer with given Customer Guid does not exist.", customerGuid);
