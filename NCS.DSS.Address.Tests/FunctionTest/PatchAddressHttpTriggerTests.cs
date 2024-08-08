@@ -50,8 +50,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
-            _httpRequestHelper = new Mock<IHttpRequestHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();            
             _httpRequestHelper = new Mock<IHttpRequestHelper>();                        
             _geoCodingService = new Mock<IGeoCodingService>();
             _addressString = JsonConvert.SerializeObject(_address);
@@ -61,8 +60,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
 
             _function = new AddressFunction.PatchAddressHttpTrigger(_resourceHelper.Object,
                 _validate,
-                _patchAddressHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _patchAddressHttpTriggerService.Object,                
                 _httpRequestHelper.Object,                
                 _geoCodingService.Object,
                 _logger.Object,
@@ -107,8 +105,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             val.Setup(x=>x.ValidateResource(It.IsAny<Models.AddressPatch>(), false)).Returns(validationResults);
             _function = new AddressFunction.PatchAddressHttpTrigger(_resourceHelper.Object,
                 val.Object,
-                _patchAddressHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _patchAddressHttpTriggerService.Object,                
                 _httpRequestHelper.Object,
                 _geoCodingService.Object,
                 _logger.Object,
