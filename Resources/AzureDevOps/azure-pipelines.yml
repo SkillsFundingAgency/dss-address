@@ -1,9 +1,7 @@
 variables:
     SolutionBaseName: 'NCS.DSS.Address'
     BuildPlatform: 'any cpu'
-    BuildConfiguration: 'release'
-    GitVersionVersion: 5.12.x
-    DotNetCoreVersion: 8.x
+    BuildConfiguration: 'release'    
 
 resources:
   repositories:
@@ -55,7 +53,7 @@ jobs:
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
-      BuildConfiguration: $(BuildConfiguration)
+      BuildConfiguration: $(BuildConfiguration)      
 
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard
@@ -69,6 +67,8 @@ jobs:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
+      GitVersionVersion: 5.12.x
+      DotNetCoreVersion: 8.x
 
 
 

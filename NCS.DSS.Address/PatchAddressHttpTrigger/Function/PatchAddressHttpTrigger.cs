@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -33,8 +32,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
         public PatchAddressHttpTrigger(IResourceHelper resourceHelper,
             IValidate validate,
-            IPatchAddressHttpTriggerService addressPatchService,
-            ILoggerHelper loggerHelper,
+            IPatchAddressHttpTriggerService addressPatchService,            
             IHttpRequestHelper httpRequestHelper,
             IGeoCodingService geoCodingService,
             ILogger<PatchAddressHttpTrigger> logger,
@@ -100,7 +98,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             {
                 addressPatchRequest = await _httpRequestHelper.GetResourceFromRequest<AddressPatch>(req);
             }
-            catch (Newtonsoft.Json.JsonException ex)
+            catch (Exception ex)
             {
                 _logger.LogWarning($"Failed to Prase Json object. Response Code [{HttpStatusCode.UnprocessableContent}]. Exception Message: [{ex.Message}]");                
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
