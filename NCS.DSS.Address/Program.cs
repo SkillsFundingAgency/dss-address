@@ -17,7 +17,8 @@ using NCS.DSS.Address.Validation;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services => {
+    .ConfigureServices(services =>
+    {
         services.AddSingleton<IResourceHelper, ResourceHelper>();
         services.AddSingleton<IValidate, Validate>();
         services.AddSingleton<ILoggerHelper, LoggerHelper>();

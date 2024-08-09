@@ -9,14 +9,14 @@ namespace NCS.DSS.Address.Tests.ValidationTests
     [TestFixture]
     public class ValidateTests
     {
-        
+
         [Test]
         public void ValidateTests_ReturnValidationResult_WhenAddressIsNotSuppliedForPost()
         {
             // Arrange
             var address = new Models.Address
             {
-               PostCode = "CV1 1VC"
+                PostCode = "CV1 1VC"
             };
 
             var validation = new Validate();

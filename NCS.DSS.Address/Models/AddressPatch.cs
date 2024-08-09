@@ -1,7 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using DFC.GeoCoding.Standard.AzureMaps.Model;
+﻿using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.Swagger.Standard.Annotations;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Address.Models
 {
@@ -81,7 +81,7 @@ namespace NCS.DSS.Address.Models
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
         [Example(Description = "01234567899876543210")]
         public string SubcontractorId { get; set; }
-        
+
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)

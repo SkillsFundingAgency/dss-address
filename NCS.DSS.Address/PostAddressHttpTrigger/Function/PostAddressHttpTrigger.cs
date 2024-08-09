@@ -4,19 +4,19 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GeoCoding;
+using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Address.Helpers;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
@@ -26,7 +26,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         private readonly IValidate _validate;
         private readonly IPostAddressHttpTriggerService _addressPostService;
         private readonly ILoggerHelper _loggerHelper;
-        private readonly IHttpRequestHelper _httpRequestHelper;        
+        private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGeoCodingService _geoCodingService;
         private readonly ILogger _logger;
         private readonly IDynamicHelper _dynamicHelper;
@@ -35,7 +35,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             IValidate validate,
             IPostAddressHttpTriggerService addressPostService,
             ILoggerHelper loggerHelper,
-            IHttpRequestHelper httpRequestHelper,            
+            IHttpRequestHelper httpRequestHelper,
             IGeoCodingService geoCodingService,
             ILogger<PostAddressHttpTrigger> logger,
             IDynamicHelper dynamicHelper)
@@ -44,7 +44,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             _validate = validate;
             _addressPostService = addressPostService;
             _loggerHelper = loggerHelper;
-            _httpRequestHelper = httpRequestHelper;            
+            _httpRequestHelper = httpRequestHelper;
             _geoCodingService = geoCodingService;
             _logger = logger;
             _dynamicHelper = dynamicHelper;

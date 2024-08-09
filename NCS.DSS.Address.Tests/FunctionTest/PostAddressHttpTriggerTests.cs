@@ -25,12 +25,12 @@ namespace NCS.DSS.Address.Tests.FunctionTest
     {
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
-        
+
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<ILoggerHelper> _loggerHelper;
-        private Mock<IHttpRequestHelper> _httpRequestHelper;        
+        private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IPostAddressHttpTriggerService> _postAddressHttpTriggerService;
         private Models.Address _address;
         private Mock<IGeoCodingService> _geoCodingService;
@@ -43,21 +43,21 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             _address = new Models.Address();
             _address.PostCode = string.Empty;
-            _request = new DefaultHttpContext().Request;            
+            _request = new DefaultHttpContext().Request;
             _validate = new Validate();
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILoggerHelper>();
-            _httpRequestHelper = new Mock<IHttpRequestHelper>();            
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _geoCodingService = new Mock<IGeoCodingService>();
-            _postAddressHttpTriggerService = new Mock<IPostAddressHttpTriggerService>();            
+            _postAddressHttpTriggerService = new Mock<IPostAddressHttpTriggerService>();
             _logger = new Mock<ILogger<AddressFunction.PostAddressHttpTrigger>>();
             _dynamicHelper = new Mock<IDynamicHelper>();
 
-            _function = new AddressFunction.PostAddressHttpTrigger(_resourceHelper.Object, 
-                _validate, 
-                _postAddressHttpTriggerService.Object, 
+            _function = new AddressFunction.PostAddressHttpTrigger(_resourceHelper.Object,
+                _validate,
+                _postAddressHttpTriggerService.Object,
                 _loggerHelper.Object,
-                _httpRequestHelper.Object,                
+                _httpRequestHelper.Object,
                 _geoCodingService.Object,
                 _logger.Object,
                 _dynamicHelper.Object
@@ -68,7 +68,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         public async Task PostAddressHttpTrigger_ReturnsStatusCodeBadRequest_WhenTouchpointIdIsNotProvided()
         {
             // Arrange
-            _httpRequestHelper.Setup(x=>x.GetDssTouchpointId(_request)).Returns((string)null);
+            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns((string)null);
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -97,10 +97,10 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _httpRequestHelper.Setup(x=>x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
+            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             var val = new Mock<IValidate>();
             var validationResults = new List<ValidationResult> { new ValidationResult("address Id is Required") };
-            val.Setup(x=>x.ValidateResource(It.IsAny<Models.Address>(), true)).Returns(validationResults);
+            val.Setup(x => x.ValidateResource(It.IsAny<Models.Address>(), true)).Returns(validationResults);
             _function = new AddressFunction.PostAddressHttpTrigger(_resourceHelper.Object,
                val.Object,
                _postAddressHttpTriggerService.Object,
@@ -142,7 +142,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -161,7 +161,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _postAddressHttpTriggerService.Setup(x=>x.CreateAsync(It.IsAny<Models.Address>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(null));
+            _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -180,7 +180,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
+            _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -195,7 +195,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private async Task<IActionResult> RunFunction(string customerId)
         {
             return await _function.Run(
-                _request,                
+                _request,
                 customerId).ConfigureAwait(false);
         }
     }

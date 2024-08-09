@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NCS.DSS.Address.Cosmos.Provider;
+using System;
 using System.Threading.Tasks;
-using NCS.DSS.Address.Cosmos.Provider;
 
 namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
 {
@@ -13,7 +13,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
         {
             _documentDbProvider = documentDbProvider;
         }
-        
+
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
             var address = await _documentDbProvider.GetAddressForCustomerAsync(customerId, addressId);

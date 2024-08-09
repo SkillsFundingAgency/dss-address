@@ -1,11 +1,11 @@
-﻿using System;
-using DFC.JSON.Standard;
+﻿using DFC.JSON.Standard;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Microsoft.Extensions.Logging;
+using System;
 
 namespace NCS.DSS.Address.Tests.ServiceTests
 {
@@ -24,13 +24,14 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             _jsonHelper = new JsonHelper();
             _log = new Mock<ILogger>();
             _addressPatchService = new AddressPatchService(_jsonHelper);
-            _address = new Models.Address() { 
-                Address1 = "Some Address1", 
-                Address2="some  Address2", 
-                Address3="Some Address3", 
+            _address = new Models.Address()
+            {
+                Address1 = "Some Address1",
+                Address2 = "some  Address2",
+                Address3 = "Some Address3",
                 Address4 = "some Address",
                 Address5 = "SomeAddress5",
-                AddressId = Guid.NewGuid(), 
+                AddressId = Guid.NewGuid(),
                 PostCode = "CV22 8BA",
                 AlternativePostCode = "CV22 9BA"
             };
@@ -41,7 +42,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
         [Test]
         public void AddressPatchServiceTests_ReturnsNull_WhenAddressPatchIsNull()
         {
-            var result = _addressPatchService.Patch(string.Empty, It.IsAny<AddressPatch>(),_log.Object);
+            var result = _addressPatchService.Patch(string.Empty, It.IsAny<AddressPatch>(), _log.Object);
 
             // Assert            
             Assert.That(result, Is.Null);
@@ -54,7 +55,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address1 = "Address 1" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -69,7 +70,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address2 = "Address 2" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -84,7 +85,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address3 = "Address 3" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -99,7 +100,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address4 = "Address 4" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -114,7 +115,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address5 = "Address 5" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -129,7 +130,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { PostCode = "CV1 1VC" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -144,7 +145,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { AlternativePostCode = "CV1 1VC" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -159,7 +160,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Longitude = (decimal?)64.7511 };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -174,7 +175,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Latitude = (decimal?)147.3494 };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -189,7 +190,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { EffectiveFrom = DateTime.MaxValue };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -204,7 +205,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { EffectiveTo = DateTime.MaxValue };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -219,7 +220,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { LastModifiedDate = DateTime.MaxValue };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -234,7 +235,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { LastModifiedTouchpointId = "0000000111" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -249,7 +250,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { SubcontractorId = "0000000111" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
 
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
@@ -264,7 +265,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address2 = "" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
             // Assert            
@@ -278,7 +279,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address3 = "" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
             // Assert            
@@ -293,7 +294,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address4 = "" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
             // Assert            
@@ -307,7 +308,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { Address5 = "" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
             // Assert            
@@ -321,7 +322,7 @@ namespace NCS.DSS.Address.Tests.ServiceTests
             var addressPatch = new AddressPatch { AlternativePostCode = "" };
 
             // Act
-            var patchedAddress = _addressPatchService.Patch(_json, addressPatch,_log.Object);
+            var patchedAddress = _addressPatchService.Patch(_json, addressPatch, _log.Object);
             var address = JsonConvert.DeserializeObject<Models.Address>(patchedAddress);
 
             // Assert            

@@ -2,34 +2,34 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
 {
     public class GetAddressByIdHttpTrigger
     {
         private readonly IResourceHelper _resourceHelper;
-        private readonly IGetAddressByIdHttpTriggerService _getAddressByIdService;        
-        private readonly IHttpRequestHelper _httpRequestHelper;        
+        private readonly IGetAddressByIdHttpTriggerService _getAddressByIdService;
+        private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly ILogger _logger;
 
         public GetAddressByIdHttpTrigger(
             IResourceHelper resourceHelper,
-            IGetAddressByIdHttpTriggerService getAddressByIdService,            
+            IGetAddressByIdHttpTriggerService getAddressByIdService,
             IHttpRequestHelper httpRequestHelper,
             ILogger<GetAddressByIdHttpTrigger> logger)
         {
             _resourceHelper = resourceHelper;
-            _getAddressByIdService = getAddressByIdService;            
-            _httpRequestHelper = httpRequestHelper;            
+            _getAddressByIdService = getAddressByIdService;
+            _httpRequestHelper = httpRequestHelper;
             _logger = logger;
         }
 

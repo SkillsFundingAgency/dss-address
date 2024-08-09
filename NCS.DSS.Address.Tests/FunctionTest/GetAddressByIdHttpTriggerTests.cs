@@ -1,6 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,7 +8,6 @@ using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using NUnit.Framework;
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AddressFunction = NCS.DSS.Address.GetAddressByIdHttpTrigger.Function;
 
@@ -22,9 +19,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string ValidAddressId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
-        private Mock<HttpRequest> _request;        
-        private Mock<IResourceHelper> _resourceHelper;        
-        private Mock<IHttpRequestHelper> _httpRequestHelper;        
+        private Mock<HttpRequest> _request;
+        private Mock<IResourceHelper> _resourceHelper;
+        private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGetAddressByIdHttpTriggerService> _getAddressByIdHttpTriggerService;
         private Models.Address _address;
         private AddressFunction.GetAddressByIdHttpTrigger _function;
@@ -34,14 +31,14 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         public void Setup()
         {
             _address = new Models.Address();
-            _request = new Mock<HttpRequest>();            
-            _resourceHelper = new Mock<IResourceHelper>();            
+            _request = new Mock<HttpRequest>();
+            _resourceHelper = new Mock<IResourceHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _logger = new Mock<ILogger<AddressFunction.GetAddressByIdHttpTrigger>>();
 
             _getAddressByIdHttpTriggerService = new Mock<IGetAddressByIdHttpTriggerService>();
             _function = new AddressFunction.GetAddressByIdHttpTrigger(_resourceHelper.Object,
-                _getAddressByIdHttpTriggerService.Object,                
+                _getAddressByIdHttpTriggerService.Object,
                 _httpRequestHelper.Object,
                 _logger.Object);
         }
@@ -135,7 +132,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private async Task<IActionResult> RunFunction(string customerId, string addressId)
         {
             return await _function.Run(
-                _request.Object,                
+                _request.Object,
                 customerId,
                 addressId).ConfigureAwait(false);
         }

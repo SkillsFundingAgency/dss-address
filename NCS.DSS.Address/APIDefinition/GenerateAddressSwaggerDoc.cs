@@ -1,8 +1,8 @@
 ﻿using DFC.Swagger.Standard;
 using Microsoft.AspNetCore.Http;
-using System.Reflection;
-using Microsoft.Azure.Functions.Worker;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using System.Reflection;
 
 namespace NCS.DSS.Address.APIDefinition
 {
@@ -22,7 +22,7 @@ namespace NCS.DSS.Address.APIDefinition
         }
 
         [Function(ApiDefinitionName)]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)]HttpRequest req)
+        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = ApiDefRoute)] HttpRequest req)
         {
             var swagger = _swaggerDocumentGenerator.GenerateSwaggerDocument(req, ApiTitle, ApiDescription,
                 ApiDefinitionName, ApiVersion, Assembly.GetExecutingAssembly());

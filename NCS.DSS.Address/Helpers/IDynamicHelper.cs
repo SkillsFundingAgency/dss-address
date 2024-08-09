@@ -1,5 +1,5 @@
-﻿using System.Dynamic;
-using System;
+﻿using System;
+using System.Dynamic;
 
 namespace NCS.DSS.Address.Helpers
 {

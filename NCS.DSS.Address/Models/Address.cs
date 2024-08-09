@@ -1,8 +1,8 @@
+using DFC.GeoCoding.Standard.AzureMaps.Model;
+using DFC.JSON.Standard.Attributes;
+using DFC.Swagger.Standard.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
-using DFC.JSON.Standard.Attributes;
-using DFC.GeoCoding.Standard.AzureMaps.Model;
-using DFC.Swagger.Standard.Annotations;
 
 namespace NCS.DSS.Address.Models
 {
@@ -88,7 +88,7 @@ namespace NCS.DSS.Address.Models
         [Display(Description = "Identifier of the touchpoint who made the last change to the record")]
         [Example(Description = "0000000001")]
         public string LastModifiedTouchpointId { get; set; }
-        
+
         [StringLength(50)]
         [Display(Description = "Identifier supplied by the touchpoint to indicate their subcontractor")]
         [Example(Description = "01234567899876543210")]
@@ -117,11 +117,11 @@ namespace NCS.DSS.Address.Models
 
         public void SetLongitudeAndLatitude(Position position)
         {
-            if(position == null)
+            if (position == null)
                 return;
 
-            Longitude = (decimal) position.Lon;
-            Latitude = (decimal) position.Lat;
+            Longitude = (decimal)position.Lon;
+            Latitude = (decimal)position.Lat;
         }
     }
 }

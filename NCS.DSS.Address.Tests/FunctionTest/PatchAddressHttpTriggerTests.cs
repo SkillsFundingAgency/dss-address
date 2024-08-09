@@ -25,13 +25,13 @@ namespace NCS.DSS.Address.Tests.FunctionTest
     {
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string ValidAddressId = "1e1a555c-9633-4e12-ab28-09ed60d51cb3";
-        private const string InValidId = "1111111-2222-3333-4444-555555555555";        
+        private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
         private Mock<IPatchAddressHttpTriggerService> _patchAddressHttpTriggerService;
         private Mock<ILoggerHelper> _loggerHelper;
-        private Mock<IHttpRequestHelper> _httpRequestHelper;        
+        private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGeoCodingService> _geoCodingService;
         private AddressFunction.PatchAddressHttpTrigger _function;
         private Models.Address _address;
@@ -47,11 +47,11 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _addressPatch = new Models.AddressPatch();
 
             _request = new DefaultHttpContext().Request;
-            
+
             _resourceHelper = new Mock<IResourceHelper>();
             _validate = new Validate();
-            _httpRequestHelper = new Mock<IHttpRequestHelper>();            
-            _httpRequestHelper = new Mock<IHttpRequestHelper>();                        
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _geoCodingService = new Mock<IGeoCodingService>();
             _addressString = JsonConvert.SerializeObject(_address);
             _patchAddressHttpTriggerService = new Mock<IPatchAddressHttpTriggerService>();
@@ -60,8 +60,8 @@ namespace NCS.DSS.Address.Tests.FunctionTest
 
             _function = new AddressFunction.PatchAddressHttpTrigger(_resourceHelper.Object,
                 _validate,
-                _patchAddressHttpTriggerService.Object,                
-                _httpRequestHelper.Object,                
+                _patchAddressHttpTriggerService.Object,
+                _httpRequestHelper.Object,
                 _geoCodingService.Object,
                 _logger.Object,
                 _dynamicHelper.Object);
@@ -102,10 +102,10 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AddressPatch>(_request)).Returns(Task.FromResult(_addressPatch));
             var val = new Mock<IValidate>();
             var validationResults = new List<ValidationResult> { new ValidationResult("address Id is Required") };
-            val.Setup(x=>x.ValidateResource(It.IsAny<Models.AddressPatch>(), false)).Returns(validationResults);
+            val.Setup(x => x.ValidateResource(It.IsAny<Models.AddressPatch>(), false)).Returns(validationResults);
             _function = new AddressFunction.PatchAddressHttpTrigger(_resourceHelper.Object,
                 val.Object,
-                _patchAddressHttpTriggerService.Object,                
+                _patchAddressHttpTriggerService.Object,
                 _httpRequestHelper.Object,
                 _geoCodingService.Object,
                 _logger.Object,
@@ -176,9 +176,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AddressPatch>(_request)).Returns(Task.FromResult(_addressPatch));
-            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(null));
+            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(null));
             _patchAddressHttpTriggerService.Setup(x => x.GetAddressForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(_addressString));
-            _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>(),_logger.Object)).Returns(_addressString);
+            _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>(), _logger.Object)).Returns(_addressString);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
@@ -195,9 +195,9 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AddressPatch>(_request)).Returns(Task.FromResult(_addressPatch));
-            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(),_logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
+            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
             _patchAddressHttpTriggerService.Setup(x => x.GetAddressForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(_addressString));
-            _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>(),_logger.Object)).Returns(_addressString);
+            _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>(), _logger.Object)).Returns(_addressString);
 
             // Act
             var result = await RunFunction(ValidCustomerId, ValidAddressId);
@@ -212,7 +212,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private async Task<IActionResult> RunFunction(string customerId, string addressId)
         {
             return await _function.Run(
-                _request,                
+                _request,
                 customerId,
                 addressId).ConfigureAwait(false);
         }

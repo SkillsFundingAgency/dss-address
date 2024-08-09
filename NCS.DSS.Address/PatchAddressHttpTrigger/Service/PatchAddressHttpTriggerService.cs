@@ -1,10 +1,10 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.ServiceBus;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 {
@@ -27,19 +27,19 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             {
                 logger.LogInformation("Can't patch address because input address json is null");
                 return null;
-            }   
+            }
 
             if (addressPatch == null)
             {
                 logger.LogInformation("Can't patch address because input addressPatch object is null");
                 return null;
-            }   
+            }
 
             addressPatch.SetDefaultValues();
-            var addressObj = _addressPatchService.Patch(addressJson, addressPatch,logger);
+            var addressObj = _addressPatchService.Patch(addressJson, addressPatch, logger);
 
             logger.LogInformation("completed patching address");
-            
+
             return addressObj;
         }
 

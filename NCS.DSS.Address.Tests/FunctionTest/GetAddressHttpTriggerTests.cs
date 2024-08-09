@@ -1,6 +1,5 @@
 ﻿using DFC.Common.Standard.Logging;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,18 +24,18 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private Mock<ILogger> _log;
         private Mock<IResourceHelper> _resourceHelper;
         private Mock<ILoggerHelper> _loggerHelper;
-        private Mock<IHttpRequestHelper> _httpRequestHelper;        
+        private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGetAddressHttpTriggerService> _getAddressHttpTriggerService;
         private AddressFunction.GetAddressHttpTrigger _function;
         private Mock<ILogger<AddressFunction.GetAddressHttpTrigger>> _logger;
 
         [SetUp]
         public void Setup()
-        {            
-            _request = new DefaultHttpContext().Request;            
+        {
+            _request = new DefaultHttpContext().Request;
             _resourceHelper = new Mock<IResourceHelper>();
             _loggerHelper = new Mock<ILoggerHelper>();
-            _httpRequestHelper = new Mock<IHttpRequestHelper >();            
+            _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _logger = new Mock<ILogger<AddressFunction.GetAddressHttpTrigger>>();
             _getAddressHttpTriggerService = new Mock<IGetAddressHttpTriggerService>();
             _function = new AddressFunction.GetAddressHttpTrigger(_resourceHelper.Object, _getAddressHttpTriggerService.Object, _httpRequestHelper.Object, _logger.Object);
@@ -73,7 +72,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(false));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -87,8 +86,8 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _getAddressHttpTriggerService.Setup(x=>x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(null));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _getAddressHttpTriggerService.Setup(x => x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(null));
 
             // Act
             var result = await RunFunction(ValidCustomerId);
@@ -102,12 +101,12 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _resourceHelper.Setup(x=>x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
+            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             var listOfAddresses = new List<Models.Address>();
-            _getAddressHttpTriggerService.Setup(x=>x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses));
+            _getAddressHttpTriggerService.Setup(x => x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses));
 
             // Act
-            var result = await RunFunction(ValidCustomerId);            
+            var result = await RunFunction(ValidCustomerId);
 
             // Assert
             Assert.That(result, Is.InstanceOf<JsonResult>());

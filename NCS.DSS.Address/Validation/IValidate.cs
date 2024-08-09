@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using NCS.DSS.Address.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NCS.DSS.Address.Models;
 
 namespace NCS.DSS.Address.Validation
 {

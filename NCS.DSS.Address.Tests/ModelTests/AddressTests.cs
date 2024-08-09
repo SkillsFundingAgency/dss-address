@@ -15,7 +15,7 @@ namespace NCS.DSS.Address.Tests.ModelTests
             address.SetDefaultValues();
 
             // Assert
-            
+
             Assert.That(address.AddressId, Is.Not.Null);
             Assert.That(address.LastModifiedDate, Is.Not.Null);
         }
@@ -54,7 +54,7 @@ namespace NCS.DSS.Address.Tests.ModelTests
             Assert.That(address.CustomerId, Is.EqualTo(customerId));
         }
 
-       [Test]
+        [Test]
         public void AddressTests_CheckLastModifiedTouchpointIdIsSet_WhenSetIdsIsCalled()
         {
             var address = new Models.Address();

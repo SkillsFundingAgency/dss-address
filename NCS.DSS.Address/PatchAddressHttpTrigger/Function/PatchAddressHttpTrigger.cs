@@ -3,9 +3,11 @@ using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GeoCoding;
+using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
@@ -13,10 +15,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Azure.Functions.Worker;
-using NCS.DSS.Address.Helpers;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 {
@@ -24,7 +24,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
     {
         private readonly IResourceHelper _resourceHelper;
         private readonly IValidate _validate;
-        private readonly IPatchAddressHttpTriggerService _addressPatchService;        
+        private readonly IPatchAddressHttpTriggerService _addressPatchService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGeoCodingService _geoCodingService;
         private readonly ILogger _logger;
@@ -32,7 +32,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
         public PatchAddressHttpTrigger(IResourceHelper resourceHelper,
             IValidate validate,
-            IPatchAddressHttpTriggerService addressPatchService,            
+            IPatchAddressHttpTriggerService addressPatchService,
             IHttpRequestHelper httpRequestHelper,
             IGeoCodingService geoCodingService,
             ILogger<PatchAddressHttpTrigger> logger,
@@ -40,8 +40,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         {
             _resourceHelper = resourceHelper;
             _validate = validate;
-            _addressPatchService = addressPatchService;            
-            _httpRequestHelper = httpRequestHelper;                        
+            _addressPatchService = addressPatchService;
+            _httpRequestHelper = httpRequestHelper;
             _geoCodingService = geoCodingService;
             _logger = logger;
             _dynamicHelper = dynamicHelper;
@@ -100,7 +100,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
             catch (Exception ex)
             {
-                _logger.LogWarning($"Failed to Prase Json object. Response Code [{HttpStatusCode.UnprocessableContent}]. Exception Message: [{ex.Message}]");                
+                _logger.LogWarning($"Failed to Prase Json object. Response Code [{HttpStatusCode.UnprocessableContent}]. Exception Message: [{ex.Message}]");
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
             }
 
@@ -145,7 +145,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
-            {                
+            {
                 _logger.LogWarning($"Readonly Customer. Response Code [{HttpStatusCode.Forbidden}]");
                 return new ObjectResult(customerGuid)
                 {
@@ -171,7 +171,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             if (updatedAddress != null)
             {
                 await _addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, ApimURL);
-                
+
                 _logger.LogInformation($"End of PATCH Address Request. Address Update Complete and Response Status Code [{HttpStatusCode.OK}]");
 
                 return new JsonResult(updatedAddress, new JsonSerializerOptions())
