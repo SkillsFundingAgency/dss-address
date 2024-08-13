@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using DFC.GeoCoding.Standard.AzureMaps.Model;
+﻿using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.GeoCoding.Standard.AzureMaps.Service;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.GeoCoding
 {

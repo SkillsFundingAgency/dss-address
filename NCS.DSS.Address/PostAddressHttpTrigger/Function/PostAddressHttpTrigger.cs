@@ -1,58 +1,56 @@
 using DFC.Common.Standard.Logging;
 using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
-using DFC.JSON.Standard;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GeoCoding;
+using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
     public class PostAddressHttpTrigger
     {
-        private IResourceHelper _resourceHelper;
-        private IValidate _validate;
-        private IPostAddressHttpTriggerService _addressPostService;
-        private ILoggerHelper _loggerHelper;
-        private IHttpRequestHelper _httpRequestHelper;
-        private IHttpResponseMessageHelper _httpResponseMessageHelper;
-        private IJsonHelper _jsonHelper;
-        private IGeoCodingService _geoCodingService;
+        private readonly IResourceHelper _resourceHelper;
+        private readonly IValidate _validate;
+        private readonly IPostAddressHttpTriggerService _addressPostService;
+        private readonly ILoggerHelper _loggerHelper;
+        private readonly IHttpRequestHelper _httpRequestHelper;
+        private readonly IGeoCodingService _geoCodingService;
+        private readonly ILogger _logger;
+        private readonly IDynamicHelper _dynamicHelper;
 
         public PostAddressHttpTrigger(IResourceHelper resourceHelper,
             IValidate validate,
             IPostAddressHttpTriggerService addressPostService,
             ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
-            IHttpResponseMessageHelper httpResponseMessageHelper,
-            IJsonHelper jsonHelper,
-            IGeoCodingService geoCodingService)
+            IGeoCodingService geoCodingService,
+            ILogger<PostAddressHttpTrigger> logger,
+            IDynamicHelper dynamicHelper)
         {
             _resourceHelper = resourceHelper;
             _validate = validate;
             _addressPostService = addressPostService;
             _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
-            _httpResponseMessageHelper = httpResponseMessageHelper;
-            _jsonHelper = jsonHelper;
             _geoCodingService = geoCodingService;
+            _logger = logger;
+            _dynamicHelper = dynamicHelper;
         }
 
-        [FunctionName("Post")]
+        [Function("Post")]
         [ProducesResponseType(typeof(Models.Address), 201)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Created, Description = "Address Created", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Address does not exist", ShowSchema = false)]
@@ -61,38 +59,38 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         [Response(HttpStatusCode = (int)HttpStatusCode.Forbidden, Description = "Insufficient access", ShowSchema = false)]
         [Response(HttpStatusCode = 422, Description = "Address validation error(s)", ShowSchema = false)]
         [Display(Name = "Post", Description = "Ability to create a new address for a given customer")]
-        public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")]HttpRequest req, ILogger log, string customerId)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Customers/{customerId}/Addresses")] HttpRequest req, string customerId)
         {
-            log.LogInformation($"Started Executing Address POST Request for CustomerId [{customerId}]");
+            _logger.LogInformation($"Started Executing Address POST Request for CustomerId [{customerId}]");
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
             if (string.IsNullOrEmpty(correlationId))
-                log.LogWarning("Unable to locate 'DssCorrelationId; in request header");
+                _logger.LogWarning("Unable to locate 'DssCorrelationId; in request header");
 
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
                 correlationGuid = Guid.NewGuid();
-                log.LogWarning($"Unable to Parse 'DssCorrelationId' to a Guid. New Guid Generated");
+                _logger.LogWarning($"Unable to Parse 'DssCorrelationId' to a Guid. New Guid Generated");
             }
 
-            log.LogInformation($" 'DssCorrelationId' is [{correlationGuid}]");
+            _logger.LogInformation($" 'DssCorrelationId' is [{correlationGuid}]");
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
-                return ReturnBadRequest( log,"Unable to locate 'APIM-TouchpointId' in request header.");
+                return ReturnBadRequest("Unable to locate 'APIM-TouchpointId' in request header.");
 
             var ApimURL = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(ApimURL))
-                return ReturnBadRequest( log,"Unable to locate 'apimurl' in request header.");
+                return ReturnBadRequest("Unable to locate 'apimurl' in request header.");
 
             var subContractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subContractorId))
-                log.LogInformation( "Unable to locate 'SubContractorId' in request header. Continuing POST Process");
+                _logger.LogInformation("Unable to locate 'SubContractorId' in request header. Continuing POST Process");
 
-            log.LogInformation("Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
+            _logger.LogInformation("Post Address C# HTTP trigger function  processed a request. By Touchpoint " + touchpointId);
 
             if (!Guid.TryParse(customerId, out var customerGuid))
-                return ReturnBadRequest( log,"Unable to Parse customerId to Guid",customerGuid);
+                return ReturnBadRequest("Unable to Parse customerId to Guid", customerGuid);
 
             Models.Address addressRequest;
 
@@ -100,19 +98,17 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             {
                 addressRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Address>(req);
             }
-            catch (JsonException ex)
+            catch (Newtonsoft.Json.JsonException ex)
             {
-                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(ex);
-                log.LogWarning($"Failed to Prase Json object. Response Code [{unProcessed.StatusCode}]. Exception Message: [{ex.Message}]");
-                return unProcessed;
+                _logger.LogWarning($"Failed to Prase Json object. Response Code [{HttpStatusCode.UnprocessableContent}]. Exception Message: [{ex.Message}]");
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (addressRequest == null)
             {
-                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(req);
-                log.LogWarning($"Address Request is Empty. Response Code [{unProcessed.StatusCode}]");
-                return unProcessed;
-            }    
+                _logger.LogWarning($"Address Request is Empty. Response Code [{HttpStatusCode.UnprocessableContent}]");
+                return new UnprocessableEntityObjectResult(req);
+            }
 
             addressRequest.SetIds(customerGuid, touchpointId, subContractorId);
 
@@ -120,13 +116,12 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                var unProcessed = _httpResponseMessageHelper.UnprocessableEntity(errors);
-                log.LogWarning($"Validation errors occured while processing request. Response Code [{unProcessed.StatusCode}]");
-                log.LogWarning($"Validation Failures are [{string.Join(',',errors)}]");
-                return unProcessed;
+                _logger.LogWarning($"Validation errors occured while processing request. Response Code [{HttpStatusCode.UnprocessableContent}]");
+                _logger.LogWarning($"Validation Failures are [{string.Join(',', errors)}]");
+                return new UnprocessableEntityObjectResult(errors);
             }
-                
-            _loggerHelper.LogInformationMessage(log, correlationGuid, "Attempting to get long and lat for postcode");
+
+            _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempting to get long and lat for postcode");
             Position position;
 
             try
@@ -136,7 +131,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
             catch (Exception e)
             {
-                _loggerHelper.LogException(log, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
+                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
                 throw;
             }
 
@@ -145,47 +140,53 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
-                return ReturnNoContent(log,"Customer with given Customer Guid does not exist",customerGuid);              
+                return ReturnNoContent("Customer with given Customer Guid does not exist", customerGuid);
 
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
-            if (isCustomerReadOnly){
-                var forbidden = _httpResponseMessageHelper.Forbidden(customerGuid);
-                log.LogWarning($"Readonly Customer. Response Code [{forbidden.StatusCode}]");
-                return forbidden;                
-            }               
+            if (isCustomerReadOnly)
+            {
+                _logger.LogWarning($"Readonly Customer. Response Code [{HttpStatusCode.Forbidden}]");
+                return new ObjectResult(customerGuid)
+                {
+                    StatusCode = (int)HttpStatusCode.Forbidden
+                };
+            }
 
-            var address = await _addressPostService.CreateAsync(addressRequest,log);
+            var address = await _addressPostService.CreateAsync(addressRequest, _logger);
 
             if (address != null)
                 await _addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
 
-            _loggerHelper.LogMethodExit(log);
+            _loggerHelper.LogMethodExit(_logger);
 
-            if(address == null)            
-                return ReturnBadRequest( log,"Null Address Found",customerGuid);
-            
-            var created =  _httpResponseMessageHelper.Created(_jsonHelper.SerializeObjectAndRenameIdProperty(address, "id", "AddressId"));
-            log.LogInformation($"Address Found. Response Code [{created.StatusCode}]");
-            return created;
+            if (address == null)
+                return ReturnBadRequest("Null Address Found", customerGuid);
+
+
+            _logger.LogInformation($"Address Found. Response Code [{HttpStatusCode.Created}]");
+
+            return new JsonResult(address, new JsonSerializerOptions())
+            {
+                StatusCode = (int)HttpStatusCode.Created
+            };
         }
-        private HttpResponseMessage ReturnBadRequest(ILogger log,string message)
+        private IActionResult ReturnBadRequest(string message)
         {
-             var badRequest = _httpResponseMessageHelper.BadRequest();
-            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
-            return badRequest;
+            _logger.LogWarning($"{message}. Response Code [{HttpStatusCode.BadRequest}]");
+            return new BadRequestObjectResult(HttpStatusCode.BadRequest);
         }
-        private HttpResponseMessage ReturnBadRequest(ILogger log,string message,Guid guid)
+
+        private IActionResult ReturnBadRequest(string message, Guid guid)
         {
-             var badRequest = _httpResponseMessageHelper.BadRequest(guid);
-            log.LogWarning($"{message}. Response Code [{badRequest.StatusCode}]");
-            return badRequest;
+            _logger.LogWarning($"{message}. Response Code [{HttpStatusCode.BadRequest}]");
+            return new BadRequestObjectResult(guid);
         }
-        private HttpResponseMessage ReturnNoContent(ILogger log,string message,Guid guid)
+
+        private IActionResult ReturnNoContent(string message, Guid guid)
         {
-             var noContent = _httpResponseMessageHelper.NoContent(guid);
-            log.LogWarning($"{message}. Response Code [{noContent.StatusCode}]");
-            return noContent;
+            _logger.LogWarning($"{message}. Response Code [{HttpStatusCode.NoContent}]");
+            return new NoContentResult();
         }
     }
 }

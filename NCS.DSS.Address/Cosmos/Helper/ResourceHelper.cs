@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NCS.DSS.Address.Cosmos.Provider;
+using System;
 using System.Threading.Tasks;
-using NCS.DSS.Address.Cosmos.Provider;
 
 namespace NCS.DSS.Address.Cosmos.Helper
 {
