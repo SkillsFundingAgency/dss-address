@@ -1,7 +1,7 @@
 variables:
     SolutionBaseName: 'NCS.DSS.Address'
     BuildPlatform: 'any cpu'
-    BuildConfiguration: 'release'
+    BuildConfiguration: 'release'    
 
 resources:
   repositories:
@@ -9,7 +9,7 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.11.2
+    ref: refs/tags/v1.16.2
     endpoint: 'GitHub (CDH)'
 
 pool:
@@ -53,7 +53,7 @@ jobs:
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
-      BuildConfiguration: $(BuildConfiguration)
+      BuildConfiguration: $(BuildConfiguration)      
 
 # Build the app with the dfc-dotnetcore-build template.  Runs if the output of TestBranchName is Version2+
 - job: BuildDotNetStandard
@@ -67,6 +67,8 @@ jobs:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
       BuildConfiguration: $(BuildConfiguration)
+      GitVersionVersion: 5.12.x
+      DotNetCoreVersion: 8.x
 
 
 

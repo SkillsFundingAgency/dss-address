@@ -1,7 +1,7 @@
 # DSS Address
 
 > [!NOTE]  
-> The latest version of this API is `v2`
+> The latest version of this API is `v3`
 
 [![Build Status](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_apis/build/status/Yaml/dss-address?repoName=SkillsFundingAgency%2Fdss-address&branchName=master-v2)](https://sfa-gov-uk.visualstudio.com/CDS%202.0/_build/latest?definitionId=1448&repoName=SkillsFundingAgency%2Fdss-address&branchName=master-v2)
 

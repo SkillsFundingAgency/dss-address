@@ -1,9 +1,8 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.ServiceBus;
-using Microsoft.Extensions.Logging;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {
@@ -24,7 +23,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
             {
                 logger.LogInformation("Address Can't be created because input address object is null");
                 return null;
-            }    
+            }
 
             address.SetDefaultValues();
 
@@ -32,7 +31,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 
             logger.LogInformation($"Completed creating address with Address POST request. Response Code [{response.StatusCode}]");
 
-            return response.StatusCode == HttpStatusCode.Created ? (dynamic) response.Resource : null;
+            return response.StatusCode == HttpStatusCode.Created ? (dynamic)response.Resource : null;
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Address address, string reqUrl)
