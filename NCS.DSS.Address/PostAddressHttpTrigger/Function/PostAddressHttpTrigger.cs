@@ -112,6 +112,16 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             addressRequest.SetIds(customerGuid, touchpointId, subContractorId);
 
+            try
+            {
+                addressRequest.PostCode = addressRequest?.PostCode?.TrimEnd().TrimStart();
+            } 
+            catch (Exception e)
+            {
+                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to trim the postcode: `{0}`", addressRequest.PostCode), e);
+                throw;
+            }
+
             var errors = _validate.ValidateResource(addressRequest, true);
 
             if (errors != null && errors.Any())
@@ -126,8 +136,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             try
             {
-                var postcode = addressRequest.PostCode.Replace(" ", string.Empty);
-                position = await _geoCodingService.GetPositionForPostcodeAsync(postcode);
+                position = await _geoCodingService.GetPositionForPostcodeAsync(addressRequest.PostCode);
             }
             catch (Exception e)
             {
