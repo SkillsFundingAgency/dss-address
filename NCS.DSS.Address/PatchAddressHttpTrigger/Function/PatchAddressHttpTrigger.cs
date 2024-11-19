@@ -114,7 +114,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             try
             {
-                addressPatchRequest.PostCode = addressPatchRequest?.PostCode?.TrimEnd();
+                addressPatchRequest.PostCode = addressPatchRequest?.PostCode?.TrimEnd().TrimStart();
             }
             catch (Exception e)
             {
