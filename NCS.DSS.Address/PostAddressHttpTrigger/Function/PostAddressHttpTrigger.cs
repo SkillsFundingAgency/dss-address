@@ -114,12 +114,11 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             try
             {
-                addressRequest.PostCode = addressRequest.PostCode.TrimEnd();
+                addressRequest.PostCode = addressRequest?.PostCode?.TrimEnd();
             } 
             catch (Exception e)
             {
-                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to trim the postcode: `{0}`", 
-                    addressRequest.PostCode, addressRequest.AlternativePostCode), e);
+                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to trim the postcode: `{0}`", addressRequest.PostCode), e);
                 throw;
             }
 
