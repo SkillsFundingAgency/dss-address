@@ -1,6 +1,4 @@
 ﻿using NCS.DSS.Address.Cosmos.Provider;
-using System;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
 {

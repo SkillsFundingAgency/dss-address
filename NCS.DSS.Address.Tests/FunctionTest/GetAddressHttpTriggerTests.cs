@@ -22,8 +22,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private HttpRequest _request;
         private Mock<ILogger> _log;
-        private Mock<IResourceHelper> _resourceHelper;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<IResourceHelper> _resourceHelper;        
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGetAddressHttpTriggerService> _getAddressHttpTriggerService;
         private AddressFunction.GetAddressHttpTrigger _function;
@@ -33,8 +32,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         public void Setup()
         {
             _request = new DefaultHttpContext().Request;
-            _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _resourceHelper = new Mock<IResourceHelper>();            
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _logger = new Mock<ILogger<AddressFunction.GetAddressHttpTrigger>>();
             _getAddressHttpTriggerService = new Mock<IGetAddressHttpTriggerService>();

@@ -9,32 +9,32 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 {
     public class AddressDataSyncTrigger
     {
-        private readonly ILogger<AddressDataSyncTrigger> _log;
+        private readonly ILogger<AddressDataSyncTrigger> _logger;
 
         public AddressDataSyncTrigger(ILogger<AddressDataSyncTrigger> log)
         {
-            _log = log;
+            _logger = log;
         }
         [Function("SyncAddressDataSyncTrigger")]
         public async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
                 LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<Document> documents)
         {
-            _log.LogInformation("Entered SyncDataForCustomerSearchTrigger");
+            _logger.LogInformation("Entered SyncDataForCustomerSearchTrigger");
 
             var inputMessage = "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}", documents.Count);
 
-            _log.LogInformation(inputMessage);
+            _logger.LogInformation(inputMessage);
 
-            SearchHelper.GetSearchServiceClient(_log);
+            SearchHelper.GetSearchServiceClient(_logger);
 
-            _log.LogInformation("get search service client");
+            _logger.LogInformation("get search service client");
 
-            var client = SearchHelper.GetSearchServiceClient(_log);
+            var client = SearchHelper.GetSearchServiceClient(_logger);
 
-            _log.LogInformation("get index client");
+            _logger.LogInformation("get index client");
 
-            _log.LogInformation("Documents modified " + documents.Count);
+            _logger.LogInformation("Documents modified " + documents.Count);
 
             if (documents.Count > 0)
             {
@@ -50,7 +50,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                 try
                 {
-                    _log.LogInformation("attempting to merge docs to azure search");
+                    _logger.LogInformation("attempting to merge docs to azure search");
 
                     var results = await client.IndexDocumentsAsync(batch);
 
@@ -58,15 +58,15 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                     if (failed.Any())
                     {
-                        _log.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
+                        _logger.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
                     }
 
-                    _log.LogInformation("successfully merged docs to azure search");
+                    _logger.LogInformation("successfully merged docs to azure search");
                 }
                 catch (RequestFailedException e)
                 {
-                    _log.LogError(string.Format("Failed to index some of the documents. Error Code: {0}", e.ErrorCode));
-                    _log.LogError(e.ToString());
+                    _logger.LogError(string.Format("Failed to index some of the documents. Error Code: {0}", e.ErrorCode));
+                    _logger.LogError(e.ToString());
                 }
             }
         }

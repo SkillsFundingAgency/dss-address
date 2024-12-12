@@ -2,9 +2,7 @@
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.ServiceBus;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 {

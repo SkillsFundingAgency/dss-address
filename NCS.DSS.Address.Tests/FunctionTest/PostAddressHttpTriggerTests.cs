@@ -28,8 +28,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
 
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
-        private IValidate _validate;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private IValidate _validate;        
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IPostAddressHttpTriggerService> _postAddressHttpTriggerService;
         private Models.Address _address;
@@ -45,8 +44,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _address.PostCode = string.Empty;
             _request = new DefaultHttpContext().Request;
             _validate = new Validate();
-            _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
+            _resourceHelper = new Mock<IResourceHelper>();            
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _geoCodingService = new Mock<IGeoCodingService>();
             _postAddressHttpTriggerService = new Mock<IPostAddressHttpTriggerService>();
@@ -55,8 +53,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
 
             _function = new AddressFunction.PostAddressHttpTrigger(_resourceHelper.Object,
                 _validate,
-                _postAddressHttpTriggerService.Object,
-                _loggerHelper.Object,
+                _postAddressHttpTriggerService.Object,                
                 _httpRequestHelper.Object,
                 _geoCodingService.Object,
                 _logger.Object,
@@ -103,8 +100,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             val.Setup(x => x.ValidateResource(It.IsAny<Models.Address>(), true)).Returns(validationResults);
             _function = new AddressFunction.PostAddressHttpTrigger(_resourceHelper.Object,
                val.Object,
-               _postAddressHttpTriggerService.Object,
-               _loggerHelper.Object,
+               _postAddressHttpTriggerService.Object,               
                _httpRequestHelper.Object,
                _geoCodingService.Object,
                _logger.Object,

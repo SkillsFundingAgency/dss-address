@@ -11,12 +11,9 @@ using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 {
@@ -27,7 +24,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         private readonly IPatchAddressHttpTriggerService _addressPatchService;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGeoCodingService _geoCodingService;
-        private readonly ILogger _logger;
+        private readonly ILogger<PatchAddressHttpTrigger> _logger;
         private readonly IDynamicHelper _dynamicHelper;
 
         public PatchAddressHttpTrigger(IResourceHelper resourceHelper,

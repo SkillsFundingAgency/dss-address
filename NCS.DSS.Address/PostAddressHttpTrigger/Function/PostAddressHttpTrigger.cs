@@ -1,4 +1,3 @@
-using DFC.Common.Standard.Logging;
 using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.HTTP.Standard;
 using DFC.Swagger.Standard.Annotations;
@@ -11,12 +10,9 @@ using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.Helpers;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
 using NCS.DSS.Address.Validation;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 {
@@ -25,16 +21,14 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IValidate _validate;
         private readonly IPostAddressHttpTriggerService _addressPostService;
-        private readonly ILoggerHelper _loggerHelper;
         private readonly IHttpRequestHelper _httpRequestHelper;
         private readonly IGeoCodingService _geoCodingService;
-        private readonly ILogger _logger;
+        private readonly ILogger<PostAddressHttpTrigger> _logger;
         private readonly IDynamicHelper _dynamicHelper;
 
         public PostAddressHttpTrigger(IResourceHelper resourceHelper,
             IValidate validate,
             IPostAddressHttpTriggerService addressPostService,
-            ILoggerHelper loggerHelper,
             IHttpRequestHelper httpRequestHelper,
             IGeoCodingService geoCodingService,
             ILogger<PostAddressHttpTrigger> logger,
@@ -43,7 +37,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             _resourceHelper = resourceHelper;
             _validate = validate;
             _addressPostService = addressPostService;
-            _loggerHelper = loggerHelper;
             _httpRequestHelper = httpRequestHelper;
             _geoCodingService = geoCodingService;
             _logger = logger;
@@ -115,10 +108,10 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             try
             {
                 addressRequest.PostCode = addressRequest?.PostCode?.TrimEnd().TrimStart();
-            } 
+            }
             catch (Exception e)
             {
-                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to trim the postcode: `{0}`", addressRequest.PostCode), e);
+                _logger.LogError(e, "Unable to trim the postcode: {0}", addressRequest.PostCode);
                 throw;
             }
 
@@ -131,7 +124,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 return new UnprocessableEntityObjectResult(errors);
             }
 
-            _loggerHelper.LogInformationMessage(_logger, correlationGuid, "Attempting to get long and lat for postcode");
+            _logger.LogInformation("Attempting to get long and lat for postcode. Correlation GUID: {CorrelationGuid}", correlationGuid);
             Position position;
 
             try
@@ -140,7 +133,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
             catch (Exception e)
             {
-                _loggerHelper.LogException(_logger, correlationGuid, string.Format("Unable to get long and lat for postcode: {0}", addressRequest.PostCode), e);
+                _logger.LogError(e, "Unable to get long and lat for postcode: {0}", addressRequest.PostCode);
                 throw;
             }
 
@@ -167,7 +160,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             if (address != null)
                 await _addressPostService.SendToServiceBusQueueAsync(address, ApimURL);
 
-            _loggerHelper.LogMethodExit(_logger);
 
             if (address == null)
                 return ReturnBadRequest("Null Address Found", customerGuid);

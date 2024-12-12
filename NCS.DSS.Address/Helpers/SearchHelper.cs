@@ -1,7 +1,6 @@
 ﻿using Azure;
 using Azure.Search.Documents;
 using Microsoft.Extensions.Logging;
-using System;
 namespace NCS.DSS.Address.Helpers
 {
     public static class SearchHelper

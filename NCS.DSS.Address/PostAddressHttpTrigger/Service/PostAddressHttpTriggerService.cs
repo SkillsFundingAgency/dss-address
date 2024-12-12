@@ -2,7 +2,6 @@
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.ServiceBus;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {

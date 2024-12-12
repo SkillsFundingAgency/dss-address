@@ -6,11 +6,9 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 {
@@ -19,7 +17,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
         private readonly IResourceHelper _resourceHelper;
         private readonly IGetAddressHttpTriggerService _getAddressService;
         private readonly IHttpRequestHelper _httpRequestHelper;
-        private readonly ILogger _logger;
+        private readonly ILogger<GetAddressHttpTrigger> _logger;
 
         public GetAddressHttpTrigger(
             IResourceHelper resourceHelper,

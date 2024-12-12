@@ -29,8 +29,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
-        private Mock<IPatchAddressHttpTriggerService> _patchAddressHttpTriggerService;
-        private Mock<ILoggerHelper> _loggerHelper;
+        private Mock<IPatchAddressHttpTriggerService> _patchAddressHttpTriggerService;        
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGeoCodingService> _geoCodingService;
         private AddressFunction.PatchAddressHttpTrigger _function;

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
 {

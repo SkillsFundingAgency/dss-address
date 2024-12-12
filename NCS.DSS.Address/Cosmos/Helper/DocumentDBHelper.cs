@@ -1,6 +1,4 @@
-﻿
-using Microsoft.Azure.Documents.Client;
-using System;
+﻿using Microsoft.Azure.Documents.Client;
 
 namespace NCS.DSS.Address.Cosmos.Helper
 {
