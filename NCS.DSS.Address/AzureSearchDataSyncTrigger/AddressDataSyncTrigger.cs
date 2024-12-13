@@ -19,7 +19,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
         public async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
                 LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<AddressDocument> documents)
         {
-            _logger.LogInformation("Entered SyncDataForCustomerSearchTrigger");
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(AddressDataSyncTrigger));
 
             var inputMessage = "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}", documents.Count);
@@ -28,11 +28,11 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
             SearchHelper.GetSearchServiceClient(_logger);
 
-            _logger.LogInformation("get search service client");
+            _logger.LogInformation("Get search service client");
 
             var client = SearchHelper.GetSearchServiceClient(_logger);
 
-            _logger.LogInformation("get index client");
+            _logger.LogInformation("Get index client");
 
             _logger.LogInformation("Documents modified " + documents.Count);
 
@@ -50,7 +50,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                 try
                 {
-                    _logger.LogInformation("attempting to merge docs to azure search");
+                    _logger.LogInformation("Attempting to merge documents to azure search");
 
                     var results = await client.IndexDocumentsAsync(batch);
 
@@ -58,15 +58,14 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                     if (failed.Any())
                     {
-                        _logger.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
+                        _logger.LogError("Failed to index some of the documents: {0}", string.Join(", ", failed));
                     }
 
-                    _logger.LogInformation("successfully merged docs to azure search");
+                    _logger.LogInformation("Successfully merged documents to azure search");
                 }
-                catch (RequestFailedException e)
+                catch (RequestFailedException ex)
                 {
-                    _logger.LogError(string.Format("Failed to index some of the documents. Error Code: {0}", e.ErrorCode));
-                    _logger.LogError(e.ToString());
+                    _logger.LogError(ex, "Failed to index some of the documents. Error Code: {0}. Error Message: {1}", ex.ErrorCode, ex.Message);
                 }
             }
         }

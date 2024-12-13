@@ -84,7 +84,9 @@ namespace NCS.DSS.Address.Models
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
+            {
                 LastModifiedDate = DateTime.UtcNow;
+            }
         }
 
         public void SetIds(string touchpointId, string subcontractorId)
@@ -96,7 +98,9 @@ namespace NCS.DSS.Address.Models
         public void SetLongitudeAndLatitude(Position position)
         {
             if (position == null)
+            {
                 return;
+            }
 
             Longitude = (decimal)position.Lon;
             Latitude = (decimal)position.Lat;

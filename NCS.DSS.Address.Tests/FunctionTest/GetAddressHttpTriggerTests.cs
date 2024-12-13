@@ -98,7 +98,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            var listOfAddresses = new List<Models.Address>();
+            var listOfAddresses = new List<Models.Address> { new Models.Address { AddressId = Guid.NewGuid() } };
             _getAddressHttpTriggerService.Setup(x => x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses));
 
             // Act

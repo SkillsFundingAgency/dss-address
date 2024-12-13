@@ -15,7 +15,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 
         public string Patch(string addressJson, AddressPatch addressPatch, ILogger logger)
         {
-            logger.LogInformation("started updating address json object with PATCH request");
+            logger.LogInformation("Started updating address json object with PATCH request");
             if (string.IsNullOrEmpty(addressJson))
                 return null;
 
@@ -116,7 +116,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                     _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], addressPatch.SubcontractorId);
                 logger.LogInformation("Added or Updated SubcontractorId in Json Object");
             }
-            logger.LogInformation("completed updating address json object with PATCH request. returning object back to caller");
+            logger.LogInformation("Completed updating address json object with PATCH request. returning object back to caller");
             return obj.ToString();
 
         }
