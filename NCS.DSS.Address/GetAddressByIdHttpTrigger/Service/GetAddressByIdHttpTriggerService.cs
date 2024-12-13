@@ -5,16 +5,16 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
     public class GetAddressByIdHttpTriggerService : IGetAddressByIdHttpTriggerService
     {
 
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
 
-        public GetAddressByIdHttpTriggerService(IDocumentDBProvider documentDbProvider)
+        public GetAddressByIdHttpTriggerService(ICosmosDbProvider cosmosDbProvider)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
         }
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
-            var address = await _documentDbProvider.GetAddressForCustomerAsync(customerId, addressId);
+            var address = await _cosmosDbProvider.GetAddressForCustomerAsync(customerId, addressId);
 
             return address;
         }

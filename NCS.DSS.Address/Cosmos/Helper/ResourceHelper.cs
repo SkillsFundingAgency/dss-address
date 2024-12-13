@@ -5,23 +5,23 @@ namespace NCS.DSS.Address.Cosmos.Helper
     public class ResourceHelper : IResourceHelper
     {
 
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
 
-        public ResourceHelper(IDocumentDBProvider documentDbProvider)
+        public ResourceHelper(ICosmosDbProvider cosmosDbProvider)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
         }
 
         public async Task<bool> DoesCustomerExist(Guid customerId)
         {
-            var doesCustomerExist = await _documentDbProvider.DoesCustomerResourceExist(customerId);
+            var doesCustomerExist = await _cosmosDbProvider.DoesCustomerResourceExist(customerId);
 
             return doesCustomerExist;
         }
 
         public async Task<bool> IsCustomerReadOnly(Guid customerId)
         {
-            var isCustomerReadOnly = await _documentDbProvider.DoesCustomerHaveATerminationDate(customerId);
+            var isCustomerReadOnly = await _cosmosDbProvider.DoesCustomerHaveATerminationDate(customerId);
 
             return isCustomerReadOnly;
         }

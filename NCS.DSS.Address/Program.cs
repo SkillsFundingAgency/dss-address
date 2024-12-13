@@ -1,18 +1,24 @@
+using Azure.Messaging.ServiceBus;
 using DFC.GeoCoding.Standard.AzureMaps.Service;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCS.DSS.Address.Cosmos.Helper;
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.GeoCoding;
 using NCS.DSS.Address.GetAddressByIdHttpTrigger.Service;
 using NCS.DSS.Address.GetAddressHttpTrigger.Service;
 using NCS.DSS.Address.Helpers;
+using NCS.DSS.Address.Models;
 using NCS.DSS.Address.PatchAddressHttpTrigger.Service;
 using NCS.DSS.Address.PostAddressHttpTrigger.Service;
+using NCS.DSS.Address.ServiceBus;
 using NCS.DSS.Address.Validation;
 
 namespace NCS.DSS.Address
@@ -23,8 +29,12 @@ namespace NCS.DSS.Address
         {
             var host = new HostBuilder()
                 .ConfigureFunctionsWebApplication()
-                .ConfigureServices(services =>
+                .ConfigureServices((context, services) =>
                 {
+                    var configuration = context.Configuration;
+                    services.AddOptions<AddressConfigurationSettings>()
+                        .Bind(configuration);
+
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
                     services.AddSingleton<IResourceHelper, ResourceHelper>();
@@ -41,8 +51,34 @@ namespace NCS.DSS.Address
                     services.AddScoped<IAddressPatchService, AddressPatchService>();
                     services.AddScoped<IGeoCodingService, GeoCodingService>();
                     services.AddScoped<IAzureMapService, AzureMapService>();
-                    services.AddTransient<IDocumentDBProvider, DocumentDBProvider>();
+                    services.AddTransient<ICosmosDbProvider, CosmosDbProvider>();
+                    services.AddTransient<IAddressServiceBusClient, AddressServiceBusClient>();
                     services.AddLogging();
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<AddressConfigurationSettings>>().Value;
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+
+                        return new CosmosClient(settings.AddressConnectionString, options);
+                    });
+
+                    services.AddSingleton(s =>
+                    {
+                        var settings = s.GetRequiredService<IOptions<AddressConfigurationSettings>>().Value;
+
+                        return new ServiceBusClient(settings.ServiceBusConnectionString);
+                    });
+
+                    services.Configure<LoggerFilterOptions>(options =>
+                    {
+                        LoggerFilterRule toRemove = options.Rules.FirstOrDefault(rule => rule.ProviderName
+                            == "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider");
+                        if (toRemove is not null)
+                        {
+                            options.Rules.Remove(toRemove);
+                        }
+                    });
                 })
                 .Build();
             await host.RunAsync();

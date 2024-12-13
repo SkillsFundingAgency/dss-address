@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,8 +20,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private HttpRequest _request;
-        private Mock<ILogger> _log;
-        private Mock<IResourceHelper> _resourceHelper;        
+        private Mock<IResourceHelper> _resourceHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGetAddressHttpTriggerService> _getAddressHttpTriggerService;
         private AddressFunction.GetAddressHttpTrigger _function;
@@ -32,7 +30,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         public void Setup()
         {
             _request = new DefaultHttpContext().Request;
-            _resourceHelper = new Mock<IResourceHelper>();            
+            _resourceHelper = new Mock<IResourceHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _logger = new Mock<ILogger<AddressFunction.GetAddressHttpTrigger>>();
             _getAddressHttpTriggerService = new Mock<IGetAddressHttpTriggerService>();

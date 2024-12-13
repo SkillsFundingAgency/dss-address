@@ -3,7 +3,7 @@ using Azure.Search.Documents.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Helpers;
-using Document = Microsoft.Azure.Documents.Document;
+using NCS.DSS.Address.Models;
 
 namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 {
@@ -17,7 +17,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
         }
         [Function("SyncAddressDataSyncTrigger")]
         public async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
-                LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<Document> documents)
+                LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<AddressDocument> documents)
         {
             _logger.LogInformation("Entered SyncDataForCustomerSearchTrigger");
 
@@ -40,9 +40,9 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
             {
                 var address = documents.Select(doc => new
                 {
-                    CustomerId = doc.GetPropertyValue<Guid>("CustomerId"),
-                    Address1 = doc.GetPropertyValue<string>("Address1"),
-                    PostCode = doc.GetPropertyValue<string>("PostCode")
+                    doc.CustomerId,
+                    doc.Address1,
+                    doc.PostCode
                 })
                     .ToList();
 

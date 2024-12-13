@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -29,7 +28,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private HttpRequest _request;
         private Mock<IResourceHelper> _resourceHelper;
         private IValidate _validate;
-        private Mock<IPatchAddressHttpTriggerService> _patchAddressHttpTriggerService;        
+        private Mock<IPatchAddressHttpTriggerService> _patchAddressHttpTriggerService;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGeoCodingService> _geoCodingService;
         private AddressFunction.PatchAddressHttpTrigger _function;
