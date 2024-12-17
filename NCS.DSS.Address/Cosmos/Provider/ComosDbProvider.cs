@@ -48,7 +48,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogError(ex, "Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogError(ex, "Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
         public async Task<string> GetAddressByIdForUpdateAsync(Guid customerId, Guid addressId)
         {
             var address = await GetAddressForCustomerAsync(customerId, addressId);
-
+            
             return JsonConvert.SerializeObject(address);
         }
 

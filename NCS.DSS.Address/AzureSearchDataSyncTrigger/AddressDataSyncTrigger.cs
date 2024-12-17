@@ -26,13 +26,8 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
             _logger.LogInformation(inputMessage);
 
-            SearchHelper.GetSearchServiceClient(_logger);
-
             _logger.LogInformation("Get search service client");
-
             var client = SearchHelper.GetSearchServiceClient(_logger);
-
-            _logger.LogInformation("Get index client");
 
             _logger.LogInformation("Documents modified " + documents.Count);
 

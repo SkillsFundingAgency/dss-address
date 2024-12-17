@@ -198,7 +198,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
 
             _logger.LogInformation("Attempting to PATCH Address resource.");
-            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest, _logger);
+            var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest);
 
             if (patchedAddress == null)
             {
@@ -228,6 +228,6 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             {
                 StatusCode = (int)HttpStatusCode.OK
             };
-        }        
+        }
     }
 }

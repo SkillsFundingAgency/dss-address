@@ -104,13 +104,13 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 addressRequest = await _httpRequestHelper.GetResourceFromRequest<Models.Address>(req);
             }
             catch (Newtonsoft.Json.JsonException ex)
-            {                
+            {
                 _logger.LogError(ex, "Unable to parse {addressRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(addressRequest), correlationGuid, ex.Message);
                 return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
             }
 
             if (addressRequest == null)
-            {                
+            {
                 _logger.LogWarning("{addressRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(addressRequest), correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
@@ -139,7 +139,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
             _logger.LogInformation("Successfully validated {addressRequest} object", nameof(addressRequest));
 
-            
+
             Position position;
             try
             {
@@ -147,7 +147,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
                 position = await _geoCodingService.GetPositionForPostcodeAsync(addressRequest.PostCode);
             }
             catch (Exception ex)
-            {                
+            {
                 _logger.LogError(ex, "Unable to get long and lat for postcode: {PostCode}. Exception: {ExceptionMessage}", addressRequest.PostCode, ex.Message);
                 throw;
             }
@@ -179,7 +179,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
 
             _logger.LogInformation("Attempting to create Address in Cosmos DB. Address GUID: {AddressId}", addressRequest.AddressId);
-            var address = await _addressPostService.CreateAsync(addressRequest, _logger);
+            var address = await _addressPostService.CreateAsync(addressRequest);
 
             if (address == null)
             {
@@ -202,6 +202,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             {
                 StatusCode = (int)HttpStatusCode.Created
             };
-        }       
+        }
     }
 }

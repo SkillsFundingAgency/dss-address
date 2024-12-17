@@ -53,13 +53,13 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Function
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
                 _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
-                return new BadRequestObjectResult(customerGuid);
+                return new BadRequestObjectResult(customerId);
             }
 
             if (!Guid.TryParse(addressId, out var addressGuid))
             {
                 _logger.LogWarning("Unable to parse 'addressId' to a GUID. Address GUID: {AddressID}", addressId);
-                return new BadRequestObjectResult(addressGuid);
+                return new BadRequestObjectResult(addressId);
             }
 
             _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);

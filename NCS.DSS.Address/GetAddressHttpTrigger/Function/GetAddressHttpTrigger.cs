@@ -81,7 +81,7 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
 
             if (addresses.Count == 1)
             {
-                _logger.LogWarning("1 Address found for Customer with ID: {CustomerId}.", customerGuid);
+                _logger.LogInformation("1 Address found for Customer with ID: {CustomerId}.", customerGuid);
                 _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
                 return new JsonResult(addresses[0], new JsonSerializerOptions())
                 {

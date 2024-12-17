@@ -18,23 +18,25 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Service
             _logger = logger;
         }
 
-        public async Task<Models.Address> CreateAsync(Models.Address address, ILogger logger)
+        public async Task<Models.Address> CreateAsync(Models.Address address)
         {
-            logger.LogInformation("Started creating address with Address POST request");
-
+            _logger.LogInformation("Started creating address with Address POST request");
             if (address == null)
             {
-                logger.LogInformation("Address can't be created because input address object is null");
+                _logger.LogInformation("Address can't be created because input address object is null");
                 return null;
             }
 
+            _logger.LogInformation("Setting default values for address object.");
             address.SetDefaultValues();
+            _logger.LogInformation("Default values for address object are successfully set.");
 
+            _logger.LogInformation("Attempting to create address in Cosmos DB");
             var response = await _cosmosDbProvider.CreateAddressAsync(address);
 
             if (response?.StatusCode == HttpStatusCode.Created)
             {
-                logger.LogInformation("Completed creating address with Address POST request. Response Code {responseStatusCode}", response.StatusCode);
+                _logger.LogInformation("Completed creating address with Address POST request. Response Code {responseStatusCode}", response.StatusCode);
                 return response.Resource;
             }
 

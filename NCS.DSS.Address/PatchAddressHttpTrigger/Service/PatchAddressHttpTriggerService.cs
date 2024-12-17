@@ -21,25 +21,28 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             _logger = logger;
         }
 
-        public string PatchResource(string addressJson, AddressPatch addressPatch, ILogger logger)
+        public string PatchResource(string addressJson, AddressPatch addressPatch)
         {
-            logger.LogInformation("Started patching address");
+            _logger.LogInformation("Started patching address");
             if (string.IsNullOrEmpty(addressJson))
             {
-                logger.LogInformation("Can't patch address because input address json is null");
+                _logger.LogInformation("Can't patch address because input address json is null");
                 return null;
             }
 
             if (addressPatch == null)
             {
-                logger.LogInformation("Can't patch address because input addressPatch object is null");
+                _logger.LogInformation("Can't patch address because input addressPatch object is null");
                 return null;
             }
 
+            _logger.LogInformation("Setting default values for address PATCH object.");
             addressPatch.SetDefaultValues();
-            var addressObj = _addressPatchService.Patch(addressJson, addressPatch, logger);
+            _logger.LogInformation("Default values for address PATCH object are successfully set.");
 
-            logger.LogInformation("Completed patching address");
+            var addressObj = _addressPatchService.Patch(addressJson, addressPatch);
+
+            _logger.LogInformation("Completed patching address");
 
             return addressObj;
         }
@@ -52,13 +55,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                 return null;
             }
 
-            logger.LogInformation("Started updating address in Cosmos DB with ID: {addressId}", addressId);
+            _logger.LogInformation("Started updating address in Cosmos DB with ID: {addressId}", addressId);
 
             var response = await _cosmosDbProvider.UpdateAddressAsync(addressJson, addressId);
 
             if (response?.StatusCode == HttpStatusCode.OK)
             {
-                logger.LogInformation("Completed updating address in Cosmos DB with ID: {addressId}", addressId);
+                _logger.LogInformation("Completed updating address in Cosmos DB with ID: {addressId}", addressId);
                 return response.Resource;
             }
 
