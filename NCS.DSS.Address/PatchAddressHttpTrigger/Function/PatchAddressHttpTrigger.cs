@@ -207,7 +207,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             }
 
             _logger.LogInformation("Attempting to update Address in Cosmos DB. Address GUID: {AddressId}", addressGuid);
-            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid, _logger);
+            var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
 
             if (updatedAddress == null)
             {

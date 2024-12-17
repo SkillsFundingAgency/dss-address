@@ -174,7 +174,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AddressPatch>(_request)).Returns(Task.FromResult(_addressPatch));
-            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(null));
+            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Address>(null));
             _patchAddressHttpTriggerService.Setup(x => x.GetAddressForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(_addressString));
             _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>())).Returns(_addressString);
 
@@ -193,7 +193,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
             _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.AddressPatch>(_request)).Returns(Task.FromResult(_addressPatch));
-            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>(), _logger.Object)).Returns(Task.FromResult<Models.Address>(_address));
+            _patchAddressHttpTriggerService.Setup(x => x.UpdateCosmosAsync(It.IsAny<string>(), It.IsAny<Guid>())).Returns(Task.FromResult<Models.Address>(_address));
             _patchAddressHttpTriggerService.Setup(x => x.GetAddressForCustomerAsync(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult<string>(_addressString));
             _patchAddressHttpTriggerService.Setup(x => x.PatchResource(It.IsAny<string>(), It.IsAny<Models.AddressPatch>())).Returns(_addressString);
 

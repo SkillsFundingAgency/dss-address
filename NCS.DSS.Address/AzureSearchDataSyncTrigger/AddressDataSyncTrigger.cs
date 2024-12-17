@@ -61,8 +61,10 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
                 catch (RequestFailedException ex)
                 {
                     _logger.LogError(ex, "Failed to index some of the documents. Error Code: {0}. Error Message: {1}", ex.ErrorCode, ex.Message);
-                }
+                }                
             }
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(AddressDataSyncTrigger));
         }
     }
 }

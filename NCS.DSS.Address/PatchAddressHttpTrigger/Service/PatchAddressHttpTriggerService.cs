@@ -47,7 +47,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             return addressObj;
         }
 
-        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId, ILogger logger)
+        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId)
         {
             if (string.IsNullOrEmpty(addressJson))
             {
