@@ -1,6 +1,4 @@
 ﻿using NCS.DSS.Address.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Address.Validation
