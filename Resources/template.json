@@ -38,12 +38,6 @@
         "serviceBusQueueName": {
             "type": "string"
         },
-        "sharedAppServicePlanName": {
-            "type": "string"
-        },
-        "sharedAppServicePlanResourceGroup": {
-            "type": "string"
-        },
         "storageAccountName": {
             "type": "string"
         },
@@ -62,7 +56,6 @@
     },
     "variables": {
         "functionAppTemplateUri": "[concat(parameters('templateBaseUrl'), '/deployments/function-app-resources.json')]",
-        "sharedAppServicePlanId": "[resourceId(parameters('sharedAppServicePlanResourceGroup'), 'Microsoft.Web/serverfarms', parameters('sharedAppServicePlanName'))]"
     },
     "resources": [
         {
@@ -87,9 +80,6 @@
                     },
                     "azureMapsUrl": {
                         "value": "[parameters('azureMapsUrl')]"
-                    },
-                    "appServicePlanId": {
-                        "value": "[variables('sharedAppServicePlanId')]"
                     },
                     "configEnvironmentName": {
                         "value": "[parameters('environmentName')]"
