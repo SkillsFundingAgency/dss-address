@@ -52,6 +52,9 @@
         },
         "SearchServiceName": {
             "value": "__SearchServiceName__"
+        },
+        "keyVaultName": {
+            "value": "__SharedKeyVaultName__"
         }
     }
 }
