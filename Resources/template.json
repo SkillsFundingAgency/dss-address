@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-       "appInsightsInstrumentationKey": {
+        "appInsightsInstrumentationKey": {
             "type": "string"
         },
         "azureMapsApiVersion": {
@@ -52,75 +52,50 @@
         },
         "SearchServiceAdminApiKey": {
             "type": "string"
+        },
+        "keyVaultName": {
+        "type": "string"
         }
-    },
-    "variables": {
-        "functionAppTemplateUri": "[concat(parameters('templateBaseUrl'), '/deployments/function-app-resources.json')]",
     },
     "resources": [
         {
-            "name": "[concat('FunctionApp-', parameters('functionAppNames')[copyIndex()])]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2017-05-10",
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2023-12-01",
+            "name": "[format('{0}/{1}', parameters('functionAppNames')[copyIndex()], 'appsettings')]",
             "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('functionAppTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "functionAppName": {
-                        "value": "[parameters('functionAppNames')[copyIndex()]]"
-                    },
-                    "azureMapsApiVersion": {
-                        "value": "[parameters('azureMapsApiVersion')]"
-                    },
-                    "azureMapsSubscriptionKey": {
-                        "value": "[parameters('azureMapsSubscriptionKey')]"
-                    },
-                    "azureMapsUrl": {
-                        "value": "[parameters('azureMapsUrl')]"
-                    },
-                    "configEnvironmentName": {
-                        "value": "[parameters('environmentName')]"
-                    },
-                    "cosmosDbCollectionId": {
-                        "value": "[parameters('cosmosDbCollectionId')]"
-                    },
-                    "cosmosDbDatabaseId": {
-                        "value": "[parameters('cosmosDbDatabaseId')]"
-                    },
-                    "cosmosDbEndpoint": {
-                        "value": "[parameters('cosmosDbEndpoint')]"
-                    },
-                    "cosmosDbKey": {
-                        "value": "[parameters('cosmosDbKey')]"
-                    },
-                    "serviceBusConnectionString": {
-                        "value": "[parameters('serviceBusConnectionString')]"
-                    },
-                    "serviceBusQueueName": {
-                        "value": "[parameters('serviceBusQueueName')]"
-                    },
-                    "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
-                    },
-                    "storageAccountKey": {
-                        "value": "[parameters('storageAccountKey')]"
-                    },
-                    "SearchServiceAdminApiKey": {
-                        "value": "[parameters('SearchServiceAdminApiKey')]"
-                    },
-                    "SearchServiceName": {
-                        "value": "[parameters('SearchServiceName')]"
-                    },
-                    "appInsightsInstrumentationKey":{
-                  "value": "[parameters('appInsightsInstrumentationKey')]"
-                    }
-                }
+                "EnvironmentName": "[toUpper(parameters('environmentName'))]",
+                "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+                "FUNCTIONS_EXTENSION_VERSION": "~4",
+                "MSDEPLOY_RENAME_LOCKED_FILES": "1",
+                "AzureMapApiVersion": "[parameters('azureMapsApiVersion')]",
+                "AzureMapSubscriptionKey": "[parameters('azureMapsSubscriptionKey')]",
+                "AzureMapURL": "[parameters('azureMapsUrl')]",
+                "AzureWebJobStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
+                "AddressConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('cosmosDbEndpoint'), parameters('cosmosDbKey'))]",
+                "CollectionId": "[parameters('cosmosDbCollectionId')]",
+                "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
+                "CustomerDatabaseId": "customers",
+                "CustomerCollectionId": "customers",
+                "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+                "QueueName": "[parameters('serviceBusQueueName')]",
+                "AzureCountrySet": "GB",
+                "CustomerSearchIndexName": "customer-search-index-v2",
+                "SearchServiceName": "[parameters('SearchServiceName')]",
+                "SearchServiceAdminApiKey": "[parameters('SearchServiceAdminApiKey')]"
             },
             "copy": {
-                "name": "FunctionAppCopy",
+                "name": "FunctionAppSettingsCopy",
+                "count": "[length(parameters('functionAppNames'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2023-12-01",
+            "name": "[format('{0}/{1}', parameters('functionAppNames')[copyIndex()], 'connectionstrings')]",
+            "properties": {},
+            "copy": {
+                "name": "FunctionAppSettingsCopy",
                 "count": "[length(parameters('functionAppNames'))]"
             }
         }
