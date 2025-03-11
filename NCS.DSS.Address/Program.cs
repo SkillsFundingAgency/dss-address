@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using DFC.GeoCoding.Standard.AzureMaps.Service;
 using DFC.HTTP.Standard;
@@ -57,10 +58,14 @@ namespace NCS.DSS.Address
 
                     services.AddSingleton(s =>
                     {
-                        var settings = s.GetRequiredService<IOptions<AddressConfigurationSettings>>().Value;
-                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                        var cosmosDbEndpoint = configuration["CosmosDbEndpoint"];
+                        if (string.IsNullOrEmpty(cosmosDbEndpoint))
+                        {
+                            throw new InvalidOperationException("CosmosDbEndpoint is not configured.");
+                        }
 
-                        return new CosmosClient(settings.AddressConnectionString, options);
+                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                        return new CosmosClient(cosmosDbEndpoint, new DefaultAzureCredential(), options);
                     });
 
                     services.AddSingleton(s =>
