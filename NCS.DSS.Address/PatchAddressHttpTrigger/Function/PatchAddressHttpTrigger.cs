@@ -125,15 +125,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             addressPatchRequest.SetIds(touchpointId, subcontractorId);
             _logger.LogInformation("IDs successfully set for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
-            try
-            {
-                addressPatchRequest.PostCode = addressPatchRequest?.PostCode?.TrimEnd().TrimStart();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to trim the postcode: {PostCode}. Exception: {ExceptionMessage}", addressPatchRequest.PostCode, ex.Message);
-                throw;
-            }
+            addressPatchRequest.PostCode = string.Join("", addressPatchRequest.PostCode?.Split(default(string[]), StringSplitOptions.RemoveEmptyEntries) ?? []);
 
             _logger.LogInformation("Attempting to validate {addressPatchRequest} object", nameof(addressPatchRequest));
             var errors = _validate.ValidateResource(addressPatchRequest, false);
