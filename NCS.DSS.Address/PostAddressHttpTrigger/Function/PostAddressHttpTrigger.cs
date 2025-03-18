@@ -134,7 +134,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Failed to validate {addressRequest} object", nameof(addressRequest));
+                _logger.LogWarning("Falied to validate {addressRequest} object", nameof(addressRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {addressRequest} object", nameof(addressRequest));
