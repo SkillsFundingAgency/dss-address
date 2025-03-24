@@ -1,5 +1,4 @@
-﻿using DFC.Common.Standard.Logging;
-using DFC.HTTP.Standard;
+﻿using DFC.HTTP.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -21,9 +20,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         private const string ValidCustomerId = "7E467BDB-213F-407A-B86A-1954053D3C24";
         private const string InValidId = "1111111-2222-3333-4444-555555555555";
         private HttpRequest _request;
-        private Mock<ILogger> _log;
         private Mock<IResourceHelper> _resourceHelper;
-        private Mock<ILoggerHelper> _loggerHelper;
         private Mock<IHttpRequestHelper> _httpRequestHelper;
         private Mock<IGetAddressHttpTriggerService> _getAddressHttpTriggerService;
         private AddressFunction.GetAddressHttpTrigger _function;
@@ -34,7 +31,6 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         {
             _request = new DefaultHttpContext().Request;
             _resourceHelper = new Mock<IResourceHelper>();
-            _loggerHelper = new Mock<ILoggerHelper>();
             _httpRequestHelper = new Mock<IHttpRequestHelper>();
             _logger = new Mock<ILogger<AddressFunction.GetAddressHttpTrigger>>();
             _getAddressHttpTriggerService = new Mock<IGetAddressHttpTriggerService>();
@@ -102,7 +98,7 @@ namespace NCS.DSS.Address.Tests.FunctionTest
             // Arrange
             _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
             _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            var listOfAddresses = new List<Models.Address>();
+            var listOfAddresses = new List<Models.Address> { new Models.Address { AddressId = Guid.NewGuid() } };
             _getAddressHttpTriggerService.Setup(x => x.GetAddressesAsync(It.IsAny<Guid>())).Returns(Task.FromResult<List<Models.Address>>(listOfAddresses));
 
             // Act

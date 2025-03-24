@@ -1,6 +1,5 @@
 ﻿using DFC.GeoCoding.Standard.AzureMaps.Model;
 using DFC.Swagger.Standard.Annotations;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace NCS.DSS.Address.Models
@@ -85,7 +84,9 @@ namespace NCS.DSS.Address.Models
         public void SetDefaultValues()
         {
             if (!LastModifiedDate.HasValue)
+            {
                 LastModifiedDate = DateTime.UtcNow;
+            }
         }
 
         public void SetIds(string touchpointId, string subcontractorId)
@@ -97,7 +98,9 @@ namespace NCS.DSS.Address.Models
         public void SetLongitudeAndLatitude(Position position)
         {
             if (position == null)
+            {
                 return;
+            }
 
             Longitude = (decimal)position.Lon;
             Latitude = (decimal)position.Lat;
