@@ -166,28 +166,6 @@ namespace NCS.DSS.Address.Tests.FunctionTest
         }
 
         [Test]
-        public async Task PostAddressHttpTrigger_ReturnsStatusCodeCreated_WhenPostcodeRequiresTrimming()
-        {
-            // Arrange
-            _address.Address1 = "Some Address";
-            _address.PostCode = "NE99 5EB ";
-            _httpRequestHelper.Setup(x => x.GetDssApimUrl(_request)).Returns("http://localhost:7071/");
-            _httpRequestHelper.Setup(x => x.GetDssTouchpointId(_request)).Returns("0000000001");
-            _httpRequestHelper.Setup(x => x.GetResourceFromRequest<Models.Address>(_request)).Returns(Task.FromResult(_address));
-            _resourceHelper.Setup(x => x.DoesCustomerExist(It.IsAny<Guid>())).Returns(Task.FromResult(true));
-            _postAddressHttpTriggerService.Setup(x => x.CreateAsync(It.IsAny<Models.Address>())).Returns(Task.FromResult<Models.Address>(_address));
-
-            // Act
-            var result = await RunFunction(ValidCustomerId);
-
-            // Assert            
-            Assert.That(result, Is.InstanceOf<JsonResult>());
-
-            var responseResult = result as JsonResult;
-            Assert.That(responseResult.StatusCode, Is.EqualTo((int)HttpStatusCode.Created));
-        }
-
-        [Test]
         public async Task PostAddressHttpTrigger_ReturnsStatusCodeCreated_WhenRequestIsValid()
         {
             // Arrange

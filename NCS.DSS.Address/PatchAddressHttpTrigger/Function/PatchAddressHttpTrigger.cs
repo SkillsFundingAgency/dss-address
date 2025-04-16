@@ -125,16 +125,6 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             addressPatchRequest.SetIds(touchpointId, subcontractorId);
             _logger.LogInformation("IDs successfully set for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
-            try
-            {
-                addressPatchRequest.PostCode = addressPatchRequest?.PostCode?.TrimEnd().TrimStart();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unable to trim the postcode: {PostCode}. Exception: {ExceptionMessage}", addressPatchRequest.PostCode, ex.Message);
-                throw;
-            }
-
             _logger.LogInformation("Attempting to validate {addressPatchRequest} object", nameof(addressPatchRequest));
             var errors = _validate.ValidateResource(addressPatchRequest, false);
 
@@ -153,7 +143,8 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 try
                 {
                     _logger.LogInformation("Attempting to get long and lat for postcode: {Postcode}", addressPatchRequest.PostCode);
-                    position = await _geoCodingService.GetPositionForPostcodeAsync(addressPatchRequest.PostCode);
+                    var postcode = addressPatchRequest.PostCode.Replace(" ", string.Empty);
+                    position = await _geoCodingService.GetPositionForPostcodeAsync(postcode);
                 }
                 catch (Exception ex)
                 {
