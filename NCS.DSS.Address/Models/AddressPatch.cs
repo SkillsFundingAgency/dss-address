@@ -98,7 +98,9 @@ namespace NCS.DSS.Address.Models
         public void SetLongitudeAndLatitude(Position position)
         {
             if (position == null)
+            {
                 return;
+            }
 
             Longitude = (decimal)position.Lon;
             Latitude = (decimal)position.Lat;
