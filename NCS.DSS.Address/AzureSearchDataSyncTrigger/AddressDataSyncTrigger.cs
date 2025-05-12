@@ -3,46 +3,41 @@ using Azure.Search.Documents.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NCS.DSS.Address.Helpers;
-using Document = Microsoft.Azure.Documents.Document;
+using NCS.DSS.Address.Models;
 
 namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 {
     public class AddressDataSyncTrigger
     {
-        private readonly ILogger<AddressDataSyncTrigger> _log;
+        private readonly ILogger<AddressDataSyncTrigger> _logger;
 
         public AddressDataSyncTrigger(ILogger<AddressDataSyncTrigger> log)
         {
-            _log = log;
+            _logger = log;
         }
         [Function("SyncAddressDataSyncTrigger")]
         public async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
-                LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<Document> documents)
+                LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<AddressDocument> documents)
         {
-            _log.LogInformation("Entered SyncDataForCustomerSearchTrigger");
+            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(AddressDataSyncTrigger));
 
             var inputMessage = "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}", documents.Count);
 
-            _log.LogInformation(inputMessage);
+            _logger.LogInformation(inputMessage);
 
-            SearchHelper.GetSearchServiceClient(_log);
+            _logger.LogInformation("Get search service client");
+            var client = SearchHelper.GetSearchServiceClient(_logger);
 
-            _log.LogInformation("get search service client");
-
-            var client = SearchHelper.GetSearchServiceClient(_log);
-
-            _log.LogInformation("get index client");
-
-            _log.LogInformation("Documents modified " + documents.Count);
+            _logger.LogInformation("Documents modified " + documents.Count);
 
             if (documents.Count > 0)
             {
                 var address = documents.Select(doc => new
                 {
-                    CustomerId = doc.GetPropertyValue<Guid>("CustomerId"),
-                    Address1 = doc.GetPropertyValue<string>("Address1"),
-                    PostCode = doc.GetPropertyValue<string>("PostCode")
+                    doc.CustomerId,
+                    doc.Address1,
+                    doc.PostCode
                 })
                     .ToList();
 
@@ -50,7 +45,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                 try
                 {
-                    _log.LogInformation("attempting to merge docs to azure search");
+                    _logger.LogInformation("Attempting to merge documents to azure search");
 
                     var results = await client.IndexDocumentsAsync(batch);
 
@@ -58,17 +53,18 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                     if (failed.Any())
                     {
-                        _log.LogError(string.Format("Failed to index some of the documents: {0}", string.Join(", ", failed)));
+                        _logger.LogError("Failed to index some of the documents: {0}", string.Join(", ", failed));
                     }
 
-                    _log.LogInformation("successfully merged docs to azure search");
+                    _logger.LogInformation("Successfully merged documents to azure search");
                 }
-                catch (RequestFailedException e)
+                catch (RequestFailedException ex)
                 {
-                    _log.LogError(string.Format("Failed to index some of the documents. Error Code: {0}", e.ErrorCode));
-                    _log.LogError(e.ToString());
-                }
+                    _logger.LogError(ex, "Failed to index some of the documents. Error Code: {0}. Error Message: {1}", ex.ErrorCode, ex.Message);
+                }                
             }
+
+            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(AddressDataSyncTrigger));
         }
     }
 }

@@ -2,68 +2,93 @@
 using NCS.DSS.Address.Cosmos.Provider;
 using NCS.DSS.Address.Models;
 using NCS.DSS.Address.ServiceBus;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 {
     public class PatchAddressHttpTriggerService : IPatchAddressHttpTriggerService
     {
-
-        private readonly IDocumentDBProvider _documentDbProvider;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
         private readonly IAddressPatchService _addressPatchService;
+        private readonly IAddressServiceBusClient _addressServiceBusClient;
+        private readonly ILogger<PatchAddressHttpTriggerService> _logger;
 
-        public PatchAddressHttpTriggerService(IDocumentDBProvider documentDbProvider, IAddressPatchService addressPatchService)
+        public PatchAddressHttpTriggerService(ICosmosDbProvider cosmosDbProvider, IAddressPatchService addressPatchService, IAddressServiceBusClient addressServiceBusClient, ILogger<PatchAddressHttpTriggerService> logger)
         {
-            _documentDbProvider = documentDbProvider;
+            _cosmosDbProvider = cosmosDbProvider;
             _addressPatchService = addressPatchService;
+            _addressServiceBusClient = addressServiceBusClient;
+            _logger = logger;
         }
 
-        public string PatchResource(string addressJson, AddressPatch addressPatch, ILogger logger)
+        public string PatchResource(string addressJson, AddressPatch addressPatch)
         {
-            logger.LogInformation("started patching address");
+            _logger.LogInformation("Started patching address");
             if (string.IsNullOrEmpty(addressJson))
             {
-                logger.LogInformation("Can't patch address because input address json is null");
+                _logger.LogInformation("Can't patch address because input address json is null");
                 return null;
             }
 
             if (addressPatch == null)
             {
-                logger.LogInformation("Can't patch address because input addressPatch object is null");
+                _logger.LogInformation("Can't patch address because input addressPatch object is null");
                 return null;
             }
 
+            _logger.LogInformation("Setting default values for address PATCH object.");
             addressPatch.SetDefaultValues();
-            var addressObj = _addressPatchService.Patch(addressJson, addressPatch, logger);
+            _logger.LogInformation("Default values for address PATCH object are successfully set.");
 
-            logger.LogInformation("completed patching address");
+            var addressObj = _addressPatchService.Patch(addressJson, addressPatch);
+
+            _logger.LogInformation("Completed patching address");
 
             return addressObj;
         }
 
-        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId, ILogger logger)
+        public async Task<Models.Address> UpdateCosmosAsync(string addressJson, Guid addressId)
         {
-            logger.LogInformation($"started updating address in Cosmos DB for Id [{addressId}]");
+            if (string.IsNullOrEmpty(addressJson))
+            {
+                _logger.LogInformation("The address object provided is either null or empty.");
+                return null;
+            }
 
-            var response = await _documentDbProvider.UpdateAddressAsync(addressJson, addressId);
+            _logger.LogInformation("Started updating address in Cosmos DB with ID: {addressId}", addressId);
 
-            var responseStatusCode = response?.StatusCode;
+            var response = await _cosmosDbProvider.UpdateAddressAsync(addressJson, addressId);
 
-            logger.LogInformation($"Completed updating address in Cosmos DB. Response Code [{responseStatusCode}]");
+            if (response?.StatusCode == HttpStatusCode.OK)
+            {
+                _logger.LogInformation("Completed updating address in Cosmos DB with ID: {addressId}", addressId);
+                return response.Resource;
+            }
 
-            return responseStatusCode == HttpStatusCode.OK ? (dynamic)response.Resource : null;
+            _logger.LogError("Failed to update address in Cosmos DB with ID: {addressId}.", addressId);
+            return null;
         }
 
         public async Task<string> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
-            return await _documentDbProvider.GetAddressByIdForUpdateAsync(customerId, addressId);
+            return await _cosmosDbProvider.GetAddressByIdForUpdateAsync(customerId, addressId);
         }
 
         public async Task SendToServiceBusQueueAsync(Models.Address address, Guid customerId, string reqUrl)
         {
-            await ServiceBusClient.SendPatchMessageAsync(address, customerId, reqUrl);
+            try
+            {
+                _logger.LogInformation("Sending address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
+
+                await _addressServiceBusClient.SendPatchMessageAsync(address, customerId, reqUrl);
+
+                _logger.LogInformation("Successfully sent address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while sending address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
+                throw;
+            }
         }
     }
 }

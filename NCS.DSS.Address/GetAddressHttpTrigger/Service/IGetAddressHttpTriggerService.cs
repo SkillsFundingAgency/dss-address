@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace NCS.DSS.Address.GetAddressHttpTrigger.Service
+﻿namespace NCS.DSS.Address.GetAddressHttpTrigger.Service
 {
     public interface IGetAddressHttpTriggerService
     {
