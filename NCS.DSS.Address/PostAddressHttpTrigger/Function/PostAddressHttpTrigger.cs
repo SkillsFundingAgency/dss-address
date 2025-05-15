@@ -153,7 +153,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             }
 
             addressRequest.SetLongitudeAndLatitude(position);
-            _logger.LogInformation("Successfully set long and lat for postcode: {Postcode}", addressRequest.PostCode);
+            _logger.LogInformation("Successfully set long and lat for postcode: {Postcode}. Longitude: {Longitude} Latitude: {Latitude} (null values imply given postcode is considered invalid)", addressRequest.PostCode, addressRequest.Longitude, addressRequest.Latitude);
 
             _logger.LogInformation("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
@@ -194,7 +194,6 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             _logger.LogInformation("Attempting to send message to Service Bus Namespace. Address GUID: {AddressId}", address.AddressId);
             await _addressPostService.SendToServiceBusQueueAsync(address, apimUrl);
             _logger.LogInformation("Successfully sent message to Service Bus. Address GUID: {AddressId}", address.AddressId);
-
 
             _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PostAddressHttpTrigger));
 
