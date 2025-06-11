@@ -262,3 +262,4 @@ __pycache__/
 /NCS.CDS.Address/host.json
 /NCS.CDS.Address/.gitignore
 /.gitattributes
+/NCS.DSS.Address/local.settings.json

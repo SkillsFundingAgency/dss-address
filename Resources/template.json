@@ -82,7 +82,7 @@
                 "AzureCountrySet": "GB",
                 "CustomerSearchIndexName": "customer-search-index-v2",
                 "SearchServiceName": "[parameters('SearchServiceName')]",
-                "SearchServiceAdminApiKey": "[parameters('SearchServiceAdminApiKey')]"
+                "SearchServiceAdminApiKey": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedSearchAdminKey)', parameters('keyVaultName'))]"
             },
             "copy": {
                 "name": "FunctionAppSettingsCopy",
