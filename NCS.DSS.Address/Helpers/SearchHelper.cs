@@ -13,7 +13,7 @@ namespace NCS.DSS.Address.Helpers
 
         public static SearchClient GetSearchServiceClient(ILogger logger)
         {
-            logger.LogInformation("Start getting Search Service Client with name: {SearchServiceName} and Key: {SearchServiceKey}", SearchServiceName, SearchServiceKey);
+            logger.LogInformation($"Retrieving Search Service Client with name: {SearchServiceName}");
             if (_client != null)
             {
                 logger.LogInformation("Not required. Search Service Client retrieved already");
@@ -23,7 +23,7 @@ namespace NCS.DSS.Address.Helpers
             var searchServiceEndpoint = $"https://{SearchServiceName}.search.windows.net";
             _client = new SearchClient(new Uri(searchServiceEndpoint), SearchServiceIndexName, new AzureKeyCredential(SearchServiceKey));
 
-            logger.LogInformation("Completed getting Search Service Client with an Endpoint {searchServiceEndpoint}", searchServiceEndpoint);
+            logger.LogInformation($"Successfully retrieved Search Service Client with endpoint: {searchServiceEndpoint}");
             return _client;
         }
     }
