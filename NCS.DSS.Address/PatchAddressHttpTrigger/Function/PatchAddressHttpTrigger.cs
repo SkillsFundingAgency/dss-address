@@ -162,7 +162,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 }
 
                 addressPatchRequest.SetLongitudeAndLatitude(position);
-                _logger.LogInformation("Successfully set long and lat for postcode: {Postcode}", addressPatchRequest.PostCode);
+                _logger.LogInformation("Successfully set long and lat for postcode: {Postcode}. Longitude: {Longitude} Latitude: {Latitude} (null values imply given postcode is considered invalid)", addressPatchRequest.PostCode, addressPatchRequest.Longitude, addressPatchRequest.Latitude);
             }
 
             _logger.LogInformation("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);

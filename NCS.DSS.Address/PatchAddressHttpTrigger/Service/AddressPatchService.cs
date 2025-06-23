@@ -62,29 +62,33 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             {
                 _jsonHelper.UpdatePropertyValue(obj["PostCode"], addressPatch.PostCode);
                 _logger.LogInformation("PostCode Update Complete in Json Object");
-            }
 
+                _jsonHelper.UpdatePropertyValue(obj["Longitude"], addressPatch.Longitude);
+                _logger.LogInformation("Longitude Update Complete in Json Object");
+
+                _jsonHelper.UpdatePropertyValue(obj["Latitude"], addressPatch.Latitude);
+                _logger.LogInformation("Latitude Update Complete in Json Object");
+            }
+            else
+            {
+                if (addressPatch.Longitude.HasValue)
+                {
+                    _jsonHelper.UpdatePropertyValue(obj["Longitude"], addressPatch.Longitude);
+                    _logger.LogInformation("Longitude Update Complete in Json Object");
+                }
+
+                if (addressPatch.Latitude.HasValue)
+                {
+                    _jsonHelper.UpdatePropertyValue(obj["Latitude"], addressPatch.Latitude);
+                    _logger.LogInformation("Latitude Update Complete in Json Object");
+                }
+            }
 
             if (addressPatch.AlternativePostCode != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["AlternativePostCode"], addressPatch.AlternativePostCode);
                 _logger.LogInformation("AlternativePostCode Update Complete in Json Object");
             }
-
-
-            if (addressPatch.Longitude.HasValue)
-            {
-                _jsonHelper.UpdatePropertyValue(obj["Longitude"], addressPatch.Longitude);
-                _logger.LogInformation("Longitude Update Complete in Json Object");
-            }
-
-
-            if (addressPatch.Latitude.HasValue)
-            {
-                _jsonHelper.UpdatePropertyValue(obj["Latitude"], addressPatch.Latitude);
-                _logger.LogInformation("Latitude Update Complete in Json Object");
-            }
-
 
             if (addressPatch.EffectiveFrom.HasValue)
             {
