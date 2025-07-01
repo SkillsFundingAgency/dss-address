@@ -140,7 +140,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (errors != null && errors.Any())
             {
-                _logger.LogWarning("Falied to validate {addressPatchRequest} object", nameof(addressPatchRequest));
+                _logger.LogWarning("Failed to validate {addressPatchRequest} object", nameof(addressPatchRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
             _logger.LogInformation("Successfully validated {addressPatchRequest} object", nameof(addressPatchRequest));
