@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using DFC.GeoCoding.Standard.AzureMaps.Service;
 using DFC.HTTP.Standard;
@@ -57,10 +58,30 @@ namespace NCS.DSS.Address
 
                     services.AddSingleton(s =>
                     {
-                        var settings = s.GetRequiredService<IOptions<AddressConfigurationSettings>>().Value;
-                        var options = new CosmosClientOptions() { ConnectionMode = ConnectionMode.Gateway };
+                        var logger = s.GetRequiredService<ILogger<Program>>();
 
-                        return new CosmosClient(settings.AddressConnectionString, options);
+                        var connectionString = configuration["AddressConnectionString"];
+                        var endpoint = configuration["CosmosDbEndpoint"];
+
+                        var options = new CosmosClientOptions
+                        {
+                            ConnectionMode = ConnectionMode.Gateway
+                        };
+
+                        if (!string.IsNullOrWhiteSpace(endpoint))
+                        {
+                            logger.LogInformation("Using DefaultAzureCredential for Cosmos DB (managed identity)");
+                            return new CosmosClient(endpoint, new DefaultAzureCredential(), options);
+                        }
+                        else if (!string.IsNullOrWhiteSpace(connectionString))
+                        {
+                            logger.LogInformation("No managed identity found: using Cosmos DB connection string (local development)");
+                            return new CosmosClient(connectionString, options);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Neither CosmosDbEndpoint or a ConnectionString are configured");
+                        }
                     });
 
                     services.AddSingleton(s =>
