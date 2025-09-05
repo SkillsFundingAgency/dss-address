@@ -8,9 +8,6 @@
         "azureMapsApiVersion": {
             "type": "string"
         },
-        "azureMapsSubscriptionKey": {
-            "type": "securestring"
-        },
         "azureMapsUrl": {
             "type": "string"
         },
@@ -23,34 +20,19 @@
         "CosmosDbEndpoint": {
             "type": "string"
         },
-        "cosmosDbKey": {
-            "type": "securestring"
-        },
         "environmentName": {
             "type": "string"
         },
         "functionAppNames": {
             "type": "array"
         },
-        "serviceBusConnectionString": {
-            "type": "string"
-        },
         "serviceBusQueueName": {
             "type": "string"
-        },
-        "storageAccountName": {
-            "type": "string"
-        },
-        "storageAccountKey": {
-            "type": "securestring"
         },
         "templateBaseUrl": {
             "type": "string"
         },
         "SearchServiceName": {
-            "type": "string"
-        },
-        "SearchServiceAdminApiKey": {
             "type": "string"
         },
         "keyVaultName": {
@@ -68,21 +50,21 @@
                 "FUNCTIONS_EXTENSION_VERSION": "~4",
                 "MSDEPLOY_RENAME_LOCKED_FILES": "1",
                 "AzureMapApiVersion": "[parameters('azureMapsApiVersion')]",
-                "AzureMapSubscriptionKey": "[parameters('azureMapsSubscriptionKey')]",
+                "AzureMapSubscriptionKey": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=AzureMapsAccessKey)', parameters('keyVaultName'))]",
                 "AzureMapURL": "[parameters('azureMapsUrl')]",
                 "AzureWebJobStorage": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedStorageAccountConnectionString)', parameters('keyVaultName'))]",
                 "APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('appInsightsInstrumentationKey')]",
-                "AddressConnectionString": "[format('AccountEndpoint={0}/;AccountKey={1};', parameters('CosmosDbEndpoint'), parameters('cosmosDbKey'))]",
+                "AddressConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=CosmosDBConnectionString)', parameters('keyVaultName'))]",
                 "CollectionId": "[parameters('cosmosDbCollectionId')]",
                 "DatabaseId": "[parameters('cosmosDbDatabaseId')]",
                 "CustomerDatabaseId": "customers",
                 "CustomerCollectionId": "customers",
-                "ServiceBusConnectionString": "[parameters('serviceBusConnectionString')]",
+                "ServiceBusConnectionString": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=ServiceBusConnectionString)', parameters('keyVaultName'))]",
                 "QueueName": "[parameters('serviceBusQueueName')]",
                 "AzureCountrySet": "GB",
                 "CustomerSearchIndexName": "customer-search-index-v2",
                 "SearchServiceName": "[parameters('SearchServiceName')]",
-                "SearchServiceAdminApiKey": "[parameters('SearchServiceAdminApiKey')]",
+                "SearchServiceAdminApiKey": "[format('@Microsoft.KeyVault(VaultName={0};SecretName=SharedSearchAdminKey)', parameters('keyVaultName'))]",
                 "CosmosDbEndpoint": "[parameters('CosmosDbEndpoint')]"
             },
             "copy": {
