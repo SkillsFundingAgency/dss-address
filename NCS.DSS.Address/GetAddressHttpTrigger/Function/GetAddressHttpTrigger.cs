@@ -42,55 +42,54 @@ namespace NCS.DSS.Address.GetAddressHttpTrigger.Function
         [Display(Name = "Get", Description = "Ability to retrieve all addresses for a given customer.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Customers/{customerId}/Addresses")] HttpRequest req, string customerId)
         {
-            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(GetAddressHttpTrigger));
+            _logger.LogTrace("Function {FunctionName} has been invoked", nameof(GetAddressHttpTrigger));
 
             var touchpointId = _httpRequestHelper.GetDssTouchpointId(req);
             if (string.IsNullOrEmpty(touchpointId))
             {
-                _logger.LogWarning("Unable to locate 'TouchpointId' in request header");
+                _logger.LogInformation("Unable to locate 'TouchpointId' in request header");
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                _logger.LogInformation("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult(customerGuid);
             }
 
-            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
+            _logger.LogTrace("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
 
-            _logger.LogInformation("Attempting to check if customer exists. Customer GUID: {CustomerId}", customerGuid);
+            _logger.LogTrace("Attempting to check if customer exists. Customer GUID: {CustomerId}", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _logger.LogWarning("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
+                _logger.LogInformation("Customer does not exist. Customer GUID: {CustomerGuid}.", customerGuid);
                 return new NoContentResult();
             }
-            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
+            _logger.LogTrace("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
-            _logger.LogInformation("Attempting to get Addresses for Customer. Customer GUID: {CustomerId}.", customerGuid);
+            _logger.LogTrace("Attempting to get Addresses for Customer. Customer GUID: {CustomerId}.", customerGuid);
             var addresses = await _getAddressService.GetAddressesAsync(customerGuid);
 
             if (addresses == null || addresses.Count == 0)
             {
-                _logger.LogWarning("No Address found for Customer with ID: {CustomerId}.", customerGuid);
-                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
+                _logger.LogInformation("No Address found for Customer with ID: {CustomerId}.", customerGuid);
                 return new NoContentResult();
             }
 
             if (addresses.Count == 1)
             {
-                _logger.LogInformation("1 Address found for Customer with ID: {CustomerId}.", customerGuid);
-                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
+                _logger.LogTrace("1 Address found for Customer with ID: {CustomerId}.", customerGuid);
+                _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
                 return new JsonResult(addresses[0], new JsonSerializerOptions())
                 {
                     StatusCode = (int)HttpStatusCode.OK
                 };
             }
 
-            _logger.LogInformation("{Count} Address(es) retrieved for Customer GUID: {CustomerId}.", addresses.Count, customerGuid);
-            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
+            _logger.LogTrace("{Count} Address(es) retrieved for Customer GUID: {CustomerId}.", addresses.Count, customerGuid);
+            _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(GetAddressHttpTrigger));
             return new JsonResult(addresses, new JsonSerializerOptions())
             {
                 StatusCode = (int)HttpStatusCode.OK

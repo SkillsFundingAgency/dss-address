@@ -55,14 +55,9 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
         [Display(Name = "Patch", Description = "Ability to update an existing address.")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "Customers/{customerId}/Addresses/{addressId}")] HttpRequest req, string customerId, string addressId)
         {
-            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(PatchAddressHttpTrigger));
+            _logger.LogTrace("Function {FunctionName} has been invoked", nameof(PatchAddressHttpTrigger));
 
             var correlationId = _httpRequestHelper.GetDssCorrelationId(req);
-            if (string.IsNullOrEmpty(correlationId))
-            {
-                _logger.LogWarning("Unable to locate 'DssCorrelationId' in request header");
-            }
-
             if (!Guid.TryParse(correlationId, out var correlationGuid))
             {
                 correlationGuid = Guid.NewGuid();
@@ -79,34 +74,34 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             var apimUrl = _httpRequestHelper.GetDssApimUrl(req);
             if (string.IsNullOrEmpty(apimUrl))
             {
-                _logger.LogWarning("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                _logger.LogInformation("Unable to locate 'apimURL' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 return new BadRequestObjectResult(HttpStatusCode.BadRequest);
             }
 
             var subcontractorId = _httpRequestHelper.GetDssSubcontractorId(req);
             if (string.IsNullOrEmpty(subcontractorId))
             {
-                _logger.LogWarning("Unable to locate 'SubcontractorId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                _logger.LogInformation("Unable to locate 'SubcontractorId' in request header. Correlation GUID: {CorrelationGuid}", correlationGuid);
             }
 
             if (!Guid.TryParse(customerId, out var customerGuid))
             {
-                _logger.LogWarning("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
+                _logger.LogInformation("Unable to parse 'customerId' to a GUID. Customer GUID: {CustomerID}", customerId);
                 return new BadRequestObjectResult(customerGuid);
             }
 
             if (!Guid.TryParse(addressId, out var addressGuid))
             {
-                _logger.LogWarning("Unable to parse 'addressId' to a GUID. Address GUID: {AddressID}", addressId);
+                _logger.LogInformation("Unable to parse 'addressId' to a GUID. Address GUID: {AddressID}", addressId);
                 return new BadRequestObjectResult(addressGuid);
             }
 
-            _logger.LogInformation("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
+            _logger.LogTrace("Input validation has succeeded. Touchpoint ID: {TouchpointId}.", touchpointId);
 
             AddressPatch addressPatchRequest;
             try
             {
-                _logger.LogInformation("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
+                _logger.LogTrace("Attempting to retrieve resource from request. Correlation GUID: {CorrelationGuid}", correlationGuid);
                 addressPatchRequest = await _httpRequestHelper.GetResourceFromRequest<AddressPatch>(req);
             }
             catch (Exception ex)
@@ -117,13 +112,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
             if (addressPatchRequest == null)
             {
-                _logger.LogWarning("{addressPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(addressPatchRequest), correlationGuid);
+                _logger.LogInformation("{addressPatchRequest} object is NULL. Correlation GUID: {CorrelationGuid}", nameof(addressPatchRequest), correlationGuid);
                 return new UnprocessableEntityObjectResult(req);
             }
 
-            _logger.LogInformation("Attempting to set IDs for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
+            _logger.LogTrace("Attempting to set IDs for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
             addressPatchRequest.SetIds(touchpointId, subcontractorId);
-            _logger.LogInformation("IDs successfully set for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
+            _logger.LogTrace("IDs successfully set for Address PATCH. Correlation GUID: {CorrelationGuid}", correlationGuid);
 
             try
             {
@@ -135,7 +130,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 throw;
             }
 
-            _logger.LogInformation("Attempting to validate {addressPatchRequest} object", nameof(addressPatchRequest));
+            _logger.LogTrace("Attempting to validate {addressPatchRequest} object", nameof(addressPatchRequest));
             var errors = _validate.ValidateResource(addressPatchRequest, false);
 
             if (errors != null && errors.Any())
@@ -143,7 +138,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 _logger.LogWarning("Failed to validate {addressPatchRequest} object", nameof(addressPatchRequest));
                 return new UnprocessableEntityObjectResult(errors);
             }
-            _logger.LogInformation("Successfully validated {addressPatchRequest} object", nameof(addressPatchRequest));
+            _logger.LogTrace("Successfully validated {addressPatchRequest} object", nameof(addressPatchRequest));
 
 
             if (!string.IsNullOrEmpty(addressPatchRequest.PostCode))
@@ -152,7 +147,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
 
                 try
                 {
-                    _logger.LogInformation("Attempting to get long and lat for postcode: {Postcode}", addressPatchRequest.PostCode);
+                    _logger.LogTrace("Attempting to get long and lat for postcode: {Postcode}", addressPatchRequest.PostCode);
                     position = await _geoCodingService.GetPositionForPostcodeAsync(addressPatchRequest.PostCode);
                 }
                 catch (Exception ex)
@@ -162,67 +157,66 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
                 }
 
                 addressPatchRequest.SetLongitudeAndLatitude(position);
-                _logger.LogInformation("Successfully set long and lat for postcode: {Postcode}. Longitude: {Longitude} Latitude: {Latitude} (null values imply given postcode is considered invalid)", addressPatchRequest.PostCode, addressPatchRequest.Longitude, addressPatchRequest.Latitude);
+                _logger.LogTrace("Successfully set long and lat for postcode: {Postcode}. Longitude: {Longitude} Latitude: {Latitude} (null values imply given postcode is considered invalid)", addressPatchRequest.PostCode, addressPatchRequest.Longitude, addressPatchRequest.Latitude);
             }
 
-            _logger.LogInformation("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);
+            _logger.LogTrace("Checking if customer exists. Customer ID: {CustomerId}.", customerGuid);
             var doesCustomerExist = await _resourceHelper.DoesCustomerExist(customerGuid);
 
             if (!doesCustomerExist)
             {
-                _logger.LogWarning("Customer not found. Customer ID: {CustomerId}.", customerGuid);
+                _logger.LogInformation("Customer not found. Customer ID: {CustomerId}.", customerGuid);
                 return new NoContentResult();
             }
 
-            _logger.LogInformation("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
+            _logger.LogTrace("Customer exists. Customer GUID: {CustomerGuid}.", customerGuid);
 
-            _logger.LogInformation("Check if customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
+            _logger.LogTrace("Check if customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
             var isCustomerReadOnly = await _resourceHelper.IsCustomerReadOnly(customerGuid);
 
             if (isCustomerReadOnly)
             {
-                _logger.LogWarning("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
+                _logger.LogInformation("Customer is read-only. Customer GUID: {CustomerId}.", customerGuid);
                 return new ObjectResult(customerGuid.ToString())
                 {
                     StatusCode = (int)HttpStatusCode.Forbidden
                 };
             }
 
-            _logger.LogInformation("Attempting to get Address for Customer. Customer GUID: {CustomerId}. Address GUID: {AddressId}.", customerGuid, addressGuid);
+            _logger.LogTrace("Attempting to get Address for Customer. Customer GUID: {CustomerId}. Address GUID: {AddressId}.", customerGuid, addressGuid);
             var address = await _addressPatchService.GetAddressForCustomerAsync(customerGuid, addressGuid);
 
             if (string.IsNullOrEmpty(address))
             {
-                _logger.LogWarning("Address not found. Customer GUID: {CustomerId}. Address GUID: {AddressId}.", customerGuid, addressGuid);
+                _logger.LogInformation("Address not found. Customer GUID: {CustomerId}. Address GUID: {AddressId}.", customerGuid, addressGuid);
                 return new NoContentResult();
             }
 
-            _logger.LogInformation("Attempting to PATCH Address resource.");
+            _logger.LogTrace("Attempting to PATCH Address resource.");
             var patchedAddress = _addressPatchService.PatchResource(address, addressPatchRequest);
 
             if (patchedAddress == null)
             {
-                _logger.LogWarning("Failed to PATCH Address resource.");
+                _logger.LogInformation("Failed to PATCH Address resource.");
                 return new NoContentResult();
             }
 
-            _logger.LogInformation("Attempting to update Address in Cosmos DB. Address GUID: {AddressId}", addressGuid);
+            _logger.LogTrace("Attempting to update Address in Cosmos DB. Address GUID: {AddressId}", addressGuid);
             var updatedAddress = await _addressPatchService.UpdateCosmosAsync(patchedAddress, addressGuid);
 
             if (updatedAddress == null)
             {
-                _logger.LogWarning("Failed to update Address in Cosmos DB. Address GUID: {AddressId}", addressGuid);
-                _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchAddressHttpTrigger));
+                _logger.LogInformation("Failed to update Address in Cosmos DB. Address GUID: {AddressId}", addressGuid);
                 return new BadRequestObjectResult(addressGuid);
             }
 
-            _logger.LogInformation("Address updated successfully in Cosmos DB. Address GUID: {AddressId}", addressGuid);
+            _logger.LogTrace("Address updated successfully in Cosmos DB. Address GUID: {AddressId}", addressGuid);
 
-            _logger.LogInformation("Attempting to send message to Service Bus Namespace. Address GUID: {AddressId}", addressGuid);
+            _logger.LogTrace("Attempting to send message to Service Bus Namespace. Address GUID: {AddressId}", addressGuid);
             await _addressPatchService.SendToServiceBusQueueAsync(updatedAddress, customerGuid, apimUrl);
-            _logger.LogInformation("Successfully sent message to Service Bus. Address GUID: {AddressId}", addressGuid);
+            _logger.LogTrace("Successfully sent message to Service Bus. Address GUID: {AddressId}", addressGuid);
 
-            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(PatchAddressHttpTrigger));
+            _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(PatchAddressHttpTrigger));
 
             return new JsonResult(updatedAddress, new JsonSerializerOptions())
             {

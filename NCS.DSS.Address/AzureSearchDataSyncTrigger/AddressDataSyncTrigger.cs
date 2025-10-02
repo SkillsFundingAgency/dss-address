@@ -19,17 +19,17 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
         public async Task Run([CosmosDBTrigger("addresses", "addresses", Connection = "AddressConnectionString",
                 LeaseContainerName = "addresses-leases", CreateLeaseContainerIfNotExists = true)]IReadOnlyList<AddressDocument> documents)
         {
-            _logger.LogInformation("Function {FunctionName} has been invoked", nameof(AddressDataSyncTrigger));
+            _logger.LogTrace("Function {FunctionName} has been invoked", nameof(AddressDataSyncTrigger));
 
             var inputMessage = "Input Paramenters " + Environment.NewLine;
             inputMessage += string.Format("Number of Documents:{0}", documents.Count);
 
-            _logger.LogInformation(inputMessage);
+            _logger.LogTrace(inputMessage);
 
-            _logger.LogInformation("Get search service client");
+            _logger.LogTrace("Get search service client");
             var client = SearchHelper.GetSearchServiceClient(_logger);
 
-            _logger.LogInformation("Documents modified " + documents.Count);
+            _logger.LogTrace("Documents modified " + documents.Count);
 
             if (documents.Count > 0)
             {
@@ -45,7 +45,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                 try
                 {
-                    _logger.LogInformation("Attempting to merge documents to azure search");
+                    _logger.LogTrace("Attempting to merge documents to azure search");
 
                     var results = await client.IndexDocumentsAsync(batch);
 
@@ -53,10 +53,10 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
 
                     if (failed.Any())
                     {
-                        _logger.LogError("Failed to index some of the documents: {0}", string.Join(", ", failed));
+                        _logger.LogWarning("Failed to index some of the documents: {0}", string.Join(", ", failed));
                     }
 
-                    _logger.LogInformation("Successfully merged documents to azure search");
+                    _logger.LogTrace("Successfully merged documents to azure search");
                 }
                 catch (RequestFailedException ex)
                 {
@@ -64,7 +64,7 @@ namespace NCS.DSS.Address.AzureSearchDataSyncTrigger
                 }                
             }
 
-            _logger.LogInformation("Function {FunctionName} has finished invoking", nameof(AddressDataSyncTrigger));
+            _logger.LogTrace("Function {FunctionName} has finished invoking", nameof(AddressDataSyncTrigger));
         }
     }
 }

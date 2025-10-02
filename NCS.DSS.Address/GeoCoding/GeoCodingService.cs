@@ -17,11 +17,11 @@ namespace NCS.DSS.Address.GeoCoding
 
         public async Task<Position> GetPositionForPostcodeAsync(string postcode)
         {
-            _logger.LogInformation("Retrieving Position for postcode: {Postcode}.", postcode);
+            _logger.LogTrace("Retrieving Position for postcode: {Postcode}.", postcode);
 
             if (string.IsNullOrEmpty(postcode))
             {
-                _logger.LogWarning("Invalid postcode provided: {Postcode}.", postcode);
+                _logger.LogInformation("Invalid postcode provided: {Postcode}.", postcode);
                 return null;
             }
 
@@ -33,7 +33,7 @@ namespace NCS.DSS.Address.GeoCoding
             }
             else
             {
-                _logger.LogInformation("Successfully retrieved Position for postcode: {Postcode}.", postcode);
+                _logger.LogTrace("Successfully retrieved Position for postcode: {Postcode}.", postcode);
             }
 
             return position;
