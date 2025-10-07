@@ -17,10 +17,10 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 
         public string Patch(string addressJson, AddressPatch addressPatch)
         {
-            _logger.LogInformation("Started updating address json object with PATCH request");
+            _logger.LogTrace("Started updating address json object with PATCH request");
             if (string.IsNullOrEmpty(addressJson))
             {
-                _logger.LogWarning("Invalid addressJson object provided. diversity json is either empty or null");
+                _logger.LogInformation("Invalid addressJson object provided. diversity json is either empty or null");
                 return null;
             }
 
@@ -29,92 +29,92 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
             if (!string.IsNullOrEmpty(addressPatch.Address1))
             {
                 _jsonHelper.UpdatePropertyValue(obj["Address1"], addressPatch.Address1);
-                _logger.LogInformation("Address1 Update Complete in Json Object");
+                _logger.LogTrace("Address1 Update Complete in Json Object");
             }
 
             if (addressPatch.Address2 != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["Address2"], addressPatch.Address2);
-                _logger.LogInformation("Address2 Update Complete in Json Object");
+                _logger.LogTrace("Address2 Update Complete in Json Object");
             }
 
 
             if (addressPatch.Address3 != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["Address3"], addressPatch.Address3);
-                _logger.LogInformation("Address3 Update Complete in Json Object");
+                _logger.LogTrace("Address3 Update Complete in Json Object");
             }
 
             if (addressPatch.Address4 != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["Address4"], addressPatch.Address4);
-                _logger.LogInformation("Address4 Update Complete in Json Object");
+                _logger.LogTrace("Address4 Update Complete in Json Object");
             }
 
 
             if (addressPatch.Address5 != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["Address5"], addressPatch.Address5);
-                _logger.LogInformation("Address5 Update Complete in Json Object");
+                _logger.LogTrace("Address5 Update Complete in Json Object");
             }
 
             if (!string.IsNullOrEmpty(addressPatch.PostCode))
             {
                 _jsonHelper.UpdatePropertyValue(obj["PostCode"], addressPatch.PostCode);
-                _logger.LogInformation("PostCode Update Complete in Json Object");
+                _logger.LogTrace("PostCode Update Complete in Json Object");
 
                 _jsonHelper.UpdatePropertyValue(obj["Longitude"], addressPatch.Longitude);
-                _logger.LogInformation("Longitude Update Complete in Json Object");
+                _logger.LogTrace("Longitude Update Complete in Json Object");
 
                 _jsonHelper.UpdatePropertyValue(obj["Latitude"], addressPatch.Latitude);
-                _logger.LogInformation("Latitude Update Complete in Json Object");
+                _logger.LogTrace("Latitude Update Complete in Json Object");
             }
             else
             {
                 if (addressPatch.Longitude.HasValue)
                 {
                     _jsonHelper.UpdatePropertyValue(obj["Longitude"], addressPatch.Longitude);
-                    _logger.LogInformation("Longitude Update Complete in Json Object");
+                    _logger.LogTrace("Longitude Update Complete in Json Object");
                 }
 
                 if (addressPatch.Latitude.HasValue)
                 {
                     _jsonHelper.UpdatePropertyValue(obj["Latitude"], addressPatch.Latitude);
-                    _logger.LogInformation("Latitude Update Complete in Json Object");
+                    _logger.LogTrace("Latitude Update Complete in Json Object");
                 }
             }
 
             if (addressPatch.AlternativePostCode != null)
             {
                 _jsonHelper.UpdatePropertyValue(obj["AlternativePostCode"], addressPatch.AlternativePostCode);
-                _logger.LogInformation("AlternativePostCode Update Complete in Json Object");
+                _logger.LogTrace("AlternativePostCode Update Complete in Json Object");
             }
 
             if (addressPatch.EffectiveFrom.HasValue)
             {
                 _jsonHelper.UpdatePropertyValue(obj["EffectiveFrom"], addressPatch.EffectiveFrom);
-                _logger.LogInformation("EffectiveFrom Update Complete in Json Object");
+                _logger.LogTrace("EffectiveFrom Update Complete in Json Object");
             }
 
 
             if (addressPatch.EffectiveTo.HasValue)
             {
                 _jsonHelper.UpdatePropertyValue(obj["EffectiveTo"], addressPatch.EffectiveTo);
-                _logger.LogInformation("EffectiveTo Update Complete in Json Object");
+                _logger.LogTrace("EffectiveTo Update Complete in Json Object");
             }
 
 
             if (addressPatch.LastModifiedDate.HasValue)
             {
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedDate"], addressPatch.LastModifiedDate);
-                _logger.LogInformation("LastModifiedDate Update Complete in Json Object");
+                _logger.LogTrace("LastModifiedDate Update Complete in Json Object");
             }
 
 
             if (!string.IsNullOrEmpty(addressPatch.LastModifiedTouchpointId))
             {
                 _jsonHelper.UpdatePropertyValue(obj["LastModifiedTouchpointId"], addressPatch.LastModifiedTouchpointId);
-                _logger.LogInformation("LastModifiedTouchpointId Update Complete in Json Object");
+                _logger.LogTrace("LastModifiedTouchpointId Update Complete in Json Object");
             }
 
             if (!string.IsNullOrEmpty(addressPatch.SubcontractorId))
@@ -123,9 +123,9 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                     _jsonHelper.CreatePropertyOnJObject(obj, "SubcontractorId", addressPatch.SubcontractorId);
                 else
                     _jsonHelper.UpdatePropertyValue(obj["SubcontractorId"], addressPatch.SubcontractorId);
-                _logger.LogInformation("Added or Updated SubcontractorId in Json Object");
+                _logger.LogTrace("Added or Updated SubcontractorId in Json Object");
             }
-            _logger.LogInformation("Completed updating address json object with PATCH request");
+            _logger.LogTrace("Completed updating address json object with PATCH request");
             return obj.ToString();
 
         }

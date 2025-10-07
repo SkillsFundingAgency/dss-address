@@ -49,11 +49,11 @@ namespace NCS.DSS.Address.ServiceBus
             };
 
 
-            _logger.LogInformation("Attempting to send POST message to service bus. Address ID: {AddressId}", address.AddressId);
+            _logger.LogTrace("Attempting to send POST message to service bus. Address ID: {AddressId}", address.AddressId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent POST message to the service bus. Address ID: {AddressId}", address.AddressId);
+            _logger.LogTrace("Successfully sent POST message to the service bus. Address ID: {AddressId}", address.AddressId);
         }
 
         public async Task SendPatchMessageAsync(Models.Address address, Guid customerId, string reqUrl)
@@ -76,11 +76,11 @@ namespace NCS.DSS.Address.ServiceBus
                 MessageId = customerId + " " + DateTime.UtcNow
             };
 
-            _logger.LogInformation("Attempting to send PATCH message to service bus. Address ID: {AddressId}", address.AddressId);
+            _logger.LogTrace("Attempting to send PATCH message to service bus. Address ID: {AddressId}", address.AddressId);
 
             await serviceBusSender.SendMessageAsync(msg);
 
-            _logger.LogInformation("Successfully sent PATCH message to the service bus. Address ID: {AddressId}", address.AddressId);
+            _logger.LogTrace("Successfully sent PATCH message to the service bus. Address ID: {AddressId}", address.AddressId);
         }
     }
 }

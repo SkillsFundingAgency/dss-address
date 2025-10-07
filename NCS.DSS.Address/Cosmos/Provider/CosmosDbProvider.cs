@@ -31,7 +31,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
         {
             try
             {
-                _logger.LogInformation("Checking for customer resource. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Checking for customer resource. Customer ID: {CustomerId}", customerId);
 
                 var response = await _customerContainer.ReadItemAsync<Customer>(
                     customerId.ToString(),
@@ -39,11 +39,11 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
                 if (response.Resource != null)
                 {
-                    _logger.LogInformation("Customer exists. Customer ID: {CustomerId}", customerId);
+                    _logger.LogTrace("Customer exists. Customer ID: {CustomerId}", customerId);
                     return true;
                 }
 
-                _logger.LogInformation("Customer does not exist. Customer ID: {CustomerId}", customerId);
+                _logger.LogTrace("Customer does not exist. Customer ID: {CustomerId}", customerId);
                 return false;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -60,7 +60,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<bool> DoesCustomerHaveATerminationDate(Guid customerId)
         {
-            _logger.LogInformation("Checking for termination date. Customer ID: {CustomerId}", customerId);
+            _logger.LogTrace("Checking for termination date. Customer ID: {CustomerId}", customerId);
 
             try
             {
@@ -71,7 +71,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
                 var dateOfTermination = response.Resource?.DateOfTermination;
                 var hasTerminationDate = dateOfTermination != null;
 
-                _logger.LogInformation("Termination date check completed. CustomerId: {CustomerId}. HasTerminationDate: {HasTerminationDate}", customerId, hasTerminationDate);
+                _logger.LogTrace("Termination date check completed. CustomerId: {CustomerId}. HasTerminationDate: {HasTerminationDate}", customerId, hasTerminationDate);
                 return hasTerminationDate;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -95,7 +95,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
-            _logger.LogInformation("Retrieving Address for Customer. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
+            _logger.LogTrace("Retrieving Address for Customer. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
 
             try
             {
@@ -106,11 +106,11 @@ namespace NCS.DSS.Address.Cosmos.Provider
                 var response = await query.ReadNextAsync();
                 if (response.Any())
                 {
-                    _logger.LogInformation("Address retrieved successfully. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
+                    _logger.LogTrace("Address retrieved successfully. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
                     return response?.FirstOrDefault();
                 }
 
-                _logger.LogWarning("Address not found. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
+                _logger.LogInformation("Address not found. Customer ID: {CustomerId}. Address ID: {AddressId}.", customerId, addressId);
                 return null;
             }
             catch (Exception ex)
@@ -123,7 +123,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
 
         public async Task<List<Models.Address>> GetAddressesForCustomerAsync(Guid customerId)
         {
-            _logger.LogInformation("Retrieving Addresses for Customer. Customer ID: {CustomerId}.", customerId);
+            _logger.LogTrace("Retrieving Addresses for Customer. Customer ID: {CustomerId}.", customerId);
 
             try
             {
@@ -138,7 +138,7 @@ namespace NCS.DSS.Address.Cosmos.Provider
                     addresses.AddRange(response);
                 }
 
-                _logger.LogInformation("Retrieved {Count} Address(es) for Customer with ID: {CustomerId}.", addresses.Count, customerId);
+                _logger.LogTrace("Retrieved {Count} Address(es) for Customer with ID: {CustomerId}.", addresses.Count, customerId);
                 return addresses;
             }
             catch (Exception ex)
@@ -152,16 +152,16 @@ namespace NCS.DSS.Address.Cosmos.Provider
         {
             if (address == null)
             {
-                _logger.LogError("Address object is null. Creation aborted.");
+                _logger.LogInformation("Address object is null. Creation aborted.");
                 throw new ArgumentNullException(nameof(Address), "Address cannot be null.");
             }
 
-            _logger.LogInformation("Creating Address with ID: {AddressId}", address.AddressId);
+            _logger.LogTrace("Creating Address with ID: {AddressId}", address.AddressId);
 
             try
             {
                 var response = await _addressContainer.CreateItemAsync(address, PartitionKey.None);
-                _logger.LogInformation("Successfully created Address with ID: {AddressID}", address.AddressId);
+                _logger.LogTrace("Successfully created Address with ID: {AddressID}", address.AddressId);
                 return response;
             }
             catch (Exception ex)
@@ -175,18 +175,18 @@ namespace NCS.DSS.Address.Cosmos.Provider
         {
             if (string.IsNullOrEmpty(addressJson))
             {
-                _logger.LogError("addressJson object is null. Update aborted.");
+                _logger.LogInformation("addressJson object is null. Update aborted.");
                 throw new ArgumentNullException(nameof(addressJson), "Address cannot be null.");
             }
 
             var address = JsonConvert.DeserializeObject<Models.Address>(addressJson);
 
-            _logger.LogInformation("Updating Address with ID: {AddressId}", addressId);
+            _logger.LogTrace("Updating Address with ID: {AddressId}", addressId);
 
             try
             {
                 var response = await _addressContainer.ReplaceItemAsync(address, addressId.ToString());
-                _logger.LogInformation("Successfully updated Address with ID: {AddressId}", addressId);
+                _logger.LogTrace("Successfully updated Address with ID: {AddressId}", addressId);
                 return response;
             }
             catch (Exception ex)

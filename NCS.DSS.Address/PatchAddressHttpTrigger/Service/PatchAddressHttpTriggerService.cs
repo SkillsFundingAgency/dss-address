@@ -23,7 +23,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
 
         public string PatchResource(string addressJson, AddressPatch addressPatch)
         {
-            _logger.LogInformation("Started patching address");
+            _logger.LogTrace("Started patching address");
             if (string.IsNullOrEmpty(addressJson))
             {
                 _logger.LogInformation("Can't patch address because input address json is null");
@@ -36,13 +36,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                 return null;
             }
 
-            _logger.LogInformation("Setting default values for address PATCH object.");
+            _logger.LogTrace("Setting default values for address PATCH object.");
             addressPatch.SetDefaultValues();
-            _logger.LogInformation("Default values for address PATCH object are successfully set.");
+            _logger.LogTrace("Default values for address PATCH object are successfully set.");
 
             var addressObj = _addressPatchService.Patch(addressJson, addressPatch);
 
-            _logger.LogInformation("Completed patching address");
+            _logger.LogTrace("Completed patching address");
 
             return addressObj;
         }
@@ -55,13 +55,13 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
                 return null;
             }
 
-            _logger.LogInformation("Started updating address in Cosmos DB with ID: {addressId}", addressId);
+            _logger.LogTrace("Started updating address in Cosmos DB with ID: {addressId}", addressId);
 
             var response = await _cosmosDbProvider.UpdateAddressAsync(addressJson, addressId);
 
             if (response?.StatusCode == HttpStatusCode.OK)
             {
-                _logger.LogInformation("Completed updating address in Cosmos DB with ID: {addressId}", addressId);
+                _logger.LogTrace("Completed updating address in Cosmos DB with ID: {addressId}", addressId);
                 return response.Resource;
             }
 
@@ -78,11 +78,11 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Service
         {
             try
             {
-                _logger.LogInformation("Sending address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
+                _logger.LogTrace("Sending address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
 
                 await _addressServiceBusClient.SendPatchMessageAsync(address, customerId, reqUrl);
 
-                _logger.LogInformation("Successfully sent address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
+                _logger.LogTrace("Successfully sent address with ID: {AddressId} to Service Bus for customer ID: {CustomerId}.", address.AddressId, customerId);
             }
             catch (Exception ex)
             {
