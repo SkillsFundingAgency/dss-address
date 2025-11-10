@@ -16,17 +16,17 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
 
         public async Task<Models.Address> GetAddressForCustomerAsync(Guid customerId, Guid addressId)
         {
-            _logger.LogInformation("Retrieving address with ID: {AddressId} for customer ID: {CustomerId}.", addressId, customerId);
+            _logger.LogTrace("Retrieving address with ID: {AddressId} for customer ID: {CustomerId}.", addressId, customerId);
 
             if (customerId == Guid.Empty)
             {
-                _logger.LogWarning("Invalid customer ID provided: {CustomerId}.", customerId);
+                _logger.LogInformation("Invalid customer ID provided: {CustomerId}.", customerId);
                 return null;
             }
 
             if (addressId == Guid.Empty)
             {
-                _logger.LogWarning("Invalid address ID provided: {AddressId}.", addressId);
+                _logger.LogInformation("Invalid address ID provided: {AddressId}.", addressId);
                 return null;
             }
 
@@ -38,7 +38,7 @@ namespace NCS.DSS.Address.GetAddressByIdHttpTrigger.Service
             }
             else
             {
-                _logger.LogInformation("Successfully retrieved address with ID: {AddressId} for customer ID: {CustomerId}", addressId, customerId);
+                _logger.LogTrace("Successfully retrieved address with ID: {AddressId} for customer ID: {CustomerId}", addressId, customerId);
             }
 
             return address;
