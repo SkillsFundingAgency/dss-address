@@ -101,7 +101,7 @@ namespace NCS.DSS.Address.PostAddressHttpTrigger.Function
             catch (Newtonsoft.Json.JsonException ex)
             {
                 _logger.LogError(ex, "Unable to parse {addressRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(addressRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
             }
 
             if (addressRequest == null)
