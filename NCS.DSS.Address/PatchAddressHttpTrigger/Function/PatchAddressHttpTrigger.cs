@@ -107,7 +107,7 @@ namespace NCS.DSS.Address.PatchAddressHttpTrigger.Function
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unable to parse {addressPatchRequest} from request body. Correlation GUID: {CorrelationGuid}. Exception: {ExceptionMessage}", nameof(addressPatchRequest), correlationGuid, ex.Message);
-                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite"]));
+                return new UnprocessableEntityObjectResult(_dynamicHelper.ExcludeProperty(ex, ["TargetSite", "StackTrace"]));
             }
 
             if (addressPatchRequest == null)
