@@ -16,10 +16,7 @@ namespace NCS.DSS.Address.Models
         public required string SearchServiceName { get; set; }
         public required string SearchServiceAdminApiKey { get; set; }
         public required string CustomerSearchIndexName { get; set; }
-        public required string AzureMapURL { get; set; }
-        public required string AzureMapApiVersion { get; set; }
-        public required string AzureMapSubscriptionKey { get; set; }
-        public required string AzureCountrySet { get; set; }
-
+        public required string OSServiceApiUrl { get; set; }
+        public required string OSServiceApiKey { get; set; }
     }
 }

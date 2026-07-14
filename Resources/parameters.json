@@ -5,12 +5,6 @@
         "appInsightsInstrumentationKey": {
             "value": "__appInsightsInstrumentationKey__" 
         },
-        "azureMapsApiVersion": {
-            "value": "__AzureMapsApiVersion__"
-        },
-        "azureMapsUrl": {
-            "value": "__AzureMapsUrl__"
-        },
         "cosmosDbCollectionId": {
             "value": "__ApiResourceName__"
         },
