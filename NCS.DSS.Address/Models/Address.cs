@@ -1,4 +1,4 @@
-using DFC.GeoCoding.Standard.AzureMaps.Model;
+using DFC.GeoCoding.Standard.OrdnanceSurvey.Models;
 using DFC.JSON.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using System.ComponentModel.DataAnnotations;
@@ -121,8 +121,8 @@ namespace NCS.DSS.Address.Models
                 return;
             }
 
-            Longitude = (decimal)position.Lon;
-            Latitude = (decimal)position.Lat;
+            Longitude = (decimal)position.Longitude;
+            Latitude = (decimal)position.Latitude;
         }
     }
 }

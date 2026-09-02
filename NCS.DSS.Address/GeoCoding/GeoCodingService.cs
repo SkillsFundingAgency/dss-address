@@ -1,17 +1,17 @@
-﻿using DFC.GeoCoding.Standard.AzureMaps.Model;
-using DFC.GeoCoding.Standard.AzureMaps.Service;
+﻿using DFC.GeoCoding.Standard.OrdnanceSurvey.Models;
+using DFC.GeoCoding.Standard.OrdnanceSurvey.Services;
 using Microsoft.Extensions.Logging;
 
 namespace NCS.DSS.Address.GeoCoding
 {
     public class GeoCodingService : IGeoCodingService
     {
-        private readonly IAzureMapService _azureMapService;
+        private readonly IOSService _OSService;
         private readonly ILogger<GeoCodingService> _logger;
 
-        public GeoCodingService(IAzureMapService azureMapService, ILogger<GeoCodingService> logger)
+        public GeoCodingService(IOSService OSService, ILogger<GeoCodingService> logger)
         {
-            _azureMapService = azureMapService;
+            _OSService = OSService;
             _logger = logger;
         }
 
@@ -25,7 +25,7 @@ namespace NCS.DSS.Address.GeoCoding
                 return null;
             }
 
-            var position = await _azureMapService.GetPositionForAddress(postcode);
+            var position = await _OSService.GetPositionForPostcodeAsync(postcode);
 
             if (position == null)
             {

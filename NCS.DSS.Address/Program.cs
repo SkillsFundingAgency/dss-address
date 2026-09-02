@@ -1,11 +1,13 @@
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
-using DFC.GeoCoding.Standard.AzureMaps.Service;
+using DFC.GeoCoding.Standard.OrdnanceSurvey.Models;
+using DFC.GeoCoding.Standard.OrdnanceSurvey.Services;
 using DFC.HTTP.Standard;
 using DFC.JSON.Standard;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -35,6 +37,12 @@ namespace NCS.DSS.Address
                     var configuration = context.Configuration;
                     services.AddOptions<AddressConfigurationSettings>()
                         .Bind(configuration);
+                    services.Configure<OSServiceOptions>(options =>
+                    {
+                        var settings = configuration.Get<AddressConfigurationSettings>();
+                        options.ApiUrl = settings.OSServiceApiUrl;
+                        options.ApiKey = settings.OSServiceApiKey;
+                    });
 
                     services.AddApplicationInsightsTelemetryWorkerService();
                     services.ConfigureFunctionsApplicationInsights();
@@ -51,9 +59,11 @@ namespace NCS.DSS.Address
                     services.AddTransient<IPatchAddressHttpTriggerService, PatchAddressHttpTriggerService>();
                     services.AddScoped<IAddressPatchService, AddressPatchService>();
                     services.AddScoped<IGeoCodingService, GeoCodingService>();
-                    services.AddScoped<IAzureMapService, AzureMapService>();
                     services.AddTransient<ICosmosDbProvider, CosmosDbProvider>();
                     services.AddTransient<IAddressServiceBusClient, AddressServiceBusClient>();
+
+                    services.AddHttpClient<IOSService, OSService>();
+
                     services.AddLogging();
 
                     services.AddSingleton(s =>
